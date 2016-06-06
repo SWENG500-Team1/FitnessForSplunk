@@ -1,0 +1,14 @@
+<setup>
+  <block title="Google Fitness API Credentials" endpoint="storage/passwords" entity="_new">
+    <text>Use the values from the client_id.json file provided by Google Developer tools.
+  <input field="name">
+    <label>Client ID (client_id)</label>
+    <type>text</type>
+  </input>
+
+  <input field="password">
+    <label>Client Secret (client_secret)</label>
+    <type>password</type>
+  </input>
+  </block>
+</setup>
