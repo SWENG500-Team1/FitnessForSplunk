@@ -2,7 +2,7 @@
 
   <!--Google configuration-->
   <block title="Google Fitness API Credentials" endpoint="storage/passwords" entity="_new">
-    <text>Use the values from the client_id.json file provided by Google Developer tools.
+    <text>Use the values from the client_id.json file provided by Google Developer tools.</text>
     <input field="name">
       <label>Client ID (client_id)</label>
       <type>text</type>
