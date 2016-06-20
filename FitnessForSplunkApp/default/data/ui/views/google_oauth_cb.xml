@@ -1,0 +1,8 @@
+<dashboard>
+<label>Google OAuth Handler</label>
+  <row>
+    <html>
+      This is a test of the Google OAuth Callback.
+    </html>
+  </row>
+</dashboard>

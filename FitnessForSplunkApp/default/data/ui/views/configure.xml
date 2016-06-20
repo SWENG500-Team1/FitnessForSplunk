@@ -1,0 +1,10 @@
+<dashboard>
+<label>Google OAuth Handler</label>
+  <row>
+    <html>
+      <a href="https://accounts.google.com/o/oauth2/auth?client_id=616872666934-ctkc2btlhme0or0vmar8mlaidt2g1j16.apps.googleusercontent.com&amp;redirect_uri=http%3A%2F%2Fwww.fitnessforsplunk.ninja%3A8000%2Fen-US%2Fapp%2FFitnessForSplunkApp%2Fgoogle_oauth_cb&amp;response_type=code&amp;scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffitness.activity.read+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffitness.body.read&amp;state=d37e33ab-8dd3-41ef-7c4e-7349df664314">
+        Setup Google Access
+      </a>
+    </html>
+  </row>
+</dashboard>
