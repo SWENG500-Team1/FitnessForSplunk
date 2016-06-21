@@ -4,16 +4,13 @@
 * Copy this whole `fitbit_data` folder to `$SPLUNK_HOME/etc/apps`.
 * Open a terminal at `$SPLUNK_HOME/etc/apps/fitbit_data/bin/app`.
 * Run `npm install`.
-* Restart Splunk
+* Restart Splunk server
 
 # Adding an input
-
-# TODO: Finish README.md
-
-#1. From Splunk Home, click the Settings menu. Under **Data**, click **Data inputs**, and find `Random Numbers`, the input you #just added. **Click Add new on that row**.
-#* Click **Add new** and fill in:
-#    * `name` (whatever name you want to give this input)
-#    * `min` (the minimum value for a random number)
-#    * `max` (the maximum value for a random number)
-#* Save your input, and navigate back to Splunk Home.
-#* Do a search for `sourcetype=random_numbers` and you should see some events.
+1. From Splunk Home, click the Settings menu. Under **Data**, click **Data inputs**, and find `Fitbit Data`, the input you #just added. **Click Add new on that row**.
+* Click **Add new** and fill in:
+    * `username` (Username of the account)
+    * `date` (Date of data to be retrieved in the format, **YYYY-MM-DD**)
+    * `token_json` (JSON token returned from the Fitbit API after authentication)
+* Save your input, and navigate back to Splunk Home.
+* Do a search for `sourcetype=fitbit_data` and you should see some events.
