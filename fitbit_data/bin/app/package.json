@@ -1,0 +1,11 @@
+{
+    "name": "fitbit_data",
+    "version": "0.0.1",
+    "description": "Splunk modular input for retrieving Fitbit data from Fitbit API",
+    "main": "fitbit_data.js",
+    "dependencies": {
+        "splunk-sdk": ">=1.4.0",
+        "fitbit-client-oauth2": "*"
+    },
+    "author": "Andy Huynh"
+}
