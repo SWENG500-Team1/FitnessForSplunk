@@ -1,3 +1,1 @@
-[GoogleFitness://<name>]
-* Client Session Token
-client_session = <value>
+[TA-GoogleFitness://<name>]
