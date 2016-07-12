@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"strings"
 	"time"
+
+	"github.com/AndyNortrup/GoSplunk"
 
 	"golang.org/x/oauth2"
 )
@@ -15,13 +19,13 @@ import (
 type GoogleFitnessInput struct{}
 
 func (input *GoogleFitnessInput) ReturnScheme() {
-	arguments := append([]Argument{}, Argument{
+	arguments := append([]splunk.Argument{}, splunk.Argument{
 		Name:        "client_id",
 		Title:       "Googl API Client ID",
 		Description: "This ID identifies the application to Google.",
 	})
 
-	scheme := &Scheme{
+	scheme := &splunk.Scheme{
 		Title:                 "Google Fitness",
 		Description:           "Retrieves fitness data from Google Fitness.",
 		UseExternalValidation: false,
@@ -42,10 +46,22 @@ func (input *GoogleFitnessInput) ValidateScheme() {
 
 func (input *GoogleFitnessInput) StreamEvents() {
 
-	//TODO: Replace hard coded values with pull from arguments
-	reader := NewFitnessReader(
-		"616872666934-ctkc2btlhme0or0vmar8mlaidt2g1j16.apps.googleusercontent.com",
-		"-CTNssDbQMnU5G6UVjkKcioA")
+	//Get parameters from std in.
+	config, err := splunk.ReadModInputConfig(bufio.NewReader(os.Stdin))
+	if err != nil {
+		log.Fatalf("Unable to read configuration from Stdin: %v\n", err)
+	}
+
+	for _, stanza := range config.Stanzas {
+		for _, key := range stanza.Params {
+			if key.Name == "passAuth" {
+				log.Printf("Key: %v\tValue:%v\n", key.Name, key.Value)
+			}
+		}
+	}
+
+	//Create FitnessReader
+	reader := NewFitnessReader(getAppCredentials(config.SessionKey))
 
 	//TODO: Replace hard coded values with pull from storage/passwords
 	/*TODO: Determine if the value from storage/passwords has a refresh token.
@@ -59,6 +75,41 @@ func (input *GoogleFitnessInput) StreamEvents() {
 
 	startTime, endTime := input.getTimes()
 	input.writeCheckPoint(outputData(reader, tok, startTime, endTime))
+}
+
+// getAppCredentials makes a call to the storage/passwords enpoint and retrieves
+// a appId and clinetSecret for the application.  The appId is stored in the
+// password field of the endpoint data and the appId is in the username.
+func getAppCredentials(sessionKey string) (string, string) {
+	passwords, err := splunk.GetEntities([]string{"storage", "passwords"},
+		"TA-GoogleFitness",
+		"nobody",
+		sessionKey)
+
+	if err != nil {
+		log.Fatalf("Unable to retrieve password entries for TA-GoogleFitness: %v\n",
+			err)
+	}
+
+	var clientSecret string
+	var appId string
+
+	for _, entry := range passwords.Entries {
+		//Because there could/should be multiple stored passwords we need to check
+		// the id for `apps.googleusercontent.com` because the id is based on the
+		// username.
+		if strings.Contains(entry.ID, "apps.googleusercontent.com") {
+			for _, key := range entry.Contents.Dictionary.Keys {
+				if key.Name == "clear_password" {
+					clientSecret = key.Value
+				}
+				if key.Name == "username" {
+					appId = key.Value
+				}
+			}
+		}
+	}
+	return appId, clientSecret
 }
 
 //getTimes returns a startTime and an endTime value.  endTime is retrived from
