@@ -4,4 +4,10 @@
   <view name="reports" />
   <view name="alerts" />
   <view name="dashboards" />
+  <collection label="Add Fitness Account">
+    <view name="testing" />
+    <a href="http://google.com">Google (unimplemented)</a>
+    <a href="https://www.fitbit.com/oauth2/authorize?response_type=code&amp;client_id=227MVJ&amp;redirect_uri=https%3A%2F%2Flocalhost%3A8089%2Fservices%2Ffitness_for_splunk%2Ffitbit_callback&amp;scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight">Fitbit</a>
+    <a href="http://microsoft.com">Microsoft (unimplemented)</a>
+  </collection>
 </nav>
