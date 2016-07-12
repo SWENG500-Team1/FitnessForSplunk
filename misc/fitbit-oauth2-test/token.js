@@ -7,8 +7,8 @@ var fs = require('fs');
 var app = express();
 
 /* Fitbit Stuff */
-var clientId = '';
-var clientSecret = '';
+var clientId = '227MVJ';
+var clientSecret = 'df8009bd0ddcb975f9a812e3587e54dd';
 var client = new FitbitClient(clientId, clientSecret);
 var redirect_uri = 'http://localhost:3000/auth/fitbit/callback';
 
