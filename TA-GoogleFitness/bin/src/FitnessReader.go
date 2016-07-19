@@ -11,6 +11,8 @@ import (
 	"google.golang.org/api/fitness/v1"
 )
 
+const oauth_time_format = "2006-01-02 15:04:05.00000000 -0700 MST"
+
 type FitnessReader struct {
 	conf         *oauth2.Config
 	client       *http.Client
@@ -40,7 +42,7 @@ func NewFitnessReader(clientID string,
 func (fit *FitnessReader) getTokenFromAccessCode(accessCode string) *oauth2.Token {
 	tok, err := fit.conf.Exchange(oauth2.NoContext, accessCode)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error fettching token: %v\n", err)
 	}
 	return tok
 }
@@ -51,10 +53,9 @@ func (fit *FitnessReader) getTokenFromRefreshToken(
 	expiryStr string,
 	tokenType string) *oauth2.Token {
 
-	const example = "2006-01-02 15:04:05.00000000 -0700 MST"
-	expires, err := time.Parse(example, expiryStr)
+	expires, err := time.Parse(oauth_time_format, expiryStr)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error fetting token from refresh token: %v\n", err)
 	}
 
 	tok := new(oauth2.Token)
@@ -80,13 +81,13 @@ func (fit *FitnessReader) GetDataSources(tok *oauth2.Token) []*fitness.DataSourc
 	}
 	service, err := fitness.New(fit.client)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Unable to create DataSource service: %v\n", err)
 	}
 	dataSourceService := fitness.NewUsersDataSourcesService(service)
 	call := dataSourceService.List("me")
 	response, err := call.Do()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error getting DataSources: %v\n", err)
 	}
 
 	return response.DataSource
@@ -106,14 +107,14 @@ func (fit *FitnessReader) GetDataSet(tok *oauth2.Token,
 
 	service, err := fitness.New(fit.getClient(tok))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error creating DataSet Service: %v\n", err)
 	}
 
 	dataSetService := fitness.NewUsersDataSourcesDatasetsService(service)
 	request := dataSetService.Get("me", dataSource.DataStreamId, dataSetId)
 	resp, err := request.Do()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error Getting DataSet: %v\n", err)
 	}
 
 	return resp
