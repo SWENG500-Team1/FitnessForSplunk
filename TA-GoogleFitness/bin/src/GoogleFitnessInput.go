@@ -68,7 +68,7 @@ func (input *GoogleFitnessInput) StreamEvents() {
 		"Bearer")
 
 	startTime, endTime := input.getTimes()
-	writer := log.New(os.Stdout, "", log.LstdFlags)
+	writer := bufio.NewWriter(os.Stdout)
 	input.writeCheckPoint(input.fetchData(reader, tok, startTime, endTime, writer))
 }
 
@@ -87,24 +87,25 @@ func (input *GoogleFitnessInput) getAppCredentials(sessionKey string) (string, s
 	}
 
 	var clientSecret string
-	var appId string
+	var clientId string
 
 	for _, entry := range passwords.Entries {
 		//Because there could/should be multiple stored passwords we need to check
 		// the id for `apps.googleusercontent.com` because the id is based on the
 		// username.
+
 		if strings.Contains(entry.ID, "apps.googleusercontent.com") {
 			for _, key := range entry.Contents.Keys {
 				if key.Name == "clear_password" {
 					clientSecret = key.Value
 				}
 				if key.Name == "username" {
-					appId = key.Value
+					clientId = key.Value
 				}
 			}
 		}
 	}
-	return appId, clientSecret
+	return clientId, clientSecret
 }
 
 //getTimes returns a startTime and an endTime value.  endTime is retrived from
@@ -124,7 +125,9 @@ func (input *GoogleFitnessInput) fetchData(
 	tok *oauth2.Token,
 	startTime time.Time,
 	endTime time.Time,
-	writer *log.Logger) time.Time {
+	writer *bufio.Writer) time.Time {
+
+	defer writer.Flush()
 
 	lastOutputTime := startTime
 
@@ -134,7 +137,8 @@ func (input *GoogleFitnessInput) fetchData(
 
 		for _, point := range dataset.Point {
 			json, _ := point.MarshalJSON()
-			writer.Println(string(json[:len(json)]))
+			writer.Write(json)
+			writer.Flush()
 
 			//find the last time recorded so that we can write that as the checkpoint
 			if time.Unix(0, point.EndTimeNanos).After(lastOutputTime) {

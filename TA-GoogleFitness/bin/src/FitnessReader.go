@@ -88,6 +88,7 @@ func (fit *FitnessReader) GetDataSources(tok *oauth2.Token) []*fitness.DataSourc
 	response, err := call.Do()
 	if err != nil {
 		log.Fatalf("Error getting DataSources: %v\n", err)
+		log.Fatalf("Client ID: %v")
 	}
 
 	return response.DataSource

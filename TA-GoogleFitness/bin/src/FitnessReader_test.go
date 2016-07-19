@@ -1,8 +1,8 @@
 package main
 
 import (
-	"log"
-	"os"
+	"bufio"
+	"io/ioutil"
 	"testing"
 	"time"
 )
@@ -38,7 +38,7 @@ func TestLatestTime(t *testing.T) {
 		testExpires,
 		testTokenType)
 
-	devNull := log.New(os.Stdout, "", log.LstdFlags)
+	devNull := bufio.NewWriter(ioutil.Discard)
 
 	latestTime := input.fetchData(reader, tok, startTime, endTime, devNull)
 	if latestTime.Nanosecond() == startTime.Nanosecond() {
