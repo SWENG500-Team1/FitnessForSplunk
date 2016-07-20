@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -18,7 +19,9 @@ import (
 
 const APP_NAME string = "TA-GoogleFitness"
 
-type GoogleFitnessInput struct{}
+type GoogleFitnessInput struct {
+	Config *splunk.ModInputConfig
+}
 
 func (input *GoogleFitnessInput) ReturnScheme() {
 	arguments := append([]splunk.Argument{}, splunk.Argument{
@@ -50,33 +53,37 @@ func (input *GoogleFitnessInput) StreamEvents() {
 
 	//Get parameters from std in.
 	config, err := splunk.ReadModInputConfig(bufio.NewReader(os.Stdin))
+	input.Config = config
 	if err != nil {
 		log.Fatalf("Unable to read configuration from Stdin: %v\n", err)
 	}
 
 	//Create FitnessReader
-	reader := NewFitnessReader(input.getAppCredentials(config.SessionKey))
+	// reader := NewFitnessReader(input.getAppCredentials(config.SessionKey))
 
 	//TODO: Replace hard coded values with pull from storage/passwords
 	/*TODO: Determine if the value from storage/passwords has a refresh token.
 	Yes: Refresh the existing token.
 	No: Get a refresh token and store new token
 	*/
-	tok := reader.getTokenFromRefreshToken("1/7u5ngLKEF2MiVYHvnWwYKRIb8s3s8u2e8JtHZ2yjUAQ",
+	tok := newToken("1/7u5ngLKEF2MiVYHvnWwYKRIb8s3s8u2e8JtHZ2yjUAQ",
 		"ya29.Ci8IA_du7mknNus-G_UTfiWB3FHeqdpIqEj_bwaUSvB2lYvsZSuKB7E-2TVuDM44sw",
 		"2016-06-21 07:59:23.44961918 -0700 PDT",
 		"Bearer")
 
+	clientId, clientSecret := input.getAppCredentials(config.SessionKey)
+	client := getClient(tok, clientId, clientSecret)
 	startTime, endTime := input.getTimes()
 	writer := bufio.NewWriter(os.Stdout)
-	input.writeCheckPoint(input.fetchData(reader, tok, startTime, endTime, writer))
+	input.writeCheckPoint(input.fetchData(tok, client, startTime, endTime, writer))
 }
 
 // getAppCredentials makes a call to the storage/passwords enpoint and retrieves
 // an appId and clinetSecret for the application.  The appId is stored in the
 // password field of the endpoint data and the appId is in the username.
 func (input *GoogleFitnessInput) getAppCredentials(sessionKey string) (string, string) {
-	passwords, err := splunk.GetEntities([]string{"storage", "passwords"},
+	passwords, err := splunk.GetEntities(splunk.LocalSplunkMgmntURL,
+		[]string{"storage", "passwords"},
 		APP_NAME,
 		"nobody",
 		sessionKey)
@@ -121,8 +128,8 @@ func (input *GoogleFitnessInput) getTimes() (time.Time, time.Time) {
 }
 
 func (input *GoogleFitnessInput) fetchData(
-	reader *FitnessReader,
 	tok *oauth2.Token,
+	client *http.Client,
 	startTime time.Time,
 	endTime time.Time,
 	writer *bufio.Writer) time.Time {
@@ -131,9 +138,9 @@ func (input *GoogleFitnessInput) fetchData(
 
 	lastOutputTime := startTime
 
-	dataSources := reader.GetDataSources(tok)
+	dataSources := GetDataSources(tok, client)
 	for _, dataSource := range dataSources {
-		dataset := reader.GetDataSet(tok, startTime, endTime, *dataSource)
+		dataset := GetDataSet(tok, client, startTime, endTime, *dataSource)
 
 		for _, point := range dataset.Point {
 			json, _ := point.MarshalJSON()
@@ -182,12 +189,10 @@ func (input *GoogleFitnessInput) readCheckPoint() (time.Time, error) {
 	return t, nil
 }
 
+// Takes the checkpoint dir from and config stanza name from the input and
+// creates a checkpoint dir.  Should be unique for each input
 func (input *GoogleFitnessInput) getCheckPointPath() string {
-	//Get the app directory
-	base := os.Getenv("SPLUNK_HOME")
-	if base == "" {
-		log.Fatal("Unable to find $SPLUNK_HOME")
-	}
-	path := path.Join(base, "etc/apps/TA-GoogleFitness/checkpoint.txt")
+	//Create a hash of the stanza name as a filename
+	path := path.Join(input.Config.CheckpointDir, input.Config.Stanzas[0].StanzaName)
 	return path
 }

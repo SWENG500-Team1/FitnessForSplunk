@@ -7,79 +7,14 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/fitness/v1"
 )
 
 const oauth_time_format = "2006-01-02 15:04:05.00000000 -0700 MST"
 
-type FitnessReader struct {
-	conf         *oauth2.Config
-	client       *http.Client
-	refreshToken string
-	accessToken  string
-	expires      time.Time
-	tokenType    string
-}
+func GetDataSources(tok *oauth2.Token, client *http.Client) []*fitness.DataSource {
 
-func NewFitnessReader(clientID string,
-	clientSecret string,
-) *FitnessReader {
-
-	fit := &FitnessReader{}
-
-	fit.conf = &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		Scopes: []string{fitness.FitnessActivityReadScope,
-			fitness.FitnessBodyReadScope},
-		Endpoint: google.Endpoint,
-	}
-
-	return fit
-}
-
-func (fit *FitnessReader) getTokenFromAccessCode(accessCode string) *oauth2.Token {
-	tok, err := fit.conf.Exchange(oauth2.NoContext, accessCode)
-	if err != nil {
-		log.Fatalf("Error fettching token: %v\n", err)
-	}
-	return tok
-}
-
-func (fit *FitnessReader) getTokenFromRefreshToken(
-	refreshToken string,
-	accessToken string,
-	expiryStr string,
-	tokenType string) *oauth2.Token {
-
-	expires, err := time.Parse(oauth_time_format, expiryStr)
-	if err != nil {
-		log.Fatalf("Error fetting token from refresh token: %v\n", err)
-	}
-
-	tok := new(oauth2.Token)
-	tok.RefreshToken = refreshToken
-	tok.AccessToken = accessToken
-	tok.Expiry = expires
-	tok.TokenType = tokenType
-
-	return tok
-}
-
-func (fit *FitnessReader) getClient(tok *oauth2.Token) *http.Client {
-	if fit.client == nil {
-		context := oauth2.NoContext
-		fit.client = fit.conf.Client(context, tok)
-	}
-	return fit.client
-}
-
-func (fit *FitnessReader) GetDataSources(tok *oauth2.Token) []*fitness.DataSource {
-	if fit.client == nil {
-		fit.getClient(tok)
-	}
-	service, err := fitness.New(fit.client)
+	service, err := fitness.New(client)
 	if err != nil {
 		log.Fatalf("Unable to create DataSource service: %v\n", err)
 	}
@@ -93,19 +28,16 @@ func (fit *FitnessReader) GetDataSources(tok *oauth2.Token) []*fitness.DataSourc
 	return response.DataSource
 }
 
-func (fit *FitnessReader) GetDataSet(tok *oauth2.Token,
+func GetDataSet(tok *oauth2.Token,
+	client *http.Client,
 	startTime time.Time,
 	endTime time.Time,
 	dataSource fitness.DataSource) *fitness.Dataset {
 
-	if fit.client == nil {
-		fit.getClient(tok)
-	}
-
 	dataSetId := strconv.FormatInt(startTime.UnixNano(), 10) + "-" +
 		strconv.FormatInt(endTime.UnixNano(), 10)
 
-	service, err := fitness.New(fit.getClient(tok))
+	service, err := fitness.New(client)
 	if err != nil {
 		log.Fatalf("Error creating DataSet Service: %v\n", err)
 	}

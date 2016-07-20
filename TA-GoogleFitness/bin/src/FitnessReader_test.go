@@ -26,21 +26,26 @@ func TestLatestTime(t *testing.T) {
 	input := &GoogleFitnessInput{}
 
 	//TODO: Replace hard coded values with pull from arguments
-	reader := NewFitnessReader(testClientId, testClientSecret)
+	// reader := NewFitnessReader(testClientId, testClientSecret)
 
 	//TODO: Replace hard coded values with pull from storage/passwords
 	/*TODO: Determine if the value from storage/passwords has a refresh token.
 	  Yes: Refresh the existing token.
 	  No: Get a refresh token and store new token
 	*/
-	tok := reader.getTokenFromRefreshToken(testRefreshToken,
+	tok := newToken(testRefreshToken,
 		testAccessToken,
 		testExpires,
 		testTokenType)
 
 	devNull := bufio.NewWriter(ioutil.Discard)
 
-	latestTime := input.fetchData(reader, tok, startTime, endTime, devNull)
+	latestTime := input.fetchData(tok,
+		getClient(tok, testClientId, testClientSecret),
+		startTime,
+		endTime,
+		devNull)
+
 	if latestTime.Nanosecond() == startTime.Nanosecond() {
 		t.Logf("Unable to pull new data from data sources.  "+
 			"\tStart Time: %v\tLatest Time: %v\n",
