@@ -1,2 +1,2 @@
 [TA-GoogleFitness://<name>]
-client_id = <value>
+force_cert_validation = <bool>

@@ -1,37 +1,56 @@
 package main
 
 import (
+	"bufio"
+	"io/ioutil"
 	"testing"
 	"time"
-
-	"github.com/AndyNortrup/GoSplunk"
 )
 
-func TestRetrieval(t *testing.T) {
+/*
+Create a file for testing with your secrets:
+const testClientId string
+const testClinetSecret string
+const testRefreshToken string
+const testAccessToken string
+const testExpires string
+const testTokenType string
+*/
 
-	sessionKey, err := splunk.GetSessionKey("testing_user", "TestAccount")
-	if err != nil {
-		t.Logf("Unable to get a Session key: %v\n", err)
-	}
+//static start times and end times based on the author's dataSet
+var startTime = time.Unix(0, 1468305494396000000)
+var endTime = startTime.Add(5 * time.Millisecond)
+
+func TestLatestTime(t *testing.T) {
+
+	input := &GoogleFitnessInput{}
 
 	//TODO: Replace hard coded values with pull from arguments
-	reader := NewFitnessReader(getAppCredentials(sessionKey.SessionKey))
+	// reader := NewFitnessReader(testClientId, testClientSecret)
 
 	//TODO: Replace hard coded values with pull from storage/passwords
 	/*TODO: Determine if the value from storage/passwords has a refresh token.
 	  Yes: Refresh the existing token.
 	  No: Get a refresh token and store new token
 	*/
-	tok := reader.getTokenFromRefreshToken("1/7u5ngLKEF2MiVYHvnWwYKRIb8s3s8u2e8JtHZ2yjUAQ",
-		"ya29.Ci8IA_du7mknNus-G_UTfiWB3FHeqdpIqEj_bwaUSvB2lYvsZSuKB7E-2TVuDM44sw",
-		"2016-06-21 07:59:23.44961918 -0700 PDT",
-		"Bearer")
+	tok := newToken(testRefreshToken,
+		testAccessToken,
+		testExpires,
+		testTokenType)
 
-	startTime := time.Now().Add(-6 * time.Hour)
-	endTime := time.Now()
-	latestTime := outputData(reader, tok, startTime, endTime)
-	if latestTime == startTime {
-		t.Log("Unable to pull new data from data srouces.")
+	devNull := bufio.NewWriter(ioutil.Discard)
+
+	latestTime := input.fetchData(tok,
+		getClient(tok, testClientId, testClientSecret),
+		startTime,
+		endTime,
+		devNull)
+
+	if latestTime.Nanosecond() == startTime.Nanosecond() {
+		t.Logf("Unable to pull new data from data sources.  "+
+			"\tStart Time: %v\tLatest Time: %v\n",
+			startTime,
+			latestTime)
 		t.Fail()
 	}
 }
