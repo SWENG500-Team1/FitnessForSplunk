@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"path"
 	"strings"
 	"time"
@@ -20,14 +20,27 @@ import (
 const APP_NAME string = "TA-GoogleFitness"
 
 type GoogleFitnessInput struct {
-	Config *splunk.ModInputConfig
+	*splunk.ModInputConfig
+	reader io.Reader //Location to read configurations from
+	writer io.Writer //Location to write configurations to
 }
 
+//Create a new GoogleFitnessInput and read the configuation from reader
+func NewGoogleFitnessInput(reader io.Reader, writer io.Writer) (*GoogleFitnessInput, error) {
+	input := &GoogleFitnessInput{reader: reader, writer: writer}
+	config, err := splunk.ReadModInputConfig(reader)
+	if err == nil {
+		input.ModInputConfig = config
+	}
+	return input, err
+}
+
+//Write the scheme to input.writer
 func (input *GoogleFitnessInput) ReturnScheme() {
 	arguments := append([]splunk.Argument{}, splunk.Argument{
-		Name:        "client_id",
-		Title:       "Googl API Client ID",
-		Description: "This ID identifies the application to Google.",
+		Name:        "force_cert_validation",
+		Title:       "ForceCertValidation",
+		Description: "If true the input requires certificate validation when making REST calls to Splunk",
 	})
 
 	scheme := &splunk.Scheme{
@@ -38,7 +51,7 @@ func (input *GoogleFitnessInput) ReturnScheme() {
 		Args:                  arguments,
 	}
 
-	enc := xml.NewEncoder(os.Stdout)
+	enc := xml.NewEncoder(input.writer)
 	enc.Indent("   ", "   ")
 	if err := enc.Encode(scheme); err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -51,16 +64,6 @@ func (input *GoogleFitnessInput) ValidateScheme() {
 
 func (input *GoogleFitnessInput) StreamEvents() {
 
-	//Get parameters from std in.
-	config, err := splunk.ReadModInputConfig(bufio.NewReader(os.Stdin))
-	input.Config = config
-	if err != nil {
-		log.Fatalf("Unable to read configuration from Stdin: %v\n", err)
-	}
-
-	//Create FitnessReader
-	// reader := NewFitnessReader(input.getAppCredentials(config.SessionKey))
-
 	//TODO: Replace hard coded values with pull from storage/passwords
 	/*TODO: Determine if the value from storage/passwords has a refresh token.
 	Yes: Refresh the existing token.
@@ -71,11 +74,10 @@ func (input *GoogleFitnessInput) StreamEvents() {
 		"2016-06-21 07:59:23.44961918 -0700 PDT",
 		"Bearer")
 
-	clientId, clientSecret := input.getAppCredentials(config.SessionKey)
+	clientId, clientSecret := input.getAppCredentials(input.SessionKey)
 	client := getClient(tok, clientId, clientSecret)
 	startTime, endTime := input.getTimes()
-	writer := bufio.NewWriter(os.Stdout)
-	input.writeCheckPoint(input.fetchData(tok, client, startTime, endTime, writer))
+	input.writeCheckPoint(input.fetchData(tok, client, startTime, endTime, bufio.NewWriter(input.writer)))
 }
 
 // getAppCredentials makes a call to the storage/passwords enpoint and retrieves
@@ -193,6 +195,7 @@ func (input *GoogleFitnessInput) readCheckPoint() (time.Time, error) {
 // creates a checkpoint dir.  Should be unique for each input
 func (input *GoogleFitnessInput) getCheckPointPath() string {
 	//Create a hash of the stanza name as a filename
-	path := path.Join(input.Config.CheckpointDir, input.Config.Stanzas[0].StanzaName)
+	fileName := strings.Split(input.Stanzas[0].StanzaName, "://")
+	path := path.Join(input.CheckpointDir, fileName[1])
 	return path
 }

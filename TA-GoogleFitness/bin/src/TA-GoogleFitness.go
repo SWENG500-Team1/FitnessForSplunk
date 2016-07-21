@@ -1,13 +1,17 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/AndyNortrup/GoSplunk"
 )
 
 func main() {
-	input := &GoogleFitnessInput{}
+	input, err := NewGoogleFitnessInput(os.Stdin, os.Stdout)
+	if err != nil {
+		log.Fatalf("Unable to create GoogleFitnessInput: %v", err)
+	}
 	handleArgs(input)
 }
 

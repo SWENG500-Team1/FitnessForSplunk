@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -57,9 +60,9 @@ func TestWriteCheckpoint(t *testing.T) {
 	config := &splunk.ModInputConfig{}
 	config.CheckpointDir = tempDir
 	stanza := &splunk.ModInputStanza{}
-	stanza.StanzaName = "TestStanza"
+	stanza.StanzaName = "input://TestStanza"
 	config.Stanzas = []splunk.ModInputStanza{*stanza}
-	input.Config = config
+	input.ModInputConfig = config
 
 	//write the checkpoint.
 	input.writeCheckPoint(checkpointTime)
@@ -70,6 +73,33 @@ func TestWriteCheckpoint(t *testing.T) {
 	//Validate that the time we sent in is the same as the time we get back.
 	if startTime != checkpointTime {
 		t.Log("Incorrect start time retreived after checkpoint written.")
+		t.Fail()
+	}
+}
+
+func TestScheme(t *testing.T) {
+	scheme := `   <scheme>
+      <title>Google Fitness</title>
+      <description>Retrieves fitness data from Google Fitness.</description>
+      <use_external_validation>false</use_external_validation>
+      <streaming_mode>simple</streaming_mode>
+      <arg name="force_cert_validation">
+         <title>ForceCertValidation</title>
+         <description>If true the input requires certificate validation when making REST calls to Splunk</description>
+      </arg>
+   </scheme>`
+	buf := new(bytes.Buffer)
+	input, err := NewGoogleFitnessInput(strings.NewReader(scheme), bufio.NewWriter(buf))
+	if err != nil {
+		t.Logf("Unable to create GoogleFitnessInput\n%v\n", err)
+		t.Fail()
+	}
+
+	//Scheme should write to the buffer
+	input.ReturnScheme()
+
+	if scheme != buf.String() {
+		t.Logf("Returned scheme does not match expected scheme.\nExpected:%v\nReceived:%v\n", scheme, buf.String())
 		t.Fail()
 	}
 }
