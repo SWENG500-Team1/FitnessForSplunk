@@ -1,17 +1,15 @@
 package main
 
 import (
-	"log"
+	"bufio"
 	"os"
 
 	"github.com/AndyNortrup/GoSplunk"
 )
 
 func main() {
-	input, err := NewGoogleFitnessInput(os.Stdin, os.Stdout)
-	if err != nil {
-		log.Fatalf("Unable to create GoogleFitnessInput: %v", err)
-	}
+	reader := bufio.NewReader(os.Stdin)
+	input := &GoogleFitnessInput{reader: reader, writer: os.Stdout}
 	handleArgs(input)
 }
 
@@ -20,11 +18,10 @@ func handleArgs(input splunk.ModularInputHandler) {
 		switch os.Args[1] {
 		case "--scheme":
 			input.ReturnScheme()
-			return
 		case "--validate-arguments":
 			input.ValidateScheme()
-			return
 		}
+	} else {
+		input.StreamEvents()
 	}
-	input.StreamEvents()
 }
