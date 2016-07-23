@@ -86,14 +86,11 @@ func TestScheme(t *testing.T) {
       <arg name="force_cert_validation">
          <title>ForceCertValidation</title>
          <description>If true the input requires certificate validation when making REST calls to Splunk</description>
+         <data_type>boolean</data_type>
       </arg>
    </scheme>`
 	buf := new(bytes.Buffer)
-	input, err := NewGoogleFitnessInput(strings.NewReader(scheme), bufio.NewWriter(buf))
-	if err != nil {
-		t.Logf("Unable to create GoogleFitnessInput\n%v\n", err)
-		t.Fail()
-	}
+	input := &GoogleFitnessInput{reader: strings.NewReader(scheme), writer: bufio.NewWriter(buf)}
 
 	//Scheme should write to the buffer
 	input.ReturnScheme()

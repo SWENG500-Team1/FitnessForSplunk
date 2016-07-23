@@ -25,22 +25,13 @@ type GoogleFitnessInput struct {
 	writer io.Writer //Location to write configurations to
 }
 
-//Create a new GoogleFitnessInput and read the configuation from reader
-func NewGoogleFitnessInput(reader io.Reader, writer io.Writer) (*GoogleFitnessInput, error) {
-	input := &GoogleFitnessInput{reader: reader, writer: writer}
-	config, err := splunk.ReadModInputConfig(reader)
-	if err == nil {
-		input.ModInputConfig = config
-	}
-	return input, err
-}
-
 //Write the scheme to input.writer
 func (input *GoogleFitnessInput) ReturnScheme() {
 	arguments := append([]splunk.Argument{}, splunk.Argument{
 		Name:        "force_cert_validation",
 		Title:       "ForceCertValidation",
 		Description: "If true the input requires certificate validation when making REST calls to Splunk",
+		DataType:    "boolean",
 	})
 
 	scheme := &splunk.Scheme{
@@ -63,6 +54,12 @@ func (input *GoogleFitnessInput) ValidateScheme() {
 }
 
 func (input *GoogleFitnessInput) StreamEvents() {
+
+	config, err := splunk.ReadModInputConfig(input.reader)
+	if err != nil {
+		log.Printf("Unable to read Modular Input config from reader.")
+	}
+	input.ModInputConfig = config
 
 	//TODO: Replace hard coded values with pull from storage/passwords
 	/*TODO: Determine if the value from storage/passwords has a refresh token.
