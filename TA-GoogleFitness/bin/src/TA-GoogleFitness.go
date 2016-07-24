@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"log"
 	"os"
 
 	"github.com/AndyNortrup/GoSplunk"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
-	input := &GoogleFitnessInput{reader: reader, writer: os.Stdout}
+	input := &FitnessInput{reader: reader, writer: os.Stdout}
 	handleArgs(input)
 }
 
@@ -19,7 +20,10 @@ func handleArgs(input splunk.ModularInputHandler) {
 		case "--scheme":
 			input.ReturnScheme()
 		case "--validate-arguments":
-			input.ValidateScheme()
+			success, msg := input.ValidateScheme()
+			if !success {
+				log.Fatal(msg)
+			}
 		}
 	} else {
 		input.StreamEvents()
