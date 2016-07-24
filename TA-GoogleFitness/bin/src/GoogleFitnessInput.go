@@ -13,11 +13,13 @@ import (
 	"time"
 
 	"github.com/AndyNortrup/GoSplunk"
-
-	"golang.org/x/oauth2"
 )
 
 const APP_NAME string = "TA-GoogleFitness"
+const STRATEGY_GOOGLE string = "GoogleFitness"
+const STRATEGY_FITBIT string = "FitBit"
+const STRATEGY_MICROSOFT string = "Microsoft"
+const STRATEGY_PARAM_NAME string = "strategy"
 
 type GoogleFitnessInput struct {
 	*splunk.ModInputConfig
@@ -32,12 +34,18 @@ func (input *GoogleFitnessInput) ReturnScheme() {
 		Title:       "ForceCertValidation",
 		Description: "If true the input requires certificate validation when making REST calls to Splunk",
 		DataType:    "boolean",
-	})
+	},
+		splunk.Argument{
+			Name:        STRATEGY_PARAM_NAME,
+			Title:       "FitnessService",
+			Description: "Enter the name of the Fitness Service to be polled.  Options are: 'GoogleFitness', 'FitBit', 'Microsoft'",
+			DataType:    "string",
+		})
 
 	scheme := &splunk.Scheme{
 		Title:                 "Google Fitness",
 		Description:           "Retrieves fitness data from Google Fitness.",
-		UseExternalValidation: false,
+		UseExternalValidation: true,
 		StreamingMode:         "simple",
 		Args:                  arguments,
 	}
@@ -49,8 +57,25 @@ func (input *GoogleFitnessInput) ReturnScheme() {
 	}
 }
 
-func (input *GoogleFitnessInput) ValidateScheme() {
-	fmt.Printf("Validate Scheme\n")
+func (input *GoogleFitnessInput) ValidateScheme() (bool, string) {
+	config, err := splunk.ReadModInputConfig(input.reader)
+	if err != nil {
+		return false, "Unable to parse configuration." + err.Error()
+	}
+
+	for _, stanza := range config.Stanzas {
+		for _, param := range stanza.Params {
+			//Check that the parameter STRAGEGY_PARAM_NAME is one of our defined
+			// strategies for getting data
+			if param.Name == STRATEGY_PARAM_NAME &&
+				!(param.Value == STRATEGY_GOOGLE ||
+					param.Value == STRATEGY_FITBIT ||
+					param.Value == STRATEGY_MICROSOFT) {
+				return false, "Improper service '" + param.Value + "' name indicated."
+			}
+		}
+	}
+	return true, ""
 }
 
 func (input *GoogleFitnessInput) StreamEvents() {
@@ -62,10 +87,6 @@ func (input *GoogleFitnessInput) StreamEvents() {
 	input.ModInputConfig = config
 
 	//TODO: Replace hard coded values with pull from storage/passwords
-	/*TODO: Determine if the value from storage/passwords has a refresh token.
-	Yes: Refresh the existing token.
-	No: Get a refresh token and store new token
-	*/
 	tok := newToken("1/7u5ngLKEF2MiVYHvnWwYKRIb8s3s8u2e8JtHZ2yjUAQ",
 		"ya29.Ci8IA_du7mknNus-G_UTfiWB3FHeqdpIqEj_bwaUSvB2lYvsZSuKB7E-2TVuDM44sw",
 		"2016-06-21 07:59:23.44961918 -0700 PDT",
@@ -74,7 +95,7 @@ func (input *GoogleFitnessInput) StreamEvents() {
 	clientId, clientSecret := input.getAppCredentials(input.SessionKey)
 	client := getClient(tok, clientId, clientSecret)
 	startTime, endTime := input.getTimes()
-	input.writeCheckPoint(input.fetchData(tok, client, startTime, endTime, bufio.NewWriter(input.writer)))
+	input.writeCheckPoint(input.fetchData(client, startTime, endTime, bufio.NewWriter(input.writer)))
 }
 
 // getAppCredentials makes a call to the storage/passwords enpoint and retrieves
@@ -127,7 +148,6 @@ func (input *GoogleFitnessInput) getTimes() (time.Time, time.Time) {
 }
 
 func (input *GoogleFitnessInput) fetchData(
-	tok *oauth2.Token,
 	client *http.Client,
 	startTime time.Time,
 	endTime time.Time,
@@ -137,9 +157,9 @@ func (input *GoogleFitnessInput) fetchData(
 
 	lastOutputTime := startTime
 
-	dataSources := GetDataSources(tok, client)
+	dataSources := GetDataSources(client)
 	for _, dataSource := range dataSources {
-		dataset := GetDataSet(tok, client, startTime, endTime, *dataSource)
+		dataset := GetDataSet(client, startTime, endTime, *dataSource)
 
 		for _, point := range dataset.Point {
 			json, _ := point.MarshalJSON()

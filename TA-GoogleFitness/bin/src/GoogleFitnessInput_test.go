@@ -81,12 +81,17 @@ func TestScheme(t *testing.T) {
 	scheme := `   <scheme>
       <title>Google Fitness</title>
       <description>Retrieves fitness data from Google Fitness.</description>
-      <use_external_validation>false</use_external_validation>
+      <use_external_validation>true</use_external_validation>
       <streaming_mode>simple</streaming_mode>
       <arg name="force_cert_validation">
          <title>ForceCertValidation</title>
          <description>If true the input requires certificate validation when making REST calls to Splunk</description>
          <data_type>boolean</data_type>
+      </arg>
+      <arg name="strategy">
+         <title>FitnessService</title>
+         <description>Enter the name of the Fitness Service to be polled.  Options are: &#39;GoogleFitness&#39;, &#39;FitBit&#39;, &#39;Microsoft&#39;</description>
+         <data_type>string</data_type>
       </arg>
    </scheme>`
 	buf := new(bytes.Buffer)
@@ -99,4 +104,75 @@ func TestScheme(t *testing.T) {
 		t.Logf("Returned scheme does not match expected scheme.\nExpected:%v\nReceived:%v\n", scheme, buf.String())
 		t.Fail()
 	}
+}
+
+func TestSchemeValidation(t *testing.T) {
+	improperValue := "Not a strategy."
+	correctSchemes := []string{`<input>
+			<server_host>myHost</server_host>
+			<server_uri>https://127.0.0.1:8089</server_uri>
+			<session_key>123102983109283019283</session_key>
+			<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
+			<configuration>
+				<stanza name="TA-GoogleFitness://test1">
+						<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_FITBIT + `</param>
+						<param name="other_param">other_value</param>
+				</stanza>
+			</configuration>
+		</input>`,
+		`<input>
+				<server_host>myHost</server_host>
+				<server_uri>https://127.0.0.1:8089</server_uri>
+				<session_key>123102983109283019283</session_key>
+				<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
+				<configuration>
+					<stanza name="TA-GoogleFitness://test1">
+							<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_GOOGLE + `</param>
+							<param name="other_param">other_value</param>
+					</stanza>
+				</configuration>
+			</input>`,
+		`<input>
+					<server_host>myHost</server_host>
+					<server_uri>https://127.0.0.1:8089</server_uri>
+					<session_key>123102983109283019283</session_key>
+					<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
+					<configuration>
+						<stanza name="TA-GoogleFitness://test1">
+								<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_MICROSOFT + `</param>
+								<param name="other_param">other_value</param>
+						</stanza>
+					</configuration>
+				</input>`}
+
+	badScheme := `<input>
+						<server_host>myHost</server_host>
+						<server_uri>https://127.0.0.1:8089</server_uri>
+						<session_key>123102983109283019283</session_key>
+						<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
+						<configuration>
+							<stanza name="TA-GoogleFitness://test1">
+									<param name="` + STRATEGY_PARAM_NAME + `">` + improperValue + `</param>
+							</stanza>
+						</configuration>
+					</input>`
+
+	for _, scheme := range correctSchemes {
+		reader := strings.NewReader(scheme)
+		input := &GoogleFitnessInput{reader: reader}
+		result, msg := input.ValidateScheme()
+		if result != true {
+			t.Logf("Failed to validate scheme: %v\n%v\n", msg, scheme)
+			t.Fail()
+		}
+	}
+
+	reader := strings.NewReader(badScheme)
+	input := &GoogleFitnessInput{reader: reader}
+	result, _ := input.ValidateScheme()
+	if result == true {
+		t.Logf("Invalid scheme passed validation: \n%v\n", badScheme)
+		t.Fail()
+	}
+
 }
