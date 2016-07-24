@@ -3,11 +3,13 @@ package main
 import (
 	"bufio"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -20,6 +22,18 @@ const STRATEGY_GOOGLE string = "GoogleFitness"
 const STRATEGY_FITBIT string = "FitBit"
 const STRATEGY_MICROSOFT string = "Microsoft"
 const STRATEGY_PARAM_NAME string = "strategy"
+const ENFORCE_CERT_VALIDATION string = "force_cert_validation"
+
+type FitnessReader interface {
+	//getData takes a start and end time, and HTTP client for communication with
+	//the service an output channle to return data for writing to the command line,
+	// and a wait group to make sure things stay open until we are done with all
+	// of the go routines.
+	// Returns a time of the last data retrived.
+	getData(
+		client *http.Client,
+		output *bufio.Writer) time.Time
+}
 
 type FitnessInput struct {
 	*splunk.ModInputConfig
@@ -30,7 +44,7 @@ type FitnessInput struct {
 //Write the scheme to input.writer
 func (input *FitnessInput) ReturnScheme() {
 	arguments := append([]splunk.Argument{}, splunk.Argument{
-		Name:        "force_cert_validation",
+		Name:        ENFORCE_CERT_VALIDATION,
 		Title:       "ForceCertValidation",
 		Description: "If true the input requires certificate validation when making REST calls to Splunk",
 		DataType:    "boolean",
@@ -92,10 +106,30 @@ func (input *FitnessInput) StreamEvents() {
 		"2016-06-21 07:59:23.44961918 -0700 PDT",
 		"Bearer")
 
+	//Create HTTP client
 	clientId, clientSecret := input.getAppCredentials(input.SessionKey)
 	client := getClient(tok, clientId, clientSecret)
+
+	//Get start and end points from checkpoint
 	startTime, endTime := input.getTimes()
-	input.writeCheckPoint(input.fetchData(client, startTime, endTime, bufio.NewWriter(input.writer)))
+
+	//Create a Fitness Reader to go get the data
+	fitnessReader, err := input.getReader(startTime, endTime)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout)))
+}
+
+func (input *FitnessInput) getReader(startTime time.Time, endTime time.Time) (FitnessReader, error) {
+	switch input.Stanzas[0].ParamMap[STRATEGY_PARAM_NAME] {
+	case STRATEGY_GOOGLE:
+		reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
+		return reader, nil
+	default:
+		return nil, errors.New("Unsupported reader requested.")
+	}
 }
 
 // getAppCredentials makes a call to the storage/passwords enpoint and retrieves
@@ -145,34 +179,6 @@ func (input *FitnessInput) getTimes() (time.Time, time.Time) {
 	}
 	endTime := time.Now()
 	return startTime, endTime
-}
-
-func (input *FitnessInput) fetchData(
-	client *http.Client,
-	startTime time.Time,
-	endTime time.Time,
-	writer *bufio.Writer) time.Time {
-
-	defer writer.Flush()
-
-	lastOutputTime := startTime
-
-	dataSources := GetDataSources(client)
-	for _, dataSource := range dataSources {
-		dataset := GetDataSet(client, startTime, endTime, *dataSource)
-
-		for _, point := range dataset.Point {
-			json, _ := point.MarshalJSON()
-			writer.Write(json)
-			writer.Flush()
-
-			//find the last time recorded so that we can write that as the checkpoint
-			if time.Unix(0, point.EndTimeNanos).After(lastOutputTime) {
-				lastOutputTime = time.Unix(0, point.EndTimeNanos)
-			}
-		}
-	}
-	return lastOutputTime
 }
 
 func (input *FitnessInput) writeCheckPoint(t time.Time) {

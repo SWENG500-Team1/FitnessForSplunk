@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,7 +12,36 @@ import (
 
 const oauth_time_format = "2006-01-02 15:04:05.00000000 -0700 MST"
 
-func GetDataSources(client *http.Client) []*fitness.DataSource {
+type GoogleFitnessReader struct {
+	startTime time.Time
+	endTime   time.Time
+}
+
+func (input *GoogleFitnessReader) getData(
+	client *http.Client,
+	writer *bufio.Writer) time.Time {
+
+	lastOutputTime := input.startTime
+
+	dataSources := input.getDataSources(client)
+	for _, dataSource := range dataSources {
+		dataset := input.getDataSet(client, input.startTime, input.endTime, *dataSource)
+
+		for _, point := range dataset.Point {
+			json, _ := point.MarshalJSON()
+			writer.Write(json)
+			writer.Flush()
+
+			//find the last time recorded so that we can write that as the checkpoint
+			if time.Unix(0, point.EndTimeNanos).After(lastOutputTime) {
+				lastOutputTime = time.Unix(0, point.EndTimeNanos)
+			}
+		}
+	}
+	return lastOutputTime
+}
+
+func (input *GoogleFitnessReader) getDataSources(client *http.Client) []*fitness.DataSource {
 
 	service, err := fitness.New(client)
 	if err != nil {
@@ -27,7 +57,7 @@ func GetDataSources(client *http.Client) []*fitness.DataSource {
 	return response.DataSource
 }
 
-func GetDataSet(
+func (input *GoogleFitnessReader) getDataSet(
 	client *http.Client,
 	startTime time.Time,
 	endTime time.Time,
