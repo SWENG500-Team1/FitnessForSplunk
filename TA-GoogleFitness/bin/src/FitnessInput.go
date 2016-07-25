@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -21,19 +20,8 @@ const APP_NAME string = "TA-GoogleFitness"
 const STRATEGY_GOOGLE string = "GoogleFitness"
 const STRATEGY_FITBIT string = "FitBit"
 const STRATEGY_MICROSOFT string = "Microsoft"
-const STRATEGY_PARAM_NAME string = "strategy"
+const STRATEGY_PARAM_NAME string = "FitnessService"
 const ENFORCE_CERT_VALIDATION string = "force_cert_validation"
-
-type FitnessReader interface {
-	//getData takes a start and end time, and HTTP client for communication with
-	//the service an output channle to return data for writing to the command line,
-	// and a wait group to make sure things stay open until we are done with all
-	// of the go routines.
-	// Returns a time of the last data retrived.
-	getData(
-		client *http.Client,
-		output *bufio.Writer) time.Time
-}
 
 type FitnessInput struct {
 	*splunk.ModInputConfig
@@ -123,12 +111,22 @@ func (input *FitnessInput) StreamEvents() {
 }
 
 func (input *FitnessInput) getReader(startTime time.Time, endTime time.Time) (FitnessReader, error) {
-	switch input.Stanzas[0].ParamMap[STRATEGY_PARAM_NAME] {
+
+	var strategyName string
+
+	for _, stanza := range input.Stanzas {
+		for _, param := range stanza.Params {
+			if param.Name == STRATEGY_PARAM_NAME {
+				strategyName = param.Value
+			}
+		}
+	}
+	switch strategyName {
 	case STRATEGY_GOOGLE:
 		reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
 		return reader, nil
 	default:
-		return nil, errors.New("Unsupported reader requested.")
+		return nil, errors.New("Unsupported reader requested: " + input.Stanzas[0].ParamMap[STRATEGY_PARAM_NAME])
 	}
 }
 

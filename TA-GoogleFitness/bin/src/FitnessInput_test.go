@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -88,7 +89,7 @@ func TestScheme(t *testing.T) {
          <description>If true the input requires certificate validation when making REST calls to Splunk</description>
          <data_type>boolean</data_type>
       </arg>
-      <arg name="strategy">
+      <arg name="` + STRATEGY_PARAM_NAME + `">
          <title>FitnessService</title>
          <description>Enter the name of the Fitness Service to be polled.  Options are: &#39;GoogleFitness&#39;, &#39;FitBit&#39;, &#39;Microsoft&#39;</description>
          <data_type>string</data_type>
@@ -172,6 +173,24 @@ func TestSchemeValidation(t *testing.T) {
 	result, _ := input.ValidateScheme()
 	if result == true {
 		t.Logf("Invalid scheme passed validation: \n%v\n", badScheme)
+		t.Fail()
+	}
+
+}
+
+//TestGetReader builds a ModInputConfig setting the STRATEGY_PARAM_NAME value
+// then uses reflection to validate that the correct type is being generated.
+func TestGetReader(t *testing.T) {
+	config := &splunk.ModInputConfig{}
+	param := splunk.ModInputParam{Name: STRATEGY_PARAM_NAME, Value: STRATEGY_GOOGLE}
+	stanza := &splunk.ModInputStanza{}
+	stanza.Params = append(stanza.Params, param)
+	config.Stanzas = append(config.Stanzas, *stanza)
+
+	input := &FitnessInput{ModInputConfig: config}
+	reader, _ := input.getReader(time.Now(), time.Now())
+	if reflect.TypeOf(reader) != reflect.TypeOf(&GoogleFitnessReader{}) {
+		t.Log("Failed to return GoogleFitnessReader")
 		t.Fail()
 	}
 
