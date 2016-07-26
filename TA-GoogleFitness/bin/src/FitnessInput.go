@@ -224,6 +224,7 @@ func (input *FitnessInput) getTokens() []*oauth2.Token {
 				TokenType    string `json:"token_type"`
 				Expires      string `json:"expires_at"`
 			}
+
 			temp := &tokenData{}
 			decode := json.NewDecoder(strings.NewReader(tokenJSON))
 			err := decode.Decode(temp)
