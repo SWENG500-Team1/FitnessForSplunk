@@ -23,13 +23,16 @@ const password string = "TestAccount"
 // 3. A google clientId and clientSecret password loaded in the
 //    APP_NAME local/passwords.conf file.
 func TestGetAppCredentials(t *testing.T) {
-	sessionKey, err := splunk.NewSessionKey(accountName, password, splunk.LocalSplunkMgmntURL)
+	accessKey, err := splunk.NewSessionKey(accountName, password, splunk.LocalSplunkMgmntURL)
 	if err != nil {
-		t.Fatalf("Unable to get session key: %v\n", err)
+		t.Logf("Unable to get session key: %v\n", err)
 	}
 
-	input := &FitnessInput{}
-	clientId, clientSecret := input.getAppCredentials(sessionKey.SessionKey)
+	config := &splunk.ModInputConfig{}
+	config.SessionKey = accessKey.SessionKey
+
+	input := FitnessInput{ModInputConfig: config}
+	clientId, clientSecret := input.getAppCredentials()
 	t.Logf("ClientId Expected: %v\tReceived: %v\n", testClientId, clientId)
 	if clientId != testClientId {
 		t.Fail()
@@ -188,10 +191,62 @@ func TestGetReader(t *testing.T) {
 	config.Stanzas = append(config.Stanzas, *stanza)
 
 	input := &FitnessInput{ModInputConfig: config}
-	reader, _ := input.getReader(time.Now(), time.Now())
+	reader, _ := input.getReaderStrategy(time.Now(), time.Now())
 	if reflect.TypeOf(reader) != reflect.TypeOf(&GoogleFitnessReader{}) {
 		t.Log("Failed to return GoogleFitnessReader")
 		t.Fail()
 	}
+}
 
+func TestGetReaderFromXML(t *testing.T) {
+	config := `<input>
+			<server_host>myHost</server_host>
+			<server_uri>https://127.0.0.1:8089</server_uri>
+			<session_key>123102983109283019283</session_key>
+			<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
+			<configuration>
+				<stanza name="TA-GoogleFitness://test1">
+						<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_GOOGLE + `</param>
+						<param name="other_param">other_value</param>
+				</stanza>
+			</configuration>
+		</input>`
+
+	parsed, _ := splunk.ReadModInputConfig(strings.NewReader(config))
+	input := &FitnessInput{ModInputConfig: parsed}
+	reader, err := input.getReaderStrategy(time.Now(), time.Now())
+	if err != nil {
+		t.Logf("Error getting FitnessReader: %v", err)
+		t.Fail()
+	}
+	if reflect.TypeOf(reader) != reflect.TypeOf(&GoogleFitnessReader{}) {
+		t.Log("Failed to return GoogleFitnessReader")
+		t.Fail()
+	}
+}
+
+func TestGetCredentials(t *testing.T) {
+	accessKey, err := splunk.NewSessionKey(accountName, password, splunk.LocalSplunkMgmntURL)
+	if err != nil {
+		t.Logf("Unable to get session key: %v\n", err)
+	}
+
+	config := &splunk.ModInputConfig{}
+	config.SessionKey = accessKey.SessionKey
+	stanza := &splunk.ModInputStanza{}
+	stanza.AddParameter(STRATEGY_PARAM_NAME, STRATEGY_GOOGLE)
+	config.Stanzas = append(config.Stanzas, *stanza)
+
+	input := FitnessInput{ModInputConfig: config}
+	credentials := input.getTokens()
+	if len(credentials) == 0 {
+		t.Logf("No credentials recieved from Splunk for: %v", STRATEGY_GOOGLE)
+		t.Fail()
+	}
+
+	t.Logf("Access Token: %v\nRefreshToken: %v\nType:%v\nExpires:%v",
+		credentials[0].AccessToken,
+		credentials[0].RefreshToken,
+		credentials[0].TokenType,
+		credentials[0].Expiry)
 }

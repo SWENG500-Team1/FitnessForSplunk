@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -12,6 +13,8 @@ import (
 	"path"
 	"strings"
 	"time"
+
+	"golang.org/x/oauth2"
 
 	"github.com/AndyNortrup/GoSplunk"
 )
@@ -89,56 +92,68 @@ func (input *FitnessInput) StreamEvents() {
 	input.ModInputConfig = config
 
 	//TODO: Replace hard coded values with pull from storage/passwords
-	tok := newToken("1/7u5ngLKEF2MiVYHvnWwYKRIb8s3s8u2e8JtHZ2yjUAQ",
-		"ya29.Ci8IA_du7mknNus-G_UTfiWB3FHeqdpIqEj_bwaUSvB2lYvsZSuKB7E-2TVuDM44sw",
-		"2016-06-21 07:59:23.44961918 -0700 PDT",
-		"Bearer")
+	// tok := newToken("1/7u5ngLKEF2MiVYHvnWwYKRIb8s3s8u2e8JtHZ2yjUAQ",
+	// 	"ya29.Ci8IA_du7mknNus-G_UTfiWB3FHeqdpIqEj_bwaUSvB2lYvsZSuKB7E-2TVuDM44sw",
+	// 	"2016-06-21 07:59:23.44961918 -0700 PDT",
+	// 	"Bearer")
 
-	//Create HTTP client
-	clientId, clientSecret := input.getAppCredentials(input.SessionKey)
-	client := getClient(tok, clientId, clientSecret)
+	tokens := input.getTokens()
 
-	//Get start and end points from checkpoint
-	startTime, endTime := input.getTimes()
+	for _, token := range tokens {
+		//Create HTTP client
+		clientId, clientSecret := input.getAppCredentials()
+		client := getClient(token, clientId, clientSecret)
 
-	//Create a Fitness Reader to go get the data
-	fitnessReader, err := input.getReader(startTime, endTime)
-	if err != nil {
-		log.Fatal(err)
+		//Get start and end points from checkpoint
+		startTime, endTime := input.getTimes()
+
+		//Create a Fitness Reader to go get the data
+		fitnessReader, err := input.getReaderStrategy(startTime, endTime)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout)))
 	}
-
-	input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout)))
 }
 
-func (input *FitnessInput) getReader(startTime time.Time, endTime time.Time) (FitnessReader, error) {
+func (input *FitnessInput) getReaderStrategy(startTime time.Time, endTime time.Time) (FitnessReader, error) {
+	strategy := input.getStrategy()
+	switch {
+	case strategy == STRATEGY_GOOGLE:
+		reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
+		return reader, nil
+	default:
+		return nil, errors.New("Unsupported reader requested: " + strategy)
+	}
+}
 
-	var strategyName string
+//get the value of the strategy parameter from the configuration.
+func (input *FitnessInput) getStrategy() string {
+	var strategy string
 
 	for _, stanza := range input.Stanzas {
 		for _, param := range stanza.Params {
 			if param.Name == STRATEGY_PARAM_NAME {
-				strategyName = param.Value
+				strategy = param.Value
 			}
 		}
 	}
-	switch strategyName {
-	case STRATEGY_GOOGLE:
-		reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
-		return reader, nil
-	default:
-		return nil, errors.New("Unsupported reader requested: " + input.Stanzas[0].ParamMap[STRATEGY_PARAM_NAME])
+	if strategy == "" {
+		log.Fatalf("No strategy passed to Fitness Input")
 	}
+	return strategy
 }
 
 // getAppCredentials makes a call to the storage/passwords enpoint and retrieves
 // an appId and clinetSecret for the application.  The appId is stored in the
 // password field of the endpoint data and the appId is in the username.
-func (input *FitnessInput) getAppCredentials(sessionKey string) (string, string) {
+func (input *FitnessInput) getAppCredentials() (string, string) {
 	passwords, err := splunk.GetEntities(splunk.LocalSplunkMgmntURL,
 		[]string{"storage", "passwords"},
 		APP_NAME,
 		"nobody",
-		sessionKey)
+		input.SessionKey)
 
 	if err != nil {
 		log.Fatalf("Unable to retrieve password entries for TA-GoogleFitness: %v\n",
@@ -167,6 +182,60 @@ func (input *FitnessInput) getAppCredentials(sessionKey string) (string, string)
 	return clientId, clientSecret
 }
 
+// getTokens gets a list of tokens that are in the storage/passwords endpoint
+// for the given strategy
+func (input *FitnessInput) getTokens() []*oauth2.Token {
+	entities, err := splunk.GetEntities(splunk.LocalSplunkMgmntURL,
+		[]string{"storage", "passwords"},
+		APP_NAME,
+		"nobody",
+		input.SessionKey)
+
+	if err != nil {
+		log.Fatalf("Unable to get user tokens from Splunk: %v\n", err)
+	}
+
+	var result []*oauth2.Token
+
+	for _, entry := range entities.Entries {
+		isForStrategy := false
+		var tokenJSON string
+
+		// Itterate through all of the password entries
+		for _, key := range entry.Contents.Keys {
+			switch {
+			//Grab the plaintext password
+			case key.Name == "clear_password":
+				tokenJSON = key.Value
+			//Determine if this key matches our strategy
+			case key.Name == "realm" && key.Value == input.getStrategy():
+				isForStrategy = true
+
+			}
+		}
+
+		if isForStrategy {
+
+			//Temporary struct so we can get string values out then make a JSON token
+			// by properly converting the date stamp
+			type tokenData struct {
+				AccessToken  string `json:"access_token"`
+				RefreshToken string `json:"refresh_token"`
+				TokenType    string `json:"token_type"`
+				Expires      string `json:"expires_at"`
+			}
+			temp := &tokenData{}
+			decode := json.NewDecoder(strings.NewReader(tokenJSON))
+			err := decode.Decode(temp)
+			if err != nil {
+				log.Fatalf("Failed to decode passwords from storage/passwords: %v\n JSON to Decode: %v\n", err, tokenJSON)
+			}
+			result = append(result, newToken(temp.RefreshToken, temp.AccessToken, temp.Expires, temp.TokenType))
+		}
+	}
+	return result
+}
+
 //getTimes returns a startTime and an endTime value.  endTime is retrived from
 // a checkpoint file, if not it returns the current time.
 // The end time is always the current time.
@@ -180,9 +249,6 @@ func (input *FitnessInput) getTimes() (time.Time, time.Time) {
 }
 
 func (input *FitnessInput) writeCheckPoint(t time.Time) {
-
-	//TODO: Replace the filename: checkpoint.txt with something that will work with
-	// multiple names of the input
 
 	//Encode the time we've been given into bytes
 	g, err := t.GobEncode()
