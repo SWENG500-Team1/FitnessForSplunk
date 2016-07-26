@@ -23,8 +23,6 @@ var endTime = startTime.Add(5 * time.Millisecond)
 
 func TestLatestTime(t *testing.T) {
 
-	input := &GoogleFitnessInput{}
-
 	//TODO: Replace hard coded values with pull from arguments
 	// reader := NewFitnessReader(testClientId, testClientSecret)
 
@@ -38,12 +36,9 @@ func TestLatestTime(t *testing.T) {
 		testExpires,
 		testTokenType)
 
+	reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
 	devNull := bufio.NewWriter(ioutil.Discard)
-
-	latestTime := input.fetchData(tok,
-		getClient(tok, testClientId, testClientSecret),
-		startTime,
-		endTime,
+	latestTime := reader.getData(getClient(tok, testClientId, testClientSecret),
 		devNull)
 
 	if latestTime.Nanosecond() == startTime.Nanosecond() {
