@@ -2,9 +2,7 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -14,16 +12,10 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/oauth2"
-
 	"github.com/AndyNortrup/GoSplunk"
 )
 
 const APP_NAME string = "TA-GoogleFitness"
-const STRATEGY_GOOGLE string = "GoogleFitness"
-const STRATEGY_FITBIT string = "FitBit"
-const STRATEGY_MICROSOFT string = "Microsoft"
-const STRATEGY_PARAM_NAME string = "FitnessService"
 const ENFORCE_CERT_VALIDATION string = "force_cert_validation"
 
 type FitnessInput struct {
@@ -73,7 +65,7 @@ func (input *FitnessInput) ValidateScheme() (bool, string) {
 			//Check that the parameter STRAGEGY_PARAM_NAME is one of our defined
 			// strategies for getting data
 			if param.Name == STRATEGY_PARAM_NAME &&
-				!(param.Value == STRATEGY_GOOGLE ||
+				!(param.Value == string(STRATEGY_GOOGLE) ||
 					param.Value == STRATEGY_FITBIT ||
 					param.Value == STRATEGY_MICROSOFT) {
 				return false, "Improper service '" + param.Value + "' name indicated."
@@ -97,34 +89,23 @@ func (input *FitnessInput) StreamEvents() {
 	// 	"2016-06-21 07:59:23.44961918 -0700 PDT",
 	// 	"Bearer")
 
-	tokens := input.getTokens()
+	tokens := getUsers(splunk.LocalSplunkMgmntURL, input.SessionKey, input.getStrategy())
 
 	for _, token := range tokens {
 		//Create HTTP client
 		clientId, clientSecret := input.getAppCredentials()
-		client := getClient(token, clientId, clientSecret)
+		client := getClient(&token.Token, clientId, clientSecret)
 
 		//Get start and end points from checkpoint
 		startTime, endTime := input.getTimes()
 
 		//Create a Fitness Reader to go get the data
-		fitnessReader, err := input.getReaderStrategy(startTime, endTime)
+		fitnessReader, err := readerFactory(input.getStrategy(), startTime, endTime)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout)))
-	}
-}
-
-func (input *FitnessInput) getReaderStrategy(startTime time.Time, endTime time.Time) (FitnessReader, error) {
-	strategy := input.getStrategy()
-	switch {
-	case strategy == STRATEGY_GOOGLE:
-		reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
-		return reader, nil
-	default:
-		return nil, errors.New("Unsupported reader requested: " + strategy)
+		input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout), token.username))
 	}
 }
 
@@ -180,61 +161,6 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 		}
 	}
 	return clientId, clientSecret
-}
-
-// getTokens gets a list of tokens that are in the storage/passwords endpoint
-// for the given strategy
-func (input *FitnessInput) getTokens() []*oauth2.Token {
-	entities, err := splunk.GetEntities(splunk.LocalSplunkMgmntURL,
-		[]string{"storage", "passwords"},
-		APP_NAME,
-		"nobody",
-		input.SessionKey)
-
-	if err != nil {
-		log.Fatalf("Unable to get user tokens from Splunk: %v\n", err)
-	}
-
-	var result []*oauth2.Token
-
-	for _, entry := range entities.Entries {
-		isForStrategy := false
-		var tokenJSON string
-
-		// Itterate through all of the password entries
-		for _, key := range entry.Contents.Keys {
-			switch {
-			//Grab the plaintext password
-			case key.Name == "clear_password":
-				tokenJSON = key.Value
-			//Determine if this key matches our strategy
-			case key.Name == "realm" && key.Value == input.getStrategy():
-				isForStrategy = true
-
-			}
-		}
-
-		if isForStrategy {
-
-			//Temporary struct so we can get string values out then make a JSON token
-			// by properly converting the date stamp
-			type tokenData struct {
-				AccessToken  string `json:"access_token"`
-				RefreshToken string `json:"refresh_token"`
-				TokenType    string `json:"token_type"`
-				Expires      string `json:"expires_at"`
-			}
-
-			temp := &tokenData{}
-			decode := json.NewDecoder(strings.NewReader(tokenJSON))
-			err := decode.Decode(temp)
-			if err != nil {
-				log.Fatalf("Failed to decode passwords from storage/passwords: %v\n JSON to Decode: %v\n", err, tokenJSON)
-			}
-			result = append(result, newToken(temp.RefreshToken, temp.AccessToken, temp.Expires, temp.TokenType))
-		}
-	}
-	return result
 }
 
 //getTimes returns a startTime and an endTime value.  endTime is retrived from
