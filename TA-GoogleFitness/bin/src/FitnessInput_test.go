@@ -184,14 +184,7 @@ func TestSchemeValidation(t *testing.T) {
 //TestGetReader builds a ModInputConfig setting the STRATEGY_PARAM_NAME value
 // then uses reflection to validate that the correct type is being generated.
 func TestGetReader(t *testing.T) {
-	config := &splunk.ModInputConfig{}
-	param := splunk.ModInputParam{Name: STRATEGY_PARAM_NAME, Value: STRATEGY_GOOGLE}
-	stanza := &splunk.ModInputStanza{}
-	stanza.Params = append(stanza.Params, param)
-	config.Stanzas = append(config.Stanzas, *stanza)
-
-	input := &FitnessInput{ModInputConfig: config}
-	reader, _ := input.getReaderStrategy(time.Now(), time.Now())
+	reader, _ := readerFactory(STRATEGY_GOOGLE, time.Now(), time.Now())
 	if reflect.TypeOf(reader) != reflect.TypeOf(&GoogleFitnessReader{}) {
 		t.Log("Failed to return GoogleFitnessReader")
 		t.Fail()
@@ -214,7 +207,7 @@ func TestGetReaderFromXML(t *testing.T) {
 
 	parsed, _ := splunk.ReadModInputConfig(strings.NewReader(config))
 	input := &FitnessInput{ModInputConfig: parsed}
-	reader, err := input.getReaderStrategy(time.Now(), time.Now())
+	reader, err := readerFactory(input.getStrategy(), time.Now(), time.Now())
 	if err != nil {
 		t.Logf("Error getting FitnessReader: %v", err)
 		t.Fail()
@@ -231,14 +224,7 @@ func TestGetCredentials(t *testing.T) {
 		t.Logf("Unable to get session key: %v\n", err)
 	}
 
-	config := &splunk.ModInputConfig{}
-	config.SessionKey = accessKey.SessionKey
-	stanza := &splunk.ModInputStanza{}
-	stanza.AddParameter(STRATEGY_PARAM_NAME, STRATEGY_GOOGLE)
-	config.Stanzas = append(config.Stanzas, *stanza)
-
-	input := FitnessInput{ModInputConfig: config}
-	credentials := input.getTokens()
+	credentials := getUsers(splunk.LocalSplunkMgmntURL, accessKey.SessionKey, STRATEGY_GOOGLE)
 	if len(credentials) == 0 {
 		t.Logf("No credentials recieved from Splunk for: %v", STRATEGY_GOOGLE)
 		t.Fail()

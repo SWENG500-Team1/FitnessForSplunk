@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,15 +12,18 @@ import (
 )
 
 const oauth_time_format = "2006-01-02 15:04:05.00000000 -0700 MST"
+const sessionTimeFormat string = "2006-01-02T15:04:05.00Z"
 
 type GoogleFitnessReader struct {
 	startTime time.Time
 	endTime   time.Time
+	username  string
 }
 
 func (input *GoogleFitnessReader) getData(
 	client *http.Client,
-	writer *bufio.Writer) time.Time {
+	writer *bufio.Writer,
+	username string) time.Time {
 
 	lastOutputTime := input.startTime
 
@@ -28,8 +32,13 @@ func (input *GoogleFitnessReader) getData(
 		dataset := input.getDataSet(client, input.startTime, input.endTime, *dataSource)
 
 		for _, point := range dataset.Point {
-			json, _ := point.MarshalJSON()
-			writer.Write(json)
+			type event struct {
+				Username  string            `json:"username"`
+				DataPoint fitness.DataPoint `json:"DataPoint"`
+			}
+			e := &event{Username: username, DataPoint: *point}
+			encoder := json.NewEncoder(writer)
+			encoder.Encode(e)
 			writer.Flush()
 
 			//find the last time recorded so that we can write that as the checkpoint
@@ -38,6 +47,8 @@ func (input *GoogleFitnessReader) getData(
 			}
 		}
 	}
+
+	input.getSessions(client, input.startTime, lastOutputTime, writer)
 	return lastOutputTime
 }
 
@@ -79,4 +90,36 @@ func (input *GoogleFitnessReader) getDataSet(
 	}
 
 	return resp
+}
+
+func (input *GoogleFitnessReader) getSessions(client *http.Client,
+	startTime, endTime time.Time, writer *bufio.Writer) error {
+
+	s, err := fitness.New(client)
+	if err != nil {
+		log.Fatalf("Unable to create Google Fitness Session: %v\n", err)
+	}
+	sessionService := fitness.NewUsersSessionsService(s)
+	sessionCall := sessionService.List("me")
+	sessionCall.StartTime(startTime.Format(sessionTimeFormat))
+	sessionCall.EndTime(endTime.Format(sessionTimeFormat))
+
+	list, err := sessionCall.Do()
+	if err != nil {
+		return err
+	}
+
+	type SessionData struct {
+		Username string          `json:"username"`
+		Session  fitness.Session `json:"session"`
+	}
+	encoder := json.NewEncoder(writer)
+
+	for _, session := range list.Session {
+		event := &SessionData{Username: input.username, Session: *session}
+
+		encoder.Encode(event)
+		writer.Flush()
+	}
+	return nil
 }
