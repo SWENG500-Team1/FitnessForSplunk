@@ -224,7 +224,7 @@ func TestGetCredentials(t *testing.T) {
 		t.Logf("Unable to get session key: %v\n", err)
 	}
 
-	credentials := getUsers(splunk.LocalSplunkMgmntURL, accessKey.SessionKey, STRATEGY_GOOGLE)
+	credentials, _ := getUsers(splunk.LocalSplunkMgmntURL, accessKey.SessionKey, STRATEGY_GOOGLE)
 	if len(credentials) == 0 {
 		t.Logf("No credentials recieved from Splunk for: %v", STRATEGY_GOOGLE)
 		t.Fail()

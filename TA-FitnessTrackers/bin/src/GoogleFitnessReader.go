@@ -23,7 +23,7 @@ type GoogleFitnessReader struct {
 func (input *GoogleFitnessReader) getData(
 	client *http.Client,
 	writer *bufio.Writer,
-	username string) time.Time {
+	user User) time.Time {
 
 	lastOutputTime := input.startTime
 
@@ -36,7 +36,7 @@ func (input *GoogleFitnessReader) getData(
 				Username  string            `json:"username"`
 				DataPoint fitness.DataPoint `json:"DataPoint"`
 			}
-			e := &event{Username: username, DataPoint: *point}
+			e := &event{Username: user.name, DataPoint: *point}
 			encoder := json.NewEncoder(writer)
 			encoder.Encode(e)
 			writer.Flush()

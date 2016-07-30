@@ -39,7 +39,10 @@ func TestLatestTime(t *testing.T) {
 
 	reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
 	devNull := bufio.NewWriter(ioutil.Discard)
-	latestTime := reader.getData(getClient(tok, testClientId, testClientSecret), devNull, "andrew.nortrup")
+	latestTime := reader.getData(
+		getClient(tok, testClientId, testClientSecret, STRATEGY_GOOGLE),
+		devNull,
+		User{name: "AndyNortrup"})
 
 	if latestTime.Nanosecond() == startTime.Nanosecond() {
 		t.Logf("Unable to pull new data from data sources.  "+
@@ -56,8 +59,15 @@ func TestGetSessions(t *testing.T) {
 	tok := newToken(testRefreshToken, testAccessToken, testExpires, testTokenType)
 	reader := &GoogleFitnessReader{startTime: startTime, endTime: startTime.Add(12 * time.Hour)}
 	reader.username = "andrew.nortrup"
-	err := reader.getSessions(getClient(tok, testClientId, testClientSecret), startTime, startTime.Add(12*time.Hour), bufio.NewWriter(os.Stdout))
-	// , bufio.NewWriter(os.Stdout), "andrew.nortrup"
+	err := reader.getSessions(
+		getClient(tok,
+			testClientId,
+			testClientSecret,
+			STRATEGY_GOOGLE),
+		startTime,
+		startTime.Add(12*time.Hour),
+		bufio.NewWriter(os.Stdout))
+
 	if err != nil {
 		t.Logf("Unable to get sessions: %v\n", err)
 		t.Fail()

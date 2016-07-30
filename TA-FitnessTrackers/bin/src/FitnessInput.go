@@ -15,7 +15,7 @@ import (
 	"github.com/AndyNortrup/GoSplunk"
 )
 
-const APP_NAME string = "TA-GoogleFitness"
+const APP_NAME string = "TA-FitnessTrackers"
 const ENFORCE_CERT_VALIDATION string = "force_cert_validation"
 
 type FitnessInput struct {
@@ -89,12 +89,15 @@ func (input *FitnessInput) StreamEvents() {
 	// 	"2016-06-21 07:59:23.44961918 -0700 PDT",
 	// 	"Bearer")
 
-	tokens := getUsers(splunk.LocalSplunkMgmntURL, input.SessionKey, input.getStrategy())
+	tokens, err := getUsers(splunk.LocalSplunkMgmntURL, input.SessionKey, input.getStrategy())
+	if err != nil {
+		log.Printf("Unable to get user tokens: %v", err)
+	}
 
 	for _, token := range tokens {
 		//Create HTTP client
 		clientId, clientSecret := input.getAppCredentials()
-		client := getClient(&token.Token, clientId, clientSecret)
+		client := getClient(&token.Token, clientId, clientSecret, input.getStrategy())
 
 		//Get start and end points from checkpoint
 		startTime, endTime := input.getTimes()
@@ -105,7 +108,7 @@ func (input *FitnessInput) StreamEvents() {
 			log.Fatal(err)
 		}
 
-		input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout), token.username))
+		input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout), token))
 	}
 }
 
