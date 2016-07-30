@@ -83,12 +83,6 @@ func (input *FitnessInput) StreamEvents() {
 	}
 	input.ModInputConfig = config
 
-	//TODO: Replace hard coded values with pull from storage/passwords
-	// tok := newToken("1/7u5ngLKEF2MiVYHvnWwYKRIb8s3s8u2e8JtHZ2yjUAQ",
-	// 	"ya29.Ci8IA_du7mknNus-G_UTfiWB3FHeqdpIqEj_bwaUSvB2lYvsZSuKB7E-2TVuDM44sw",
-	// 	"2016-06-21 07:59:23.44961918 -0700 PDT",
-	// 	"Bearer")
-
 	tokens, err := getUsers(splunk.LocalSplunkMgmntURL, input.SessionKey, input.getStrategy())
 	if err != nil {
 		log.Printf("Unable to get user tokens: %v", err)
@@ -144,26 +138,27 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 			err)
 	}
 
-	var clientSecret string
-	var clientId string
-
 	for _, entry := range passwords.Entries {
-		//Because there could/should be multiple stored passwords we need to check
-		// the id for `apps.googleusercontent.com` because the id is based on the
-		// username.
-
-		if strings.Contains(entry.ID, "apps.googleusercontent.com") {
-			for _, key := range entry.Contents.Keys {
-				if key.Name == "clear_password" {
-					clientSecret = key.Value
-				}
-				if key.Name == "username" {
-					clientId = key.Value
-				}
+		var clientId, clientSecret string
+		strategyKey := false
+		for _, key := range entry.Contents.Keys {
+			if key.Name == "clear_password" {
+				clientSecret = key.Value
+			}
+			if key.Name == "username" {
+				clientId = key.Value
+			}
+			if key.Name == "realm" && key.Value == input.getStrategy() {
+				strategyKey = true
 			}
 		}
+
+		if strategyKey {
+			return clientId, clientSecret
+		}
 	}
-	return clientId, clientSecret
+	log.Fatalf("No application credentials found for service type")
+	return "", ""
 }
 
 //getTimes returns a startTime and an endTime value.  endTime is retrived from
