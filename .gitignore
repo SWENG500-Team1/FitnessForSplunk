@@ -64,3 +64,8 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# fitbit-oauth2-test files
+misc/fitbit-oauth2-test/node_modules
+misc/fitbit-oauth2-test/access_token.json
+misc/fitbit-oauth2-test/success.json
