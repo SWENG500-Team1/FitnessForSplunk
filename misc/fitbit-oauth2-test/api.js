@@ -10,6 +10,7 @@ var refresh_token = token.refresh_token;
 var scope = token.scope;
 var expires_in = token.expires_in;
 var expires_at = token.expires_at;
+
 console.log(access_token);
 console.log(refresh_token);
 console.log(scope);
@@ -25,9 +26,7 @@ var redirect_uri = 'http://localhost:3000/auth/fitbit/callback';
 var client = new FitbitClient(clientId, clientSecret);
 
 //var options = { /* TIME_SERIES_OPTIONS */ };
-
 var options = { date: "2016-06-01" };
-
 
 function getDailyActivitySummary(token, options)
 {
@@ -66,93 +65,7 @@ rl.on('line', function(line) {
     options.date = line.trim();
     console.log(options);
     getDailyActivitySummary(token, options);
-    
-    /*switch(line.trim()) {
-        case 'hello':
-            console.log('world!');
-            break;
-        case 'summary':
-            console.log('summary!');
-            gettingDate = true;
-            break;
-        default:
-            if(gettingDate) {
-                options.date = line;
-                console.log('Getting summary..');
-                getDeailyActivitySummary(token, options);
-                gettingDate = false;
-            } else {
-                console.log('Say what? I might have heard `' + line.trim() + '`');
-            }
-            break;
-    }*/
-    //if(gettingDate) {
-    //    rl.setPrompt('API Method: ');
-    //    r1.setPrompt('Enter date (yyyy-MM-dd): ');
-        //r1.prompt();
-    //}
-    //else {
-      //  rl.setPrompt('API Method: ');
-        //rl.prompt();
-    //}
 }).on('close', function() {
     console.log('Stopping..');
     process.exit(0);
 });
-
-/*
-var gettingDate = false;
-
-rl.on('line', function(line) {
-    switch(line.trim()) {
-        case 'hello':
-            console.log('world!');
-            break;
-        case 'summary':
-            console.log('summary!');
-            gettingDate = true;
-            break;
-        default:
-            if(gettingDate) {
-                options.date = line;
-                console.log('Getting summary..');
-                getDeailyActivitySummary(token, options);
-                gettingDate = false;
-            } else {
-                console.log('Say what? I might have heard `' + line.trim() + '`');
-            }
-            break;
-    }
-    //if(gettingDate) {
-        rl.setPrompt('API Method: ');
-        r1.setPrompt('Enter date (yyyy-MM-dd): ');
-        //r1.prompt();
-    //}
-    //else {
-      //  rl.setPrompt('API Method: ');
-        rl.prompt();
-    //}
-}).on('close', function() {
-    console.log('Stopping..');
-    process.exit(0);
-});
-*/
-
-/*function getNewAccessToken()
-{
-    console.log('getNewAccessToken');
-    //var auth_url = client.getAuthorizationUrl('http://localhost:3000/auth/fitbit/callback');
-}
-
-function refreshAccessToken()
-{
-    console.log('Refreshing Expired Access Token');
-    
-    client.refreshAccessToken(tokens)
-        .then(function(new_token) {
-            // Save new_access_token data to db
-            // then do more stuff here.
-        }).catch(function(err) {
-          console.log('error refreshing user token', err);
-        });
-}*/
