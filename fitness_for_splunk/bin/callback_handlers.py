@@ -85,8 +85,8 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         # Pull Client ID and Secret from Fitbit ModInput password store
         c = client.connect(host='localhost', port='8089', username=admin_credentials['username'], password=admin_credentials['password'])
         c.namespace.owner = 'nobody'
-        c.namespace.app = 'fitness_for_splunk'
-        #c.namespace.app = "TA-FitnessTrackers"
+        #c.namespace.app = 'fitness_for_splunk'
+        c.namespace.app = "TA-FitnessTrackers"
         passwords = c.storage_passwords
                 
         # Look for Client Secret
@@ -190,8 +190,8 @@ class google_callback(splunk.rest.BaseRestHandler):
         # Pull Client ID and Secret from Google ModInput password store
         c = client.connect(host='localhost', port='8089', username=admin_credentials['username'], password=admin_credentials['password'])
         c.namespace.owner = 'nobody'
-        c.namespace.app = 'fitness_for_splunk'
-        #c.namespace.app = "TA-FitnessTrackers"
+        #c.namespace.app = 'fitness_for_splunk'
+        c.namespace.app = "TA-FitnessTrackers"
         passwords = c.storage_passwords
         
         # Look for Client Secret
@@ -234,6 +234,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         token_json = credentials_json['token_response']
         
         #TODO: Update Existing entries in KV Store
+        c.namespace.app = 'fitness_for_splunk'
         collection_name = 'google_tokens'
         if collection_name in c.kvstore:
             # Create the KV Store if it doesn't exist
@@ -290,8 +291,8 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         # Pull Client ID and Secret from Microsoft ModInput password store
         c = client.connect(host='localhost', port='8089', username=admin_credentials['username'], password=admin_credentials['password'])
         c.namespace.owner = 'nobody'
-        c.namespace.app = 'fitness_for_splunk'
-        #c.namespace.app = "microsoft_data"
+        #c.namespace.app = 'fitness_for_splunk'
+        c.namespace.app = "microsoft_data"
         passwords = c.storage_passwords
         
         # Look for Client Secret
@@ -338,6 +339,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         
         # Store id, name, and token in KV store
         #TODO: Update Existing entries in KV Store
+        c.namespace.app = 'fitness_for_splunk'
         collection_name = 'microsoft_tokens'
         if collection_name in c.kvstore:
             # Create the KV Store if it doesn't exist
