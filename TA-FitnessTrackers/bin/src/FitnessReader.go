@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const STRATEGY_GOOGLE string = "GoogleFitness"
+const STRATEGY_GOOGLE string = "Google"
 const STRATEGY_FITBIT string = "FitBit"
 const STRATEGY_MICROSOFT string = "Microsoft"
 const STRATEGY_PARAM_NAME string = "FitnessService"
