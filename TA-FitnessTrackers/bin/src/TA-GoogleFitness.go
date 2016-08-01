@@ -8,6 +8,8 @@ import (
 	"github.com/AndyNortrup/GoSplunk"
 )
 
+const fitnessForSplunkAppName string = "fitness_for_splunk"
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	input := &FitnessInput{reader: reader, writer: os.Stdout}

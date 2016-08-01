@@ -21,7 +21,7 @@ type FitnessReader interface {
 	getData(
 		client *http.Client,
 		output *bufio.Writer,
-		username string) time.Time
+		username User) time.Time
 }
 
 func readerFactory(strategy string, startTime time.Time, endTime time.Time) (FitnessReader, error) {

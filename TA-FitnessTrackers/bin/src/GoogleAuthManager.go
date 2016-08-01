@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"google.golang.org/api/fitness/v1"
-
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/fitbit"
 	"golang.org/x/oauth2/google"
 )
 
@@ -39,13 +38,25 @@ func newToken(
 	return tok
 }
 
-func getClient(tok *oauth2.Token, clientID string, clientSecret string) *http.Client {
+func getClient(tok *oauth2.Token,
+	clientID string,
+	clientSecret string,
+	strategy string) *http.Client {
+
 	conf := &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		Scopes: []string{fitness.FitnessActivityReadScope,
-			fitness.FitnessBodyReadScope},
-		Endpoint: google.Endpoint,
+	}
+
+	switch {
+	case strategy == STRATEGY_GOOGLE:
+		conf.Endpoint = google.Endpoint
+		conf.Scopes = []string{"https://www.googleapis.com/auth/fitness.activity.read",
+			"https://www.googleapis.com/auth/fitness.body.read",
+			"https://www.googleapis.com/auth/userinfo.profile"}
+	case strategy == STRATEGY_FITBIT:
+		conf.Endpoint = fitbit.Endpoint
+		conf.Scopes = []string{"activity"}
 	}
 
 	client := conf.Client(oauth2.NoContext, tok)
