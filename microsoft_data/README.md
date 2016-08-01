@@ -7,12 +7,12 @@
 * Restart Splunk server
 
 # Adding an input
-1. From Splunk Home, click the Settings menu. Under **Data**, click **Data inputs**, and find `Fitbit Data`, the input you #just added. **Click Add new on that row**.
+1. From Splunk Home, click the Settings menu. Under **Data**, click **Data inputs**, and find `Microsoft Data`, the input you #just added. **Click Add new on that row**.
 * Click **Add new** and fill in:
     * `fullname` (first and last of the account)
     * `username` (Username of the account)
     * `startdate` (Date of data to be retrieved in the format using 24 hours time, **YYYY-MM-DD-HH**  Ex: 2016-07-13-18)
-    * `token_json` (JSON token returned from the Microsoft Health API after authentication)
+    * `token_json` (Refresh Token returned from the Microsoft Health API after authentication)
 * Save your input, and navigate back to Splunk Home.
 * Do a search for `sourcetype=microsoft_data` and you should see some events.
 
