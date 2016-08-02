@@ -14,12 +14,10 @@ import json
 import xml.etree.ElementTree as ET
 import os
 
-from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import OAuth2WebServerFlow
 from apiclient.discovery import build
 
 import jsonbyteify
-#import splunkmethods
 
 """
 NOTE: To use this script, the following Python library dependencies need 
@@ -132,23 +130,38 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         full_name = profile_json['user']['fullName']
         
         # Store id, name, and token in KV store
-        #TODO: Update Existing entries in KV Store
+        c.namespace.app = 'fitness_for_splunk'
         collection_name = 'fitbit_tokens'
-        if collection_name in c.kvstore:
-            # Create the KV Store if it doesn't exist
-            c.kvstore.delete(collection_name)
         
-        c.kvstore.create(collection_name)
-                
+        if collection_name not in c.kvstore:
+            # Create the KV Store if it doesn't exist
+            c.kvstore.create(collection_name)
+        
         kvstore = c.kvstore[collection_name]
-        kv_jsonstring = json.dumps({'id': user_id, 'name': full_name, 'token': token_json})
-        kvstore.data.insert(kv_jsonstring)
+        
+        # Check if user already exists in KV Store
+        userExists = False
+        try:
+            kv_user_dict = kvstore.data.query_by_id(user_id)
+            userExists = True
+        except:
+            userExists = False
+        
+        kv_jsonstring = json.dumps({'_key': user_id, 'id': user_id, 'name': full_name, 'token': token_json})
+        
+        if userExists:
+            # Update entry
+            key = jsonbyteify._byteify(kv_user_dict['_key'])
+            kvstore.data.update(key, kv_jsonstring)
+        else:
+            # Create new entry
+            kvstore.data.insert(kv_jsonstring)
         
         #TODO: Redirect to Success Page
         self.response.setStatus(200)
         self.response.setHeader('content-type', 'text/html')
         #self.response.setHeader('content-type', 'application/json')
-        self.response.write(str(kv_jsonstring))
+        self.response.write(kv_jsonstring)
         
     # listen to all verbs
     handle_POST = handle_DELETE = handle_PUT = handle_VIEW = handle_GET
@@ -233,18 +246,33 @@ class google_callback(splunk.rest.BaseRestHandler):
         credentials_json = jsonbyteify.json_loads_byteified(credentials.to_json())
         token_json = credentials_json['token_response']
         
-        #TODO: Update Existing entries in KV Store
+        # Store id, name, and token in KV store
         c.namespace.app = 'fitness_for_splunk'
         collection_name = 'google_tokens'
-        if collection_name in c.kvstore:
-            # Create the KV Store if it doesn't exist
-            c.kvstore.delete(collection_name)
         
-        c.kvstore.create(collection_name)
-
+        if collection_name not in c.kvstore:
+            # Create the KV Store if it doesn't exist
+            c.kvstore.create(collection_name)
+        
         kvstore = c.kvstore[collection_name]
-        kv_jsonstring = json.dumps({'id': user_id, 'name': full_name, 'token': token_json})
-        kvstore.data.insert(kv_jsonstring)
+        
+        # Check if user already exists in KV Store
+        userExists = False
+        try:
+            kv_user_dict = kvstore.data.query_by_id(user_id)
+            userExists = True
+        except:
+            userExists = False
+        
+        kv_jsonstring = json.dumps({'_key': user_id, 'id': user_id, 'name': full_name, 'token': token_json})
+        
+        if userExists:
+            # Update entry
+            key = jsonbyteify._byteify(kv_user_dict['_key'])
+            kvstore.data.update(key, kv_jsonstring)
+        else:
+            # Create new entry
+            kvstore.data.insert(kv_jsonstring)
         
         # Write Response
         self.response.setStatus(200)
@@ -338,18 +366,32 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         full_name = profile_json['firstName']
         
         # Store id, name, and token in KV store
-        #TODO: Update Existing entries in KV Store
         c.namespace.app = 'fitness_for_splunk'
         collection_name = 'microsoft_tokens'
-        if collection_name in c.kvstore:
-            # Create the KV Store if it doesn't exist
-            c.kvstore.delete(collection_name)
         
-        c.kvstore.create(collection_name)
+        if collection_name not in c.kvstore:
+            # Create the KV Store if it doesn't exist
+            c.kvstore.create(collection_name)
         
         kvstore = c.kvstore[collection_name]
-        kv_jsonstring = json.dumps({'id': user_id, 'name': full_name, 'token': token_json})
-        kvstore.data.insert(kv_jsonstring)
+        
+        # Check if user already exists in KV Store
+        userExists = False
+        try:
+            kv_user_dict = kvstore.data.query_by_id(user_id)
+            userExists = True
+        except:
+            userExists = False
+        
+        kv_jsonstring = json.dumps({'_key': user_id, 'id': user_id, 'name': full_name, 'token': token_json})
+        
+        if userExists:
+            # Update entry
+            key = jsonbyteify._byteify(kv_user_dict['_key'])
+            kvstore.data.update(key, kv_jsonstring)
+        else:
+            # Create new entry
+            kvstore.data.insert(kv_jsonstring)
         
         # Write Response
         self.response.setStatus(200)
