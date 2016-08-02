@@ -1,0 +1,11 @@
+{
+    "name": "microsoft_data",
+    "version": "0.0.1",
+    "description": "Splunk modular input Using Microsoft Health Api",
+    "main": "microsoft_data.js",
+    "dependencies": {
+        "splunk-sdk": ">=1.4.0",
+        "unirest": "*"
+    },
+    "author": "Jay Sprowls"
+}
