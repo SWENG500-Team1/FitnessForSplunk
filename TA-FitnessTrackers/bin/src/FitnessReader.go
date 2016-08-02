@@ -29,6 +29,9 @@ func readerFactory(strategy string, startTime time.Time, endTime time.Time) (Fit
 	case strategy == STRATEGY_GOOGLE:
 		reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
 		return reader, nil
+	case strategy == STRATEGY_FITBIT:
+		reader := &FitBitReader{startTime: startTime, endTime: endTime}
+		return reader, nil
 	default:
 		return nil, errors.New("Unsupported reader requested: " + string(strategy))
 	}
