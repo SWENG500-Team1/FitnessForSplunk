@@ -33,7 +33,7 @@ func (input *FitnessInput) ReturnScheme() {
 		DataType:    "boolean",
 	},
 		splunk.Argument{
-			Name:        STRATEGY_PARAM_NAME,
+			Name:        strategyParamName,
 			Title:       "FitnessService",
 			Description: "Enter the name of the Fitness Service to be polled.  Options are: 'GoogleFitness', 'FitBit', 'Microsoft'",
 			DataType:    "string",
@@ -64,10 +64,10 @@ func (input *FitnessInput) ValidateScheme() (bool, string) {
 		for _, param := range stanza.Params {
 			//Check that the parameter STRAGEGY_PARAM_NAME is one of our defined
 			// strategies for getting data
-			if param.Name == STRATEGY_PARAM_NAME &&
-				!(param.Value == string(STRATEGY_GOOGLE) ||
-					param.Value == STRATEGY_FITBIT ||
-					param.Value == STRATEGY_MICROSOFT) {
+			if param.Name == strategyParamName &&
+				!(param.Value == string(strategyGoogle) ||
+					param.Value == strategyFitbit ||
+					param.Value == strategyMicrosoft) {
 				return false, "Improper service '" + param.Value + "' name indicated."
 			}
 		}
@@ -112,7 +112,7 @@ func (input *FitnessInput) getStrategy() string {
 
 	for _, stanza := range input.Stanzas {
 		for _, param := range stanza.Params {
-			if param.Name == STRATEGY_PARAM_NAME {
+			if param.Name == strategyParamName {
 				strategy = param.Value
 			}
 		}

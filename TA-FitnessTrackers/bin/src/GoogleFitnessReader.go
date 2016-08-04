@@ -11,7 +11,8 @@ import (
 	"google.golang.org/api/fitness/v1"
 )
 
-const oauth_time_format = "2006-01-02 15:04:05.00000000 -0700 MST"
+const googleOauthTimeFormat = "2006-01-02 15:04:05.00000000 -0700 MST"
+const fitbitOauthTimeFormat = "2006-01-02T15:04:05.000000000-07:00"
 const sessionTimeFormat string = "2006-01-02T15:04:05.00Z"
 
 type GoogleFitnessReader struct {

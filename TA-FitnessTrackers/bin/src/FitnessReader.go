@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-const STRATEGY_GOOGLE string = "Google"
-const STRATEGY_FITBIT string = "FitBit"
-const STRATEGY_MICROSOFT string = "Microsoft"
-const STRATEGY_PARAM_NAME string = "FitnessService"
+const strategyGoogle string = "Google"
+const strategyFitbit string = "FitBit"
+const strategyMicrosoft string = "Microsoft"
+const strategyParamName string = "FitnessService"
 
 type FitnessReader interface {
 	//getData takes a start and end time, and HTTP client for communication with
@@ -26,10 +26,10 @@ type FitnessReader interface {
 
 func readerFactory(strategy string, startTime time.Time, endTime time.Time) (FitnessReader, error) {
 	switch {
-	case strategy == STRATEGY_GOOGLE:
+	case strategy == strategyGoogle:
 		reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
 		return reader, nil
-	case strategy == STRATEGY_FITBIT:
+	case strategy == strategyFitbit:
 		reader := &FitBitReader{startTime: startTime, endTime: endTime}
 		return reader, nil
 	default:

@@ -22,9 +22,10 @@ func newToken(
 	refreshToken string,
 	accessToken string,
 	expiryStr string,
-	tokenType string) *oauth2.Token {
+	tokenType string,
+	timeFormat string) *oauth2.Token {
 
-	expires, err := time.Parse(oauth_time_format, expiryStr)
+	expires, err := time.Parse(timeFormat, expiryStr)
 	if err != nil {
 		log.Fatalf("Error fetting token from refresh token: %v\n", err)
 	}
@@ -32,8 +33,8 @@ func newToken(
 	tok := new(oauth2.Token)
 	tok.RefreshToken = refreshToken
 	tok.AccessToken = accessToken
-	tok.Expiry = expires
 	tok.TokenType = tokenType
+	tok.Expiry = expires
 
 	return tok
 }
@@ -49,12 +50,12 @@ func getClient(tok *oauth2.Token,
 	}
 
 	switch {
-	case strategy == STRATEGY_GOOGLE:
+	case strategy == strategyGoogle:
 		conf.Endpoint = google.Endpoint
 		conf.Scopes = []string{"https://www.googleapis.com/auth/fitness.activity.read",
 			"https://www.googleapis.com/auth/fitness.body.read",
 			"https://www.googleapis.com/auth/userinfo.profile"}
-	case strategy == STRATEGY_FITBIT:
+	case strategy == strategyFitbit:
 		conf.Endpoint = fitbit.Endpoint
 		conf.Scopes = []string{"activity"}
 	}

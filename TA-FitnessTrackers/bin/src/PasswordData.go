@@ -21,11 +21,11 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 
 	var collection string
 	switch {
-	case strategy == STRATEGY_GOOGLE:
+	case strategy == strategyGoogle:
 		collection = "google_tokens"
-	case strategy == STRATEGY_FITBIT:
+	case strategy == strategyFitbit:
 		collection = "fitbit_tokens"
-	case strategy == STRATEGY_MICROSOFT:
+	case strategy == strategyMicrosoft:
 		collection = "microsoft_tokens"
 	}
 
@@ -60,7 +60,8 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 		token := newToken(tempUser.Token["refresh_token"],
 			tempUser.Token["access_token"],
 			tempUser.Token["expires_at"],
-			tempUser.Token["token_type"])
+			tempUser.Token["token_type"],
+			getTokenTimeFormat(strategy))
 		result = append(result,
 			User{name: tempUser.Name,
 				userID: tempUser.Id,
@@ -69,4 +70,14 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 	}
 
 	return result, nil
+}
+
+func getTokenTimeFormat(strategy string) string {
+	switch strategy {
+	case strategyGoogle:
+		return googleOauthTimeFormat
+	case strategyFitbit:
+		return fitbitOauthTimeFormat
+	}
+	return ""
 }

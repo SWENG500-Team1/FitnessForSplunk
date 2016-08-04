@@ -92,7 +92,7 @@ func TestScheme(t *testing.T) {
          <description>If true the input requires certificate validation when making REST calls to Splunk</description>
          <data_type>boolean</data_type>
       </arg>
-      <arg name="` + STRATEGY_PARAM_NAME + `">
+      <arg name="` + strategyParamName + `">
          <title>FitnessService</title>
          <description>Enter the name of the Fitness Service to be polled.  Options are: &#39;GoogleFitness&#39;, &#39;FitBit&#39;, &#39;Microsoft&#39;</description>
          <data_type>string</data_type>
@@ -119,7 +119,7 @@ func TestSchemeValidation(t *testing.T) {
 			<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
 			<configuration>
 				<stanza name="TA-GoogleFitness://test1">
-						<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_FITBIT + `</param>
+						<param name="` + strategyParamName + `">` + strategyFitbit + `</param>
 						<param name="other_param">other_value</param>
 				</stanza>
 			</configuration>
@@ -131,7 +131,7 @@ func TestSchemeValidation(t *testing.T) {
 				<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
 				<configuration>
 					<stanza name="TA-GoogleFitness://test1">
-							<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_GOOGLE + `</param>
+							<param name="` + strategyParamName + `">` + strategyGoogle + `</param>
 							<param name="other_param">other_value</param>
 					</stanza>
 				</configuration>
@@ -143,7 +143,7 @@ func TestSchemeValidation(t *testing.T) {
 					<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
 					<configuration>
 						<stanza name="TA-GoogleFitness://test1">
-								<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_MICROSOFT + `</param>
+								<param name="` + strategyParamName + `">` + strategyMicrosoft + `</param>
 								<param name="other_param">other_value</param>
 						</stanza>
 					</configuration>
@@ -156,7 +156,7 @@ func TestSchemeValidation(t *testing.T) {
 						<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
 						<configuration>
 							<stanza name="TA-GoogleFitness://test1">
-									<param name="` + STRATEGY_PARAM_NAME + `">` + improperValue + `</param>
+									<param name="` + strategyParamName + `">` + improperValue + `</param>
 							</stanza>
 						</configuration>
 					</input>`
@@ -184,7 +184,7 @@ func TestSchemeValidation(t *testing.T) {
 //TestGetReader builds a ModInputConfig setting the STRATEGY_PARAM_NAME value
 // then uses reflection to validate that the correct type is being generated.
 func TestGetReader(t *testing.T) {
-	reader, _ := readerFactory(STRATEGY_GOOGLE, time.Now(), time.Now())
+	reader, _ := readerFactory(strategyGoogle, time.Now(), time.Now())
 	if reflect.TypeOf(reader) != reflect.TypeOf(&GoogleFitnessReader{}) {
 		t.Log("Failed to return GoogleFitnessReader")
 		t.Fail()
@@ -199,7 +199,7 @@ func TestGetReaderFromXML(t *testing.T) {
 			<checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
 			<configuration>
 				<stanza name="TA-GoogleFitness://test1">
-						<param name="` + STRATEGY_PARAM_NAME + `">` + STRATEGY_GOOGLE + `</param>
+						<param name="` + strategyParamName + `">` + strategyGoogle + `</param>
 						<param name="other_param">other_value</param>
 				</stanza>
 			</configuration>
@@ -224,9 +224,9 @@ func TestGetCredentials(t *testing.T) {
 		t.Logf("Unable to get session key: %v\n", err)
 	}
 
-	credentials, _ := getUsers(splunk.LocalSplunkMgmntURL, accessKey.SessionKey, STRATEGY_GOOGLE)
+	credentials, _ := getUsers(splunk.LocalSplunkMgmntURL, accessKey.SessionKey, strategyGoogle)
 	if len(credentials) == 0 {
-		t.Logf("No credentials recieved from Splunk for: %v", STRATEGY_GOOGLE)
+		t.Logf("No credentials recieved from Splunk for: %v", strategyGoogle)
 		t.Fail()
 	}
 
