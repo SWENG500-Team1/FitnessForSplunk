@@ -1,0 +1,20 @@
+{
+    "fitbit": {
+        "password_namespace": "fitness_for_splunk",
+        "kv_namespace": "fitness_for_splunk",
+        "callback_uri": "https://localhost:8089/services/fitness_for_splunk/fitbit_callback",
+        "realm": "fitbit"
+    },
+    "google": {
+        "password_namespace": "fitness_for_splunk",
+        "kv_namespace": "fitness_for_splunk",
+        "callback_uri": "https://localhost:8089/services/fitness_for_splunk/google_callback",
+        "realm": "google"
+    },
+    "microsoft": {
+        "password_namespace": "fitness_for_splunk",
+        "kv_namespace": "fitness_for_splunk",
+        "callback_uri": "https://localhost:8089/services/fitness_for_splunk/microsoft_callback",
+        "realm": "microsoft"
+  }
+}

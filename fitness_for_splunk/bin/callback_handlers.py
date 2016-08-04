@@ -46,6 +46,7 @@ web_dir = app_dir + "/web"
 
 # filepath to admin credentials for connection
 admin_credentials_filepath = os.path.join(app_dir, 'admin_credentials.json')
+REST_config_filepath = os.path.join(app_dir, 'REST_config.json')
 
 class fitbit_callback(splunk.rest.BaseRestHandler):
 
@@ -79,18 +80,24 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
             self.response.write('Server Error: No Admin credentials')
+            return
+        
+        REST_config = None
+        with open(REST_config_filepath, 'r') as file:
+            REST_config = jsonbyteify.json_load_byteified(file)
+            
+        REST_config = REST_config['fitbit']
         
         # Pull Client ID and Secret from Fitbit ModInput password store
         c = client.connect(host='localhost', port='8089', username=admin_credentials['username'], password=admin_credentials['password'])
         c.namespace.owner = 'nobody'
-        #c.namespace.app = 'fitness_for_splunk'
-        c.namespace.app = "TA-FitnessTrackers"
+        c.namespace.app = REST_config['password_namespace']
         passwords = c.storage_passwords
                 
         # Look for Client Secret
         password = None
         for entry in passwords:
-            if entry.realm == 'fitbit':
+            if entry.realm == REST_config['realm']:
                 password = entry
                 
         if password is None:
@@ -105,7 +112,7 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         http = httplib2.Http()
         clientId = password.username
         clientSecret = password.clear_password
-        callback_url = 'https://localhost:8089/services/fitness_for_splunk/fitbit_callback'
+        callback_url = REST_config['callback_uri']
         auth_uri = 'https://www.fitbit.com/oauth2/authorize'
         token_url = 'https://api.fitbit.com/oauth2/token'
         
@@ -130,7 +137,7 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         full_name = profile_json['user']['fullName']
         
         # Store id, name, and token in KV store
-        c.namespace.app = 'fitness_for_splunk'
+        c.namespace.app = REST_config['kv_namespace']
         collection_name = 'fitbit_tokens'
         
         if collection_name not in c.kvstore:
@@ -199,18 +206,25 @@ class google_callback(splunk.rest.BaseRestHandler):
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
             self.response.write('Server Error: No Admin credentials')
+            return
+        
+        REST_config = None
+        with open(REST_config_filepath, 'r') as file:
+            REST_config = jsonbyteify.json_load_byteified(file)
+            
+        REST_config = REST_config['google']
+
         
         # Pull Client ID and Secret from Google ModInput password store
         c = client.connect(host='localhost', port='8089', username=admin_credentials['username'], password=admin_credentials['password'])
         c.namespace.owner = 'nobody'
-        #c.namespace.app = 'fitness_for_splunk'
-        c.namespace.app = "TA-FitnessTrackers"
+        c.namespace.app = REST_config['password_namespace']
         passwords = c.storage_passwords
         
         # Look for Client Secret
         password = None
         for entry in passwords:
-            if entry.realm == 'google':
+            if entry.realm == REST_config['realm']:
                 password = entry
                 
         if password is None:
@@ -226,7 +240,7 @@ class google_callback(splunk.rest.BaseRestHandler):
             client_id = password.username,
             client_secret = password.clear_password,
             scope='https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.body.read https://www.googleapis.com/auth/userinfo.profile',
-            redirect_uri='https://localhost:8089/services/fitness_for_splunk/google_callback',
+            redirect_uri=REST_config['callback_uri'],
             access_type = 'offline'
             )
         
@@ -247,7 +261,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         token_json = credentials_json['token_response']
         
         # Store id, name, and token in KV store
-        c.namespace.app = 'fitness_for_splunk'
+        c.namespace.app = REST_config['kv_namespace']
         collection_name = 'google_tokens'
         
         if collection_name not in c.kvstore:
@@ -310,23 +324,29 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         with open(admin_credentials_filepath, 'r') as file:
             admin_credentials = jsonbyteify.json_load_byteified(file)
         
+        REST_config = None
+        with open(REST_config_filepath, 'r') as file:
+            REST_config = jsonbyteify.json_load_byteified(file)
+            
+        REST_config = REST_config['microsoft']
+
         if admin_credentials is None:
             #TODO: Redirect to Error Page
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
             self.response.write('Server Error: No Admin credentials')
+            return
         
         # Pull Client ID and Secret from Microsoft ModInput password store
         c = client.connect(host='localhost', port='8089', username=admin_credentials['username'], password=admin_credentials['password'])
         c.namespace.owner = 'nobody'
-        #c.namespace.app = 'fitness_for_splunk'
-        c.namespace.app = "microsoft_data"
+        c.namespace.app = REST_config['password_namespace']
         passwords = c.storage_passwords
         
         # Look for Client Secret
         password = None
         for entry in passwords:
-            if entry.realm == 'microsoft':
+            if entry.realm == REST_config['realm']:
                 password = entry
                 
         if password is None:
@@ -342,7 +362,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
             client_id = password.username,
             client_secret = password.clear_password,
             scope='mshealth.ReadProfile mshealth.ReadActivityHistory mshealth.ReadDevices mshealth.ReadActivityLocation offline_access',
-            redirect_uri='https://localhost:8089/services/fitness_for_splunk/microsoft_callback',
+            redirect_uri=REST_config['callback_uri'],
             auth_uri='https://login.live.com/oauth20_authorize.srf',
             token_uri='https://login.live.com/oauth20_token.srf'
             )
@@ -366,7 +386,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         full_name = profile_json['firstName']
         
         # Store id, name, and token in KV store
-        c.namespace.app = 'fitness_for_splunk'
+        c.namespace.app = REST_config['kv_namespace']
         collection_name = 'microsoft_tokens'
         
         if collection_name not in c.kvstore:
