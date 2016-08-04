@@ -30,6 +30,11 @@ func TestGetAppCredentials(t *testing.T) {
 
 	config := &splunk.ModInputConfig{}
 	config.SessionKey = accessKey.SessionKey
+	stanza := splunk.ModInputStanza{}
+	stanza.Params = append([]splunk.ModInputParam{},
+		splunk.ModInputParam{Name: strategyParamName,
+			Value: strategyGoogle})
+	config.Stanzas = append(config.Stanzas, stanza)
 
 	input := FitnessInput{ModInputConfig: config}
 	clientId, clientSecret := input.getAppCredentials()
