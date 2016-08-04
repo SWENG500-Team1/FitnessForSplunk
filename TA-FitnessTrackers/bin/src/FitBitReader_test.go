@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"log"
 	"strings"
 	"testing"
 	"time"
@@ -47,7 +48,7 @@ func TestFitbitGetData(t *testing.T) {
 	}
 
 	//Turn the data returned to the writer back into a data structure
-	var us []UserSummary
+	var us []FitbitOutput
 	//to turn it into a JSON array we need to add commas between events and add
 	// brackets around the whole result
 	b := []byte("[" + strings.Replace(string(buf.Bytes()), "}}", "}},", 2) + "]")
@@ -56,7 +57,7 @@ func TestFitbitGetData(t *testing.T) {
 		t.Logf("Input: %s", b)
 		t.Fatal(err)
 	}
-
+	log.Println(string(b))
 	if len(us) != 3 {
 		t.Logf("Failed to retrieve data from fitbit.")
 		t.Fail()
@@ -113,7 +114,7 @@ func TestCreateFitbitAuthCodeURL(t *testing.T) {
 	t.Logf("URL: %v\n", conf.AuthCodeURL("state", oauth2.AccessTypeOnline))
 }
 
-func TestExchangeFitBitToken(t *testing.T) {
+func disabledTestExchangeFitBitToken(t *testing.T) {
 	conf := oauth2.Config{ClientID: fitbitClientId, ClientSecret: fitbitClientSecret}
 	conf.Endpoint = fitbit.Endpoint
 	conf.Scopes = []string{"activity"}

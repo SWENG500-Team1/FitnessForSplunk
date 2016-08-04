@@ -86,11 +86,7 @@ func (input *FitBitReader) decodeAndPrint(reader io.Reader,
 		return
 	}
 
-	us := &UserSummary{
-		User: username,
-		Date: date,
-		FitbitActivitySummary: summary,
-	}
+	us := NewFitbitOutput(username, date, summary)
 
 	b, _ := json.Marshal(us)
 	writer.WriteString(fmt.Sprintf("%s\n", b))
@@ -98,10 +94,20 @@ func (input *FitBitReader) decodeAndPrint(reader io.Reader,
 }
 
 //userStruct: A a struct to glue username and Activity Summaries together
-type UserSummary struct {
-	User string    `json:"User"`
-	Date time.Time `json:"Date"`
+type FitbitOutput struct {
+	Source string    `json:"Source"`
+	User   string    `json:"User"`
+	Date   time.Time `json:"Date"`
 	*FitbitActivitySummary
+}
+
+func NewFitbitOutput(user string, date time.Time, summary *FitbitActivitySummary) *FitbitOutput {
+	return &FitbitOutput{
+		Source: strategyFitbit,
+		User:   user,
+		Date:   date,
+		FitbitActivitySummary: summary,
+	}
 }
 
 type FitbitActivitySummary struct {
