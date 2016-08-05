@@ -64,11 +64,11 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
                 authCode = queryParams['code']
         
         if authCode is None:
-            #TODO: Redirect to Error Authorizing Page
             # No Authorization Code, return 400
             self.response.setStatus(400)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Bad Request: No authorization code')
+            #self.response.write('Bad Request: No authorization code')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         admin_credentials = None
@@ -76,10 +76,10 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
             admin_credentials = jsonbyteify.json_load_byteified(file)
         
         if admin_credentials is None:
-            #TODO: Redirect to Error Page
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Server Error: No Admin credentials')
+            #self.response.write('Server Error: No Admin credentials')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         REST_config = None
@@ -101,11 +101,11 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
                 password = entry
                 
         if password is None:
-            #TODO: Redirect to Error Authorizing Page
             # No password configured for Fitbit, return 500
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Server Error: No password')
+            #self.response.write('Server Error: No password')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         # Exchange authorization code for OAuth2 token
@@ -164,11 +164,11 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
             # Create new entry
             kvstore.data.insert(kv_jsonstring)
         
-        #TODO: Redirect to Success Page
+        # Return Success message
         self.response.setStatus(200)
         self.response.setHeader('content-type', 'text/html')
-        #self.response.setHeader('content-type', 'application/json')
-        self.response.write(kv_jsonstring)
+        #self.response.write(kv_jsonstring)
+        self.addMessage("Success", "Your Fitbit account was successfully added!")
         
     # listen to all verbs
     handle_POST = handle_DELETE = handle_PUT = handle_VIEW = handle_GET
@@ -190,11 +190,11 @@ class google_callback(splunk.rest.BaseRestHandler):
                 authCode = queryParams['code']
         
         if authCode is None:
-            #TODO: Redirect to Error Authorizing Page
             # No Authorization Code, return 400
             self.response.setStatus(400)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Bad Request: No authorization code')
+            #self.response.write('Bad Request: No authorization code')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         admin_credentials = None
@@ -202,10 +202,11 @@ class google_callback(splunk.rest.BaseRestHandler):
             admin_credentials = jsonbyteify.json_load_byteified(file)
         
         if admin_credentials is None:
-            #TODO: Redirect to Error Page
+            # No admin credentials
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Server Error: No Admin credentials')
+            #self.response.write('Server Error: No Admin credentials')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         REST_config = None
@@ -228,11 +229,11 @@ class google_callback(splunk.rest.BaseRestHandler):
                 password = entry
                 
         if password is None:
-            #TODO: Redirect to Error Authorizing Page
             # No password configured for Google, return 500
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Server Error: No password')
+            #self.response.write('Server Error: No password')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         # Create flow object
@@ -288,17 +289,18 @@ class google_callback(splunk.rest.BaseRestHandler):
             # Create new entry
             kvstore.data.insert(kv_jsonstring)
         
-        # Write Response
+        # Write Success message
         self.response.setStatus(200)
         self.response.setHeader('content-type', 'text/html')
-        #self.response.setHeader('content-type', 'application/json')
-        self.response.write(kv_jsonstring)
+        #self.response.write(kv_jsonstring)
+        self.addMessage("Success", "Your Google account was successfully added!")
         
     # listen to all verbs
     handle_POST = handle_DELETE = handle_PUT = handle_VIEW = handle_GET
 
 
 class microsoft_callback(splunk.rest.BaseRestHandler):
+
     """
     Microsoft OAuth2 Callback Endpoint
     """
@@ -313,11 +315,11 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
                 authCode = queryParams['code']
         
         if authCode is None:
-            #TODO: Redirect to Error Authorizing Page
             # No Authorization Code, return 400
             self.response.setStatus(400)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Bad Request: No authorization code')
+            #self.response.write('Bad Request: No authorization code')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         admin_credentials = None
@@ -331,10 +333,11 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         REST_config = REST_config['microsoft']
 
         if admin_credentials is None:
-            #TODO: Redirect to Error Page
+            # No Admin credentials
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Server Error: No Admin credentials')
+            #self.response.write('Server Error: No Admin credentials')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         # Pull Client ID and Secret from Microsoft ModInput password store
@@ -350,11 +353,11 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
                 password = entry
                 
         if password is None:
-            #TODO: Redirect to Error Authorizing Page
             # No password configured for Google, return 500
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/html')
-            self.response.write('Server Error: No password')
+            #self.response.write('Server Error: No password')
+            self.addMessage("Error", "Sorry, your account could not be added.")
             return
         
         # Create flow object
@@ -413,11 +416,11 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
             # Create new entry
             kvstore.data.insert(kv_jsonstring)
         
-        # Write Response
+        # Return Success message
         self.response.setStatus(200)
         self.response.setHeader('content-type', 'text/html')
-        #self.response.setHeader('content-type', 'application/json')
-        self.response.write(kv_jsonstring)
+        #self.response.write(kv_jsonstring)
+        self.addMessage("Success", "Your Microsoft account was successfully added!")
         
     # listen to all verbs
     handle_POST = handle_DELETE = handle_PUT = handle_VIEW = handle_GET
