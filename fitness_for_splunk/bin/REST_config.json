@@ -1,20 +1,20 @@
 {
     "fitbit": {
-        "password_namespace": "fitness_for_splunk",
+        "password_namespace": "TA-FitnessTrackers",
         "kv_namespace": "fitness_for_splunk",
-        "callback_uri": "https://localhost:8089/services/fitness_for_splunk/fitbit_callback",
+        "callback_uri": "https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Fitbit_Account",
         "realm": "fitbit"
     },
     "google": {
-        "password_namespace": "fitness_for_splunk",
+        "password_namespace": "TA-FitnessTrackers",
         "kv_namespace": "fitness_for_splunk",
-        "callback_uri": "https://localhost:8089/services/fitness_for_splunk/google_callback",
+        "callback_uri": "https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Google_Account",
         "realm": "google"
     },
     "microsoft": {
-        "password_namespace": "fitness_for_splunk",
+        "password_namespace": "microsoft_data",
         "kv_namespace": "fitness_for_splunk",
-        "callback_uri": "https://localhost:8089/services/fitness_for_splunk/microsoft_callback",
+        "callback_uri": "https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Microsoft_Account",
         "realm": "microsoft"
   }
 }

@@ -66,7 +66,7 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         if authCode is None:
             # No Authorization Code, return 400
             self.response.setStatus(400)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Bad Request: No authorization code')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -77,7 +77,7 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         
         if admin_credentials is None:
             self.response.setStatus(500)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Server Error: No Admin credentials')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -103,7 +103,7 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         if password is None:
             # No password configured for Fitbit, return 500
             self.response.setStatus(500)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Server Error: No password')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -166,7 +166,7 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         
         # Return Success message
         self.response.setStatus(200)
-        self.response.setHeader('content-type', 'text/html')
+        self.response.setHeader('content-type', 'text/xml')
         #self.response.write(kv_jsonstring)
         self.addMessage("Success", "Your Fitbit account was successfully added!")
         
@@ -192,7 +192,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         if authCode is None:
             # No Authorization Code, return 400
             self.response.setStatus(400)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Bad Request: No authorization code')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -204,7 +204,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         if admin_credentials is None:
             # No admin credentials
             self.response.setStatus(500)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Server Error: No Admin credentials')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -231,7 +231,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         if password is None:
             # No password configured for Google, return 500
             self.response.setStatus(500)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Server Error: No password')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -291,7 +291,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         
         # Write Success message
         self.response.setStatus(200)
-        self.response.setHeader('content-type', 'text/html')
+        self.response.setHeader('content-type', 'text/xml')
         #self.response.write(kv_jsonstring)
         self.addMessage("Success", "Your Google account was successfully added!")
         
@@ -317,7 +317,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         if authCode is None:
             # No Authorization Code, return 400
             self.response.setStatus(400)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Bad Request: No authorization code')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -335,7 +335,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         if admin_credentials is None:
             # No Admin credentials
             self.response.setStatus(500)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Server Error: No Admin credentials')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -355,7 +355,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         if password is None:
             # No password configured for Google, return 500
             self.response.setStatus(500)
-            self.response.setHeader('content-type', 'text/html')
+            self.response.setHeader('content-type', 'text/xml')
             #self.response.write('Server Error: No password')
             self.addMessage("Error", "Sorry, your account could not be added.")
             return
@@ -418,7 +418,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         
         # Return Success message
         self.response.setStatus(200)
-        self.response.setHeader('content-type', 'text/html')
+        self.response.setHeader('content-type', 'text/xml')
         #self.response.write(kv_jsonstring)
         self.addMessage("Success", "Your Microsoft account was successfully added!")
         
