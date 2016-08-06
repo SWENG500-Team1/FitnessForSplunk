@@ -11,13 +11,13 @@ import (
 	"time"
 )
 
-type FitBitReader struct {
+type FitbitReader struct {
 	startTime, endTime time.Time
 }
 
-func NewFitbitReader(startTime, endTime time.Time) (*FitBitReader, error) {
+func NewFitbitReader(startTime, endTime time.Time) (*FitbitReader, error) {
 	if startTime.After(endTime) {
-		return &FitBitReader{}, errors.New("Start time after end time not allowed")
+		return &FitbitReader{}, errors.New("Start time after end time not allowed")
 	}
 
 	//Establish what the last date we will query is.  We only want to get a
@@ -40,10 +40,10 @@ func NewFitbitReader(startTime, endTime time.Time) (*FitBitReader, error) {
 		lastDate = time.Now().AddDate(0, 0, -1)
 	}
 
-	return &FitBitReader{startTime: startTime, endTime: lastDate}, nil
+	return &FitbitReader{startTime: startTime, endTime: lastDate}, nil
 }
 
-func (input *FitBitReader) getData(
+func (input *FitbitReader) getData(
 	client *http.Client,
 	writer *bufio.Writer,
 	user User) time.Time {
@@ -74,7 +74,7 @@ func (input *FitBitReader) getData(
 	return lastDate
 }
 
-func (input *FitBitReader) decodeAndPrint(reader io.Reader,
+func (input *FitbitReader) decodeAndPrint(reader io.Reader,
 	writer *bufio.Writer,
 	username string, date time.Time) {
 

@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -38,13 +39,13 @@ func TestGetAppCredentials(t *testing.T) {
 
 	input := FitnessInput{ModInputConfig: config}
 	clientId, clientSecret := input.getAppCredentials()
-	t.Logf("ClientId Expected: %v\tReceived: %v\n", testClientId, clientId)
 	if clientId != testClientId {
+		t.Logf("ClientId Expected: %v\tReceived: %v\n", testClientId, clientId)
 		t.Fail()
 	}
 
-	t.Logf("ClientSecret Expected: %v\tReceived: %v\n", testClientSecret, clientSecret)
 	if clientSecret != testClientSecret {
+		t.Logf("ClientSecret Expected: %v\tReceived: %v\n", testClientSecret, clientSecret)
 		t.Fail()
 	}
 }
@@ -229,15 +230,30 @@ func TestGetCredentials(t *testing.T) {
 		t.Logf("Unable to get session key: %v\n", err)
 	}
 
-	credentials, _ := getUsers(splunk.LocalSplunkMgmntURL, accessKey.SessionKey, strategyGoogle)
+	credentials, err := getUsers(splunk.LocalSplunkMgmntURL, accessKey.SessionKey, strategyGoogle)
+	if err != nil {
+		t.Logf("Error retriving tookens from KV Store: %v", err)
+	}
 	if len(credentials) == 0 {
 		t.Logf("No credentials recieved from Splunk for: %v", strategyGoogle)
 		t.Fail()
 	}
 
-	t.Logf("Access Token: %v\nRefreshToken: %v\nType:%v\nExpires:%v",
-		credentials[0].AccessToken,
-		credentials[0].RefreshToken,
-		credentials[0].TokenType,
-		credentials[0].Expiry)
+	if len(credentials) > 0 {
+		t.Logf("Access Token: %v\nRefreshToken: %v\nType:%v\nExpires:%v",
+			credentials[0].AccessToken,
+			credentials[0].RefreshToken,
+			credentials[0].TokenType,
+			credentials[0].Expiry)
+	}
+}
+
+func TestUnmarshalKVJSON(t *testing.T) {
+	encoded := `[ { "name" : "Andy Huynh", "id" : "106238504011438260955", "token" : { "id_token" : "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBmMmY1ZTMxNjE0YmIxYTc4ZjkxNTYxZWIxMmE0M2I5ZjUwNTQ2NDMifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhdF9oYXNoIjoiMTc1ZHo4NmFLenlfQllNcW1adWI2dyIsImF1ZCI6IjE4NjUyNjkxODY0LTNvNjNxNjVxcWpwamw5amM1b2F2N21oOHIzc3U0Mm9hLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA2MjM4NTA0MDExNDM4MjYwOTU1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF6cCI6IjE4NjUyNjkxODY0LTNvNjNxNjVxcWpwamw5amM1b2F2N21oOHIzc3U0Mm9hLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiZW1haWwiOiJhbmR5aHV5bmgyM0BnbWFpbC5jb20iLCJpYXQiOjE0NzAzNjMwODQsImV4cCI6MTQ3MDM2NjY4NCwibmFtZSI6IkFuZHkgSHV5bmgiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1BQ2NBOWthU2dTWS9BQUFBQUFBQUFBSS9BQUFBQUFBQUFKQS9XUW9Qa3dYLVFIOC9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiQW5keSIsImZhbWlseV9uYW1lIjoiSHV5bmgiLCJsb2NhbGUiOiJlbiJ9.TkDTloZYCLJmWxG2XVnphHeUUr3ee_h_HOR650uxb0xMKt-MuCVh6VnbUOjpMGuLbRGKvJ0qLh88mCws2VwGvgK1WnqpAyALQVFUEmm9ud4f9TLNnPsL2uBxmf4p3DtAp3uKeuKOr3bFWSIjp5IOH7dyaWHfBZX5hS1ni3Zuei_VPtW_QZNied7ToO_SBODUtm3YA6RMjuGJQ4ZPv7P0Fx0-_FBFM0SY7iTWDapwOaPu1XmRZwgyxjvOCj-Ewr2d5fnqWo64Ytzp9qWZz6NcSUznZUOTFvj3WJF6yl57xewqOEIWDdKRrWYowZ8EpOYX6vN81S145CgJPDrcy_3Jfg", "access_token" : "ya29.Ci82A2iR0N1iOLCpf7gl5K4oR82kXGeDOP1Di5TTAYWsXcgBhDB3KuXcbwbho3fTmQ", "refresh_token" : "1\/pcyzd0z8KIVtnB5z-X6qI0c2TiYE44gVzUWakiTTRrw", "expires_in" : 3600, "token_type" : "Bearer" }, "_user" : "nobody", "_key" : "106238504011438260955" } ]`
+	var user []User
+	err := json.Unmarshal([]byte(encoded), &user)
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+	}
 }
