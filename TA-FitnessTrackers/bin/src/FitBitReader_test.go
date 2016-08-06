@@ -121,7 +121,7 @@ func disabledTestExchangeFitBitToken(t *testing.T) {
 	conf.Scopes = []string{"activity"}
 	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
 
-	tok := getTokenFromAccessCode("573b7696b4bee2ca44c92dcfedd3a6ba46a7cea7", conf)
+	tok := getTokenFromAccessCode("68f5a1c28dff96afee402ab42e6c3ff0400b82dd", conf)
 	tokStr, _ := json.Marshal(tok)
 	t.Logf("%s\n", tokStr)
 }

@@ -1,0 +1,5 @@
+<nav>
+  <collection label="Management">
+    <view name="credentials" default="true"/>
+  </collection>
+</nav>
