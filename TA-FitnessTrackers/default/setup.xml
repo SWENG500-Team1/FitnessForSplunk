@@ -1,12 +1,18 @@
 <setup>
-  <block title="Add Google API credentials" endpoint="storage/passwords" entity="_new">
+  <block title="API credentials"
+    endpoint="storage/passwords"
+    entity="_new">
     <input field="name">
-            <label>Client ID</label>
-            <type>text</type>
+      <label>Client ID</label>
+      <type>text</type>
     </input>
     <input field="password">
-            <label>Client Secret</label>
-            <type>password</type>
+      <label>Client Secret</label>
+      <type>text</type>
+    </input>
+    <input field="realm">
+      <label>Realm</label>
+      <type>text</type>
     </input>
   </block>
 </setup>

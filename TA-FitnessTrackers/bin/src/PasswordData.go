@@ -21,11 +21,11 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 
 	var collection string
 	switch {
-	case strategy == STRATEGY_GOOGLE:
+	case strategy == strategyGoogle:
 		collection = "google_tokens"
-	case strategy == STRATEGY_FITBIT:
+	case strategy == strategyFitbit:
 		collection = "fitbit_tokens"
-	case strategy == STRATEGY_MICROSOFT:
+	case strategy == strategyMicrosoft:
 		collection = "microsoft_tokens"
 	}
 
@@ -36,37 +36,34 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 	}
 	defer tokenReader.Close()
 
-	var result []User
-
-	//Temporary struct so we can get string values out then make a JSON token
-	// by properly converting the date stamp
-	type tempUser struct {
-		Name  string            `json:"name"`
-		Id    string            `json:"id"`
-		Token map[string]string `json:"token"`
-	}
-
-	type userCollection struct {
-		users []tempUser
-	}
-
-	temp := &userCollection{}
-	decode := json.NewDecoder(tokenReader)
-	err = decode.Decode(temp)
+	var user []User
+	decoder := json.NewDecoder(tokenReader)
+	err = decoder.Decode(&user)
 	if err != nil {
-		return []User{}, err
-	}
-	for _, tempUser := range temp.users {
-		token := newToken(tempUser.Token["refresh_token"],
-			tempUser.Token["access_token"],
-			tempUser.Token["expires_at"],
-			tempUser.Token["token_type"])
-		result = append(result,
-			User{name: tempUser.Name,
-				userID: tempUser.Id,
-				scope:  []string{tempUser.Token["scope"]},
-				Token:  *token})
+		return user, err
 	}
 
-	return result, nil
+	return user, err
+}
+
+//Temporary struct so we can get string values out then make a JSON token
+// by properly converting the date stamp
+type KVStoreUser struct {
+	Name  string            `json:"name"`
+	Id    string            `json:"id"`
+	Token map[string]string `json:"token"`
+}
+
+type UserCollection struct {
+	users []KVStoreUser
+}
+
+func getTokenTimeFormat(strategy string) string {
+	switch strategy {
+	case strategyGoogle:
+		return googleOauthTimeFormat
+	case strategyFitbit:
+		return fitbitOauthTimeFormat
+	}
+	return ""
 }

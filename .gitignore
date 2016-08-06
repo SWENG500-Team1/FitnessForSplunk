@@ -1,3 +1,6 @@
+#Exclude a file with constants for Client_IDs and passwords for testing.
+secrets.go
+
 #OS X files
 .DS_Store
 

@@ -35,12 +35,13 @@ func TestLatestTime(t *testing.T) {
 	tok := newToken(testRefreshToken,
 		testAccessToken,
 		testExpires,
-		testTokenType)
+		testTokenType,
+		getTokenTimeFormat(strategyGoogle))
 
 	reader := &GoogleFitnessReader{startTime: startTime, endTime: endTime}
 	devNull := bufio.NewWriter(ioutil.Discard)
 	latestTime := reader.getData(
-		getClient(tok, testClientId, testClientSecret, STRATEGY_GOOGLE),
+		getClient(tok, testClientId, testClientSecret, strategyGoogle),
 		devNull,
 		User{name: "AndyNortrup"})
 
@@ -54,16 +55,19 @@ func TestLatestTime(t *testing.T) {
 }
 
 func TestGetSessions(t *testing.T) {
-	loc, _ := time.LoadLocation("America/Los_Angeles")
-	startTime := time.Date(2016, 07, 16, 04, 0, 0, 0, loc)
-	tok := newToken(testRefreshToken, testAccessToken, testExpires, testTokenType)
+	startTime := time.Date(2016, 07, 16, 04, 0, 0, 0, time.Local)
+	tok := newToken(testRefreshToken,
+		testAccessToken,
+		testExpires,
+		testTokenType,
+		getTokenTimeFormat(strategyGoogle))
 	reader := &GoogleFitnessReader{startTime: startTime, endTime: startTime.Add(12 * time.Hour)}
 	reader.username = "andrew.nortrup"
 	err := reader.getSessions(
 		getClient(tok,
 			testClientId,
 			testClientSecret,
-			STRATEGY_GOOGLE),
+			strategyGoogle),
 		startTime,
 		startTime.Add(12*time.Hour),
 		bufio.NewWriter(os.Stdout))
