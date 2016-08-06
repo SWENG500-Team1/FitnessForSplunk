@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"log"
 	"strings"
 	"testing"
 	"time"
@@ -57,7 +56,7 @@ func TestFitbitGetData(t *testing.T) {
 		t.Logf("Input: %s", b)
 		t.Fatal(err)
 	}
-	log.Println(string(b))
+
 	if len(us) != 3 {
 		t.Logf("Failed to retrieve data from fitbit.")
 		t.Fail()
@@ -111,7 +110,9 @@ func TestCreateFitbitAuthCodeURL(t *testing.T) {
 	conf.Scopes = []string{"activity"}
 	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
 	//print a url to go get an access code
-	t.Logf("URL: %v\n", conf.AuthCodeURL("state", oauth2.AccessTypeOnline))
+	t.Logf("URL: %v\n", conf.AuthCodeURL("state",
+		oauth2.AccessTypeOnline,
+		oauth2.SetAuthURLParam("expires_in", "31536000")))
 }
 
 func disabledTestExchangeFitBitToken(t *testing.T) {
@@ -120,7 +121,7 @@ func disabledTestExchangeFitBitToken(t *testing.T) {
 	conf.Scopes = []string{"activity"}
 	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
 
-	tok := getTokenFromAccessCode("ee0cb70f9effe948e1719cd8c8b700470c27f904", conf)
+	tok := getTokenFromAccessCode("573b7696b4bee2ca44c92dcfedd3a6ba46a7cea7", conf)
 	tokStr, _ := json.Marshal(tok)
 	t.Logf("%s\n", tokStr)
 }
