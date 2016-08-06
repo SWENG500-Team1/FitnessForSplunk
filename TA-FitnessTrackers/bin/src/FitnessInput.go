@@ -133,7 +133,7 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 		"nobody",
 		input.SessionKey)
 
-	if err != nil {
+	if err != nil || len(passwords.Entries) == 0 {
 		log.Fatalf("Unable to retrieve password entries for TA-GoogleFitness: %v\n",
 			err)
 	}
@@ -157,7 +157,7 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 			return clientId, clientSecret
 		}
 	}
-	log.Fatalf("No application credentials found for service type")
+	log.Fatalf("No application credentials found for service \"%v\"", input.getStrategy())
 	return "", ""
 }
 

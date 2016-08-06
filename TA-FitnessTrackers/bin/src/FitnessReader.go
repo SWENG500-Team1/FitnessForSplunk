@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-const strategyGoogle string = "Google"
-const strategyFitbit string = "FitBit"
-const strategyMicrosoft string = "Microsoft"
+const strategyGoogle string = "google"
+const strategyFitbit string = "fitbit"
+const strategyMicrosoft string = "microsoft"
 const strategyParamName string = "FitnessService"
 
 type FitnessReader interface {
