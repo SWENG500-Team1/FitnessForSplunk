@@ -2,10 +2,14 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"testing"
 	"time"
+
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 /*
@@ -43,7 +47,7 @@ func TestLatestTime(t *testing.T) {
 	latestTime := reader.getData(
 		getClient(tok, testClientId, testClientSecret, strategyGoogle),
 		devNull,
-		User{name: "AndyNortrup"})
+		User{Name: "AndyNortrup"})
 
 	if latestTime.Nanosecond() == startTime.Nanosecond() {
 		t.Logf("Unable to pull new data from data sources.  "+
@@ -68,12 +72,39 @@ func TestGetSessions(t *testing.T) {
 			testClientId,
 			testClientSecret,
 			strategyGoogle),
-		startTime,
-		startTime.Add(12*time.Hour),
 		bufio.NewWriter(os.Stdout))
 
 	if err != nil {
 		t.Logf("Unable to get sessions: %v\n", err)
 		t.Fail()
 	}
+}
+
+//TestCreateGoogleAuthCodeURL creates a authorization URL.
+func TestCreateGoogleAuthCodeURL(t *testing.T) {
+	conf := oauth2.Config{ClientID: testClientId, ClientSecret: testClientSecret}
+	conf.Endpoint = google.Endpoint
+	conf.Scopes = []string{"https://www.googleapis.com/auth/fitness.activity.read",
+		"https://www.googleapis.com/auth/fitness.body.read"}
+	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Google_Account"
+	//print a url to go get an access code
+	t.Logf("URL: %v\n", conf.AuthCodeURL("state",
+		oauth2.AccessTypeOffline))
+}
+
+//This is a utility method for generating tokens for testing purposes.
+func disabledTestExchangeAccessCode(t *testing.T) {
+	conf := oauth2.Config{ClientID: testClientId, ClientSecret: testClientSecret}
+	conf.Endpoint = google.Endpoint
+	conf.Scopes = []string{"https://www.googleapis.com/auth/fitness.activity.read",
+		"https://www.googleapis.com/auth/fitness.body.read"}
+	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Google_Account"
+
+	tok := getTokenFromAccessCode("4/jPQ5pJSfhM2nN0ZwwNkUzT6Fmr-EKmejunjswa8LJuM#", conf)
+	tokStr, err := json.Marshal(tok)
+	if err != nil {
+		t.Fail()
+		t.Log(err)
+	}
+	t.Logf("%s\n", tokStr)
 }

@@ -39,7 +39,7 @@ func TestFitbitGetData(t *testing.T) {
 	writer := bufio.NewWriter(buf)
 
 	//Go get the data from fitbit
-	date := reader.getData(client, writer, User{name: "Andy"})
+	date := reader.getData(client, writer, User{Name: "Andy"})
 
 	if date.Day() != 3 {
 		t.Logf("Wrong date returned.\nExpected:%v\nRecieved:%v", endTime, date)
@@ -111,7 +111,7 @@ func TestCreateFitbitAuthCodeURL(t *testing.T) {
 	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
 	//print a url to go get an access code
 	t.Logf("URL: %v\n", conf.AuthCodeURL("state",
-		oauth2.AccessTypeOnline,
+		oauth2.AccessTypeOffline,
 		oauth2.SetAuthURLParam("expires_in", "31536000")))
 }
 

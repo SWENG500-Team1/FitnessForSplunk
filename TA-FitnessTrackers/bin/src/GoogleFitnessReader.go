@@ -37,7 +37,7 @@ func (input *GoogleFitnessReader) getData(
 				Username  string            `json:"username"`
 				DataPoint fitness.DataPoint `json:"DataPoint"`
 			}
-			e := &event{Username: user.name, DataPoint: *point}
+			e := &event{Username: user.Name, DataPoint: *point}
 			encoder := json.NewEncoder(writer)
 			encoder.Encode(e)
 			writer.Flush()
@@ -63,7 +63,8 @@ func (input *GoogleFitnessReader) getDataSources(client *http.Client) []*fitness
 	call := dataSourceService.List("me")
 	response, err := call.Do()
 	if err != nil {
-		log.Fatalf("Error getting DataSources: %v\n", err)
+		log.Fatalf("Error getting DataSources for User: %v\t Error %v\n",
+			input.username, err)
 	}
 
 	return response.DataSource
