@@ -1,0 +1,4 @@
+<dashboard stylesheet="custom.css" script="custom.js">
+  <label>Account Link Successful!</label>
+  <label><small><b>Go, Andy N!</b></small></label>
+</dashboard>

@@ -1,0 +1,61 @@
+.main {
+    background-image: url("images/ffs-main-bg.png");
+    background-repeat: no-repeat;
+}
+
+.enrollment {
+    background-image: url("images/ffs-join-event-bg.png");
+    background-repeat: no-repeat;
+    max-width: 
+}
+
+.enrollment-success,  {
+    background-image: url("images/ffs-joined-bg.png");
+    background-repeat: no-repeat;
+}
+
+.enrollment.failure {
+    background-image: url("images/ffs-join-fail.png");
+    background-repeat: no-repeat;
+}
+
+.dashboard-body {
+    background-color: transparent;
+}
+
+.pagetext {
+    font-size: 2em;
+    color: #ddd;
+    margin-top: 200px;
+    margin-left: 80px;
+    line-height: 40px;
+}
+
+.shared-footer {
+    display: none;
+}
+
+#account-li, #option1, #option2, #option3 {
+    line-height: 36px;
+    font-size: 0.8em; 
+}
+
+.pagenote {
+    font-size: 1.8em;
+    color: rgb(221, 221, 221);
+    margin-left: 80px;
+    line-height: 32px;
+}
+
+#radio {
+    font-size: 2em;
+    color: red;
+    margin-left: 100px;
+}
+
+/*
+.dashboard-header h2 {
+    font-size: 48px;
+    font-weight: 800;
+}
+*/
