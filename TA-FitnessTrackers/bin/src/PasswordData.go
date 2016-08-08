@@ -9,10 +9,10 @@ import (
 )
 
 type User struct {
-	name   string
-	userID string
-	scope  []string
-	oauth2.Token
+	Name         string `json:"name"`
+	UserID       string `json:"id"`
+	Scope        []string
+	oauth2.Token `json:"token"`
 }
 
 // getTokens gets a list of tokens that are in the storage/passwords endpoint
@@ -35,14 +35,12 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 		return []User{}, errors.New("Unable to get user tokens from Splunk:" + err.Error())
 	}
 	defer tokenReader.Close()
-
 	var user []User
 	decoder := json.NewDecoder(tokenReader)
 	err = decoder.Decode(&user)
 	if err != nil {
 		return user, err
 	}
-
 	return user, err
 }
 

@@ -30,26 +30,26 @@ func (input *GoogleFitnessReader) getData(
 
 	dataSources := input.getDataSources(client)
 	for _, dataSource := range dataSources {
-		dataset := input.getDataSet(client, input.startTime, input.endTime, *dataSource)
+		dataset := input.getDataSet(client, *dataSource)
 
 		for _, point := range dataset.Point {
 			type event struct {
 				Username  string            `json:"username"`
 				DataPoint fitness.DataPoint `json:"DataPoint"`
 			}
-			e := &event{Username: user.name, DataPoint: *point}
+			e := &event{Username: user.Name, DataPoint: *point}
 			encoder := json.NewEncoder(writer)
 			encoder.Encode(e)
 			writer.Flush()
 
 			//find the last time recorded so that we can write that as the checkpoint
 			if time.Unix(0, point.EndTimeNanos).After(lastOutputTime) {
-				lastOutputTime = time.Unix(0, point.EndTimeNanos)
+				input.endTime = time.Unix(0, point.EndTimeNanos)
 			}
 		}
 	}
 
-	input.getSessions(client, input.startTime, lastOutputTime, writer)
+	input.getSessions(client, writer)
 	return lastOutputTime
 }
 
@@ -63,7 +63,8 @@ func (input *GoogleFitnessReader) getDataSources(client *http.Client) []*fitness
 	call := dataSourceService.List("me")
 	response, err := call.Do()
 	if err != nil {
-		log.Fatalf("Error getting DataSources: %v\n", err)
+		log.Fatalf("Error getting DataSources for User: %v\t Error %v\n",
+			input.username, err)
 	}
 
 	return response.DataSource
@@ -71,12 +72,10 @@ func (input *GoogleFitnessReader) getDataSources(client *http.Client) []*fitness
 
 func (input *GoogleFitnessReader) getDataSet(
 	client *http.Client,
-	startTime time.Time,
-	endTime time.Time,
 	dataSource fitness.DataSource) *fitness.Dataset {
 
-	dataSetId := strconv.FormatInt(startTime.UnixNano(), 10) + "-" +
-		strconv.FormatInt(endTime.UnixNano(), 10)
+	dataSetId := strconv.FormatInt(input.startTime.UnixNano(), 10) + "-" +
+		strconv.FormatInt(input.endTime.UnixNano(), 10)
 
 	service, err := fitness.New(client)
 	if err != nil {
@@ -94,7 +93,7 @@ func (input *GoogleFitnessReader) getDataSet(
 }
 
 func (input *GoogleFitnessReader) getSessions(client *http.Client,
-	startTime, endTime time.Time, writer *bufio.Writer) error {
+	writer *bufio.Writer) error {
 
 	s, err := fitness.New(client)
 	if err != nil {
@@ -102,8 +101,8 @@ func (input *GoogleFitnessReader) getSessions(client *http.Client,
 	}
 	sessionService := fitness.NewUsersSessionsService(s)
 	sessionCall := sessionService.List("me")
-	sessionCall.StartTime(startTime.Format(sessionTimeFormat))
-	sessionCall.EndTime(endTime.Format(sessionTimeFormat))
+	sessionCall.StartTime(input.startTime.Format(sessionTimeFormat))
+	sessionCall.EndTime(input.endTime.Format(sessionTimeFormat))
 
 	list, err := sessionCall.Do()
 	if err != nil {

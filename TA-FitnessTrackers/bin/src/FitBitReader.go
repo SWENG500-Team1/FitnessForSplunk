@@ -68,7 +68,7 @@ func (input *FitbitReader) getData(
 				requestString)
 		}
 
-		input.decodeAndPrint(response.Body, writer, user.name, rd)
+		input.decodeAndPrint(response.Body, writer, user.Name, rd)
 		lastDate = rd
 	}
 	return lastDate
