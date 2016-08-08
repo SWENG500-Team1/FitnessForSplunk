@@ -15,8 +15,7 @@ import xml.etree.ElementTree as ET
 import os
 
 from oauth2client.client import OAuth2WebServerFlow
-from apiclient.discovery import build
-
+from googleapiclient.discovery import build
 import jsonbyteify
 
 """
@@ -67,8 +66,8 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
             # No Authorization Code, return 400
             self.response.setStatus(400)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Bad Request: No authorization code')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No Auth Code")
             return
         
         admin_credentials = None
@@ -78,8 +77,8 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         if admin_credentials is None:
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Server Error: No Admin credentials')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No Admin Credentials")
             return
         
         REST_config = None
@@ -97,16 +96,15 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         # Look for Client Secret
         password = None
         for entry in passwords:
-            if entry.realm == REST_config['realm']:
+            if entry.realm.lower() == REST_config['realm']:
                 password = entry
                 
         if password is None:
             # No password configured for Fitbit, return 500
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Server Error: No password')
-            self.addMessage("Error", "Sorry, your account could not be added.")
-            return
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No client password provided")
         
         # Exchange authorization code for OAuth2 token
         http = httplib2.Http()
@@ -145,7 +143,7 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
             c.kvstore.create(collection_name)
         
         kvstore = c.kvstore[collection_name]
-        
+
         # Check if user already exists in KV Store
         userExists = False
         try:
@@ -193,8 +191,8 @@ class google_callback(splunk.rest.BaseRestHandler):
             # No Authorization Code, return 400
             self.response.setStatus(400)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Bad Request: No authorization code')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No Auth Code")
             return
         
         admin_credentials = None
@@ -205,8 +203,8 @@ class google_callback(splunk.rest.BaseRestHandler):
             # No admin credentials
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Server Error: No Admin credentials')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No Admin Credentials")
             return
         
         REST_config = None
@@ -225,15 +223,15 @@ class google_callback(splunk.rest.BaseRestHandler):
         # Look for Client Secret
         password = None
         for entry in passwords:
-            if entry.realm == REST_config['realm']:
+            if entry.realm.lower() == REST_config['realm']:
                 password = entry
                 
         if password is None:
             # No password configured for Google, return 500
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Server Error: No password')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No client password provided")
             return
         
         # Create flow object
@@ -318,8 +316,8 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
             # No Authorization Code, return 400
             self.response.setStatus(400)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Bad Request: No authorization code')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No Auth Code")
             return
         
         admin_credentials = None
@@ -336,8 +334,8 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
             # No Admin credentials
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Server Error: No Admin credentials')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No Admin credentials")
             return
         
         # Pull Client ID and Secret from Microsoft ModInput password store
@@ -349,15 +347,15 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         # Look for Client Secret
         password = None
         for entry in passwords:
-            if entry.realm == REST_config['realm']:
+            if entry.realm.lower() == REST_config['realm']:
                 password = entry
                 
         if password is None:
             # No password configured for Google, return 500
             self.response.setStatus(500)
             self.response.setHeader('content-type', 'text/xml')
-            #self.response.write('Server Error: No password')
-            self.addMessage("Error", "Sorry, your account could not be added.")
+            #self.addMessage("Error", "Sorry, your account could not be added.")
+            self.addMessage("Error", "No client password provided")
             return
         
         # Create flow object
