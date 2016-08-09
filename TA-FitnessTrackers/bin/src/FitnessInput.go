@@ -39,8 +39,8 @@ func (input *FitnessInput) ReturnScheme() {
 		})
 
 	scheme := &splunk.Scheme{
-		Title:                 "Google Fitness",
-		Description:           "Retrieves fitness data from Google Fitness.",
+		Title:                 "Fitness Trackers",
+		Description:           "Retrieves fitness data from Google Fitness and fitbit.",
 		UseExternalValidation: true,
 		StreamingMode:         "simple",
 		Args:                  arguments,
