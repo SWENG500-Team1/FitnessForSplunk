@@ -36,7 +36,7 @@ func TestLatestTime(t *testing.T) {
 	  Yes: Refresh the existing token.
 	  No: Get a refresh token and store new token
 	*/
-	tok := newToken(testRefreshToken,
+	tok := newTokenWithExpiry(testRefreshToken,
 		testAccessToken,
 		testExpires,
 		testTokenType,
@@ -60,7 +60,7 @@ func TestLatestTime(t *testing.T) {
 
 func TestGetSessions(t *testing.T) {
 	startTime := time.Date(2016, 07, 16, 04, 0, 0, 0, time.Local)
-	tok := newToken(testRefreshToken,
+	tok := newTokenWithExpiry(testRefreshToken,
 		testAccessToken,
 		testExpires,
 		testTokenType,

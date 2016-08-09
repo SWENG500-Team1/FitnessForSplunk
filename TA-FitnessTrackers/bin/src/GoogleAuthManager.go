@@ -18,7 +18,7 @@ func getTokenFromAccessCode(accessCode string, conf oauth2.Config) *oauth2.Token
 	return tok
 }
 
-func newToken(
+func newTokenWithExpiry(
 	refreshToken string,
 	accessToken string,
 	expiryStr string,
@@ -35,6 +35,16 @@ func newToken(
 	tok.AccessToken = accessToken
 	tok.TokenType = tokenType
 	tok.Expiry = expires
+
+	return tok
+}
+
+func newTokenNoExpiry(refreshToken, accessToken, tokenType string) *oauth2.Token {
+	tok := &oauth2.Token{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		TokenType:    tokenType,
+	}
 
 	return tok
 }
@@ -57,7 +67,7 @@ func getClient(tok *oauth2.Token,
 			"https://www.googleapis.com/auth/userinfo.profile"}
 	case strategy == strategyFitbit:
 		conf.Endpoint = fitbit.Endpoint
-		conf.Scopes = []string{"activity"}
+		conf.Scopes = []string{"activity", "profile"}
 	}
 
 	client := conf.Client(oauth2.NoContext, tok)

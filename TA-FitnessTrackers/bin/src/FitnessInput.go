@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"strings"
 	"time"
 
 	"github.com/AndyNortrup/GoSplunk"
@@ -94,7 +93,7 @@ func (input *FitnessInput) StreamEvents() {
 		client := getClient(&token.Token, clientId, clientSecret, input.getStrategy())
 
 		//Get start and end points from checkpoint
-		startTime, endTime := input.getTimes()
+		startTime, endTime := input.getTimes(input.getStrategy(), token.Name, token.UserID)
 
 		//Create a Fitness Reader to go get the data
 		fitnessReader, err := readerFactory(input.getStrategy(), startTime, endTime)
@@ -102,7 +101,10 @@ func (input *FitnessInput) StreamEvents() {
 			log.Fatal(err)
 		}
 
-		input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout), token))
+		input.writeCheckPoint(input.getStrategy(),
+			token.Name,
+			token.UserID,
+			fitnessReader.getData(client, bufio.NewWriter(os.Stdout), token))
 	}
 }
 
@@ -164,8 +166,8 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 //getTimes returns a startTime and an endTime value.  endTime is retrived from
 // a checkpoint file, if not it returns the current time.
 // The end time is always the current time.
-func (input *FitnessInput) getTimes() (time.Time, time.Time) {
-	startTime, err := input.readCheckPoint()
+func (input *FitnessInput) getTimes(service, username, userid string) (time.Time, time.Time) {
+	startTime, err := input.readCheckPoint(service, username, userid)
 	if err != nil {
 		startTime = time.Now()
 	}
@@ -173,7 +175,7 @@ func (input *FitnessInput) getTimes() (time.Time, time.Time) {
 	return startTime, endTime
 }
 
-func (input *FitnessInput) writeCheckPoint(t time.Time) {
+func (input *FitnessInput) writeCheckPoint(service, username, userid string, t time.Time) {
 
 	//Encode the time we've been given into bytes
 	g, err := t.GobEncode()
@@ -182,14 +184,14 @@ func (input *FitnessInput) writeCheckPoint(t time.Time) {
 	}
 
 	//Write the checkpoint
-	err = ioutil.WriteFile(input.getCheckPointPath(), g, 0644)
+	err = ioutil.WriteFile(input.getCheckPointPath(service, username, userid), g, 0644)
 	if err != nil {
 		log.Fatalf("Error writing checkpoint file: %v\n", err)
 	}
 }
 
-func (input *FitnessInput) readCheckPoint() (time.Time, error) {
-	b, err := ioutil.ReadFile(input.getCheckPointPath())
+func (input *FitnessInput) readCheckPoint(service, username, userid string) (time.Time, error) {
+	b, err := ioutil.ReadFile(input.getCheckPointPath(service, username, userid))
 	if err != nil {
 		log.Printf("Unable to read checkpoint file:%v\n", err)
 		return time.Now(), err
@@ -198,16 +200,16 @@ func (input *FitnessInput) readCheckPoint() (time.Time, error) {
 	err = t.GobDecode(b)
 	if err != nil {
 		log.Printf("Unable to decode checkpoint file: %v\n", err)
-		return time.Now().Add(-2 * time.Hour), err
+		return time.Now().AddDate(0, 0, -10), err
 	}
 	return t, nil
 }
 
 // Takes the checkpoint dir from and config stanza name from the input and
 // creates a checkpoint dir.  Should be unique for each input
-func (input *FitnessInput) getCheckPointPath() string {
+func (input *FitnessInput) getCheckPointPath(service, username, userid string) string {
 	//Create a hash of the stanza name as a filename
-	fileName := strings.Split(input.Stanzas[0].StanzaName, "://")
-	path := path.Join(input.CheckpointDir, fileName[1])
+	fileName := service + "_" + username + "_" + userid
+	path := path.Join(input.CheckpointDir, fileName)
 	return path
 }
