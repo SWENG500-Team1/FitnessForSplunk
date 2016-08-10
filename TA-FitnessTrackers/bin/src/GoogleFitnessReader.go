@@ -11,7 +11,8 @@ import (
 	"google.golang.org/api/fitness/v1"
 )
 
-const googleOauthTimeFormat = "2006-01-02 15:04:05.00000000 -0700 MST"
+//2016-08-10T01:01:49Z
+const googleOauthTimeFormat = "2006-01-02T15:04:05Z"
 const fitbitOauthTimeFormat = "2006-01-02T15:04:05.000000000-07:00"
 const sessionTimeFormat string = "2006-01-02T15:04:05.00Z"
 
@@ -106,6 +107,7 @@ func (input *GoogleFitnessReader) getSessions(client *http.Client,
 
 	list, err := sessionCall.Do()
 	if err != nil {
+		log.Printf("%v", client)
 		return err
 	}
 

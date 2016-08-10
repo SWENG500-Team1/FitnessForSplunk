@@ -52,11 +52,17 @@ func newTokenNoExpiry(refreshToken, accessToken, tokenType string) *oauth2.Token
 func getClient(tok *oauth2.Token,
 	clientID string,
 	clientSecret string,
-	strategy string) *http.Client {
+	strategy string) (*http.Client, *oauth2.Token) {
 
 	conf := &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
+	}
+
+	//Fitbit is silly and wants you to remove the old token, cus they can't ignore
+	// an expired token in the presece of a refresh token
+	if strategy == strategyFitbit {
+		tok.AccessToken = ""
 	}
 
 	switch {
@@ -71,5 +77,11 @@ func getClient(tok *oauth2.Token,
 	}
 
 	client := conf.Client(oauth2.NoContext, tok)
-	return client
+
+	newToken, err := conf.TokenSource(oauth2.NoContext, tok).Token()
+	if err != nil {
+		log.Printf("Failed to capture updated token. %v", tok.RefreshToken)
+	}
+
+	return client, newToken
 }

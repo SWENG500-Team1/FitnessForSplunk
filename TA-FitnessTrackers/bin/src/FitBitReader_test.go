@@ -2,11 +2,12 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/json"
-	"log"
+	"os"
 	"testing"
 	"time"
+
+	splunk "github.com/AndyNortrup/GoSplunk"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/fitbit"
@@ -23,8 +24,8 @@ require some setup to be run correctly.
 */
 func TestFitbitGetData(t *testing.T) {
 	const expectedSteps int = 14102
-	endTime := time.Date(2016, time.August, 2, 23, 59, 0, 0, time.Local)
-	startTime := time.Date(2016, time.August, 1, 0, 0, 0, 0, time.Local)
+	endTime := time.Date(2016, time.August, 2, 02, 00, 0, 0, time.Local)
+	startTime := time.Date(2016, time.August, 1, 23, 0, 0, 0, time.Local)
 
 	reader, err := NewFitbitReader(startTime, endTime)
 	if err != nil {
@@ -32,21 +33,29 @@ func TestFitbitGetData(t *testing.T) {
 		t.Logf("Failed to create Fitbit Reader: %v", err)
 	}
 
-	tok := newTokenNoExpiry(fitbitRefreshToken, fitbitAccessToken, testTokenType)
+	sessionKey, _ := splunk.NewSessionKey(accountName, password, splunk.LocalSplunkMgmntURL)
+	users, err := getUsers(splunk.LocalSplunkMgmntURL,
+		sessionKey.SessionKey,
+		strategyFitbit)
 
-	client := getClient(tok, fitbitClientId, fitbitClientSecret, strategyFitbit)
-	buf := bytes.NewBuffer([]byte{})
-	writer := bufio.NewWriter(buf)
+	users[0].Token.AccessToken = ""
+
+	client, newToken := getClient(&users[0].Token, fitbitClientId, fitbitClientSecret, strategyFitbit)
+	// buf := bytes.NewBuffer([]byte{})
+	// writer := bufio.NewWriter(buf)
+
+	users[0].Token = *newToken
+	updateKVStoreToken(users[0], strategyFitbit, sessionKey.SessionKey)
 
 	//Go get the data from fitbit
-	date := reader.getData(client, writer, User{Name: "Andy"})
+	date := reader.getData(client, bufio.NewWriter(os.Stdout), User{Name: "Andy"})
 
-	if date.Day() != 1 {
-		t.Logf("Wrong date returned.\nExpected:%v\nRecieved:%v", endTime, date)
+	if date.Day() != endTime.Day() && date.Hour() != endTime.Hour() {
 		t.Fail()
+		t.Logf("Wrong date returned")
 	}
 
-	log.Printf("%s", buf)
+	// log.Printf("%s", buf)
 	//Turn the data returned to the writer back into a data structure
 	// var us []FitbitOutput
 	// //to turn it into a JSON array we need to add commas between events and add
@@ -61,21 +70,13 @@ func TestFitbitGetData(t *testing.T) {
 	// if len(us) != 1 {
 	// 	t.Logf("Failed to retrieve data from fitbit.")
 	// 	t.Fail()
-	// } else {
-	// 	expected := expectedSteps
-	// 	if us[0].Summary.Steps != 14102 {
-	// 		t.Logf("Incorrect step count retrived for 1AUG16. Expected: %v\tRecieved:%v\n",
-	// 			expected, us[0].Summary.Steps)
-	// 		t.Fail()
-	// 	}
 	// }
-
 }
 
 func TestGetTimeZone(t *testing.T) {
 	tok := newTokenNoExpiry(fitbitRefreshToken, fitbitAccessToken, testTokenType)
 
-	client := getClient(tok, fitbitClientId, fitbitClientSecret, strategyFitbit)
+	client, _ := getClient(tok, fitbitClientId, fitbitClientSecret, strategyFitbit)
 	reader := &FitbitReader{}
 	tz := reader.getTimeZone(client)
 
@@ -126,7 +127,7 @@ func TestCreateFitbitAuthCodeURL(t *testing.T) {
 		oauth2.SetAuthURLParam("expires_in", "31536000")))
 }
 
-func TestExchangeFitBitToken(t *testing.T) {
+func disabledTestExchangeFitBitToken(t *testing.T) {
 	conf := oauth2.Config{ClientID: fitbitClientId, ClientSecret: fitbitClientSecret}
 	conf.Endpoint = fitbit.Endpoint
 	conf.Scopes = []string{"activity"}

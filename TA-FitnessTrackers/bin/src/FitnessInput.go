@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/AndyNortrup/GoSplunk"
@@ -87,10 +88,28 @@ func (input *FitnessInput) StreamEvents() {
 		log.Printf("Unable to get user tokens: %v", err)
 	}
 
+	clientId, clientSecret := input.getAppCredentials()
 	for _, token := range tokens {
+
+		//Quick and dirty fix because it's late.
+		//KV store escapes the backslash in the refresh tokens from google.
+		token.RefreshToken = strings.Replace(token.RefreshToken, "\\", "", -1)
 		//Create HTTP client
-		clientId, clientSecret := input.getAppCredentials()
-		client := getClient(&token.Token, clientId, clientSecret, input.getStrategy())
+		client, newToken := getClient(&token.Token,
+			clientId,
+			clientSecret,
+			input.getStrategy())
+
+		//Fitbit is stupid and makes you cache a new refresh token every time.
+		//Probably more secure, but much more of a pain to handle.
+		if input.getStrategy() == strategyFitbit {
+			token.RefreshToken = newToken.RefreshToken
+			err := updateKVStoreToken(token, input.getStrategy(), input.SessionKey)
+			if err != nil {
+				log.Printf("FITBIT: Failed to update KV Store with new key for user: %v Err: %v",
+					token.UserID, err)
+			}
+		}
 
 		//Get start and end points from checkpoint
 		startTime, endTime := input.getTimes(input.getStrategy(), token.Name, token.UserID)
@@ -169,7 +188,7 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 func (input *FitnessInput) getTimes(service, username, userid string) (time.Time, time.Time) {
 	startTime, err := input.readCheckPoint(service, username, userid)
 	if err != nil {
-		startTime = time.Now()
+		startTime = time.Now().AddDate(0, 0, -5)
 	}
 	endTime := time.Now()
 	return startTime, endTime

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -29,6 +30,8 @@ func (input *FitbitReader) getData(
 	//Get the user's time-zone
 	tz := input.getTimeZone(client)
 
+	result := &input.startTime
+
 	for loopStart := input.startTime; loopStart.Before(input.endTime); loopStart = loopStart.Add(24 * time.Hour) {
 		var loopEnd time.Time
 		if input.endTime.Sub(loopStart).Hours() < 24 {
@@ -50,44 +53,55 @@ func (input *FitbitReader) getData(
 		}
 
 		if response.StatusCode != http.StatusOK {
-			log.Printf("Non-200 status code from fitbit request: %v, %v",
+			b, _ := ioutil.ReadAll(response.Body)
+			log.Printf("Non-200 status code from fitbit request: %v, %v\n %s",
 				response.StatusCode,
-				requestString)
+				requestString,
+				b)
+			return input.startTime
 		}
 		defer response.Body.Close()
-		input.decodeAndPrint(response.Body, writer, user.Name, tz)
+		lastTime := input.decodeAndPrint(response.Body, writer, user.Name, tz)
+		if lastTime != nil && lastTime.After(*result) {
+			result = lastTime
+		}
 	}
 
-	// TODO: Replace this with a value from the data structure
-	return time.Now()
+	return *result
 }
 
 func (input *FitbitReader) decodeAndPrint(reader io.Reader,
 	writer *bufio.Writer,
-	username, timeZone string) {
+	username, timeZone string) *time.Time {
 
 	decoder := json.NewDecoder(reader)
 	summary := &FitbitIntrdayActivityResponse{}
 	err := decoder.Decode(summary)
 	if err != nil {
 		log.Printf("Error decoding fitbit summary: %v\n", err)
-		return
+		return nil
 	}
+	var result time.Time
 
 	for _, dataPoint := range summary.Data.Dataset {
+		pointDate := summary.Summary[0].Date + " " + dataPoint.Time + " " + timeZone
+		result, _ = time.Parse("2006-01-02 15:04:05 -0700", pointDate)
+
 		if dataPoint.Value > 0 {
 
 			output := &FitbitOutput{
 				Source:   strategyFitbit,
 				User:     username,
-				DateTime: summary.Summary[0].Date + " " + dataPoint.Time + " " + timeZone,
+				DateTime: pointDate,
 				Value:    dataPoint.Value,
+				Activity: "Steps",
 			}
 			b, _ := json.Marshal(output)
 			writer.WriteString(fmt.Sprintf("%s\n", b))
 			writer.Flush()
 		}
 	}
+	return &result
 }
 
 //getTimeZone makes a call to the fitbit profile endpoint so that we can get
@@ -128,6 +142,7 @@ type FitbitOutput struct {
 	User     string `json:"User"`
 	DateTime string `json:"Date"`
 	Value    int    `json:"Value"`
+	Activity string `json:"Activity"`
 }
 
 type FitbitActivitySummary struct {
