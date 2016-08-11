@@ -10,42 +10,46 @@
   	<link rel="stylesheet" type="text/css" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/fitness_for_splunk/custom.css" />
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   	<script type="text/javascript">      
-    	function callRest() {
-  // Parse code from query string
-  var code = getParameterByName('code');
-  alert(code);    
-  //makeRequest(code);
-}
+      function callRest() {
+        // Parse code from query string
+        var code = getParameterByName('code');
+        
+        if (code != null && code != "") {
+          //alert(code);
+          makeRequest(code);
+        } else {
+          // No authorization code, so redirect to failure page
+          window.location.replace("https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/account_add_failure");
+        }
+      }
 
-function makeRequest(code) {
-  var fitbitRestUrl = 'https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback?code=' + code;
-  var googleRestUrl = 'https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/google_callback?code=' + code;
-  var microsoftRestUrl = 'https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/microsoft_callback?code=' + code;
-//alert(fitbitRestUrl);
-  $.ajax({
-  	method: "GET",
-  	url: fitbitRestUrl,
-    success: function(response) {
-      var xmlDoc = $.parseXML(response);
-      alert(xmlDoc);
-    },
-    error: function(response) {
-       var xmlDoc = $.parseXML(response);
-      alert(xmlDoc);
-    }
-  });
+      function makeRequest(code) {
+        var fitbitRestUrl = 'https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback?code=' + code;
+        $.ajax({
+  	      method: "GET",
+  	      url: fitbitRestUrl,
+          success: function(response) {
+            // Redirect to Success page
+            //var xmlDoc = $.parseXML(response);
+            window.location.replace("https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/account_add_success");
+          },
+          error: function(response) {
+            // Redirect to Failure page
+            //var xmlDoc = $.parseXML(response);
+            window.location.replace("https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/account_add_failure");
+          }
+        });
+      }
 
-}
-
-function getParameterByName(name, url) {
-  if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-    results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
   	</script>
 </head>
 <body class="simplexml preload locale-en enrollment" onload="callRest()">
@@ -70,7 +74,7 @@ styles in <div> tags, similar to Bootstrap's grid system.
           
 <div id="pagetext" class="pagetext">
       <p>
-        
+        Linking Fitbit account.. One moment..
       </p>
   </div>     
       

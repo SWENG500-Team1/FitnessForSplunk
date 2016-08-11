@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Splunk SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      
+      .nav .nav-header {
+        text-transform: none;
+        font-size: 13px;
+      }
+      
+      .method {
+        margin-bottom: 18px;
+        clear: both;
+      }
+      
+      .method section {
+        margin-top: 10px;
+      }
+      
+      .method section h4 {
+        margin-bottom: 5px;
+      }
+      
+      .code-link {
+        margin-bottom: 5px;
+      }
+      
+      section.code {
+        position: relative;
+      }
+      
+      pre {
+        overflow-x: auto;
+        white-space: pre;
+        word-wrap: normal;
+      }
+      
+      .pre-scrollable {
+        overflow-y: auto;
+      }
+      
+      .code-toggle {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        padding-bottom: 5px;
+      }
+      
+      section.code pre {
+        margin-top: 10px;
+      }
+      
+      code .keyword, code .special {
+        font-weight: bold;
+        color: black;
+      }
+      code .string, code .regexp {
+        color: green
+      }
+      code .class { 
+        color: blue
+      }
+      code .number {
+        color: red
+      }
+      code .comment {
+        color: grey;
+        font-style: italic;
+      }
+      
+      .param-name {
+        font-family: monospace;
+      }
+      
+      .param-type {
+        font-style: italic;
+      }
+      
+      .return-type {
+        font-style: italic;
+      }
+      
+      section.syntax span {
+        font-family: monospace;
+      }
+    </style>
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+                          <li class="nav-header"><a href="splunkjs.Async.html">splunkjs.Async</a></li>
+                          <li class="nav-header"><a href="splunkjs.Context.html">splunkjs.Context</a></li>
+                          <li class="nav-header"><a href="splunkjs.Http.html">splunkjs.Http</a></li>
+                          <li class="nav-header"><a href="splunkjs.Logger.html">splunkjs.Logger</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Argument.html">splunkjs.ModularInputs.Argument</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Event.html">splunkjs.ModularInputs.Event</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.EventWriter.html">splunkjs.ModularInputs.EventWriter</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.InputDefinition.html">splunkjs.ModularInputs.InputDefinition</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Logger.html">splunkjs.ModularInputs.Logger</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.ModularInput.html">splunkjs.ModularInputs.ModularInput</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Scheme.html">splunkjs.ModularInputs.Scheme</a></li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.ValidationDefinition.html">splunkjs.ModularInputs.ValidationDefinition</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.html">splunkjs.Service</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Application.html">splunkjs.Service.Application</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Applications.html">splunkjs.Service.Applications</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Collection.html">splunkjs.Service.Collection</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.ConfigurationFile.html">splunkjs.Service.ConfigurationFile</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.ConfigurationStanza.html">splunkjs.Service.ConfigurationStanza</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Configurations.html">splunkjs.Service.Configurations</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModel.html">splunkjs.Service.DataModel</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelCalculation.html">splunkjs.Service.DataModelCalculation</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelConstraint.html">splunkjs.Service.DataModelConstraint</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelField.html">splunkjs.Service.DataModelField</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelObject.html">splunkjs.Service.DataModelObject</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModels.html">splunkjs.Service.DataModels</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Endpoint.html">splunkjs.Service.Endpoint</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Entity.html">splunkjs.Service.Entity</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlert.html">splunkjs.Service.FiredAlert</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlertGroup.html">splunkjs.Service.FiredAlertGroup</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlertGroupCollection.html">splunkjs.Service.FiredAlertGroupCollection</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Index.html">splunkjs.Service.Index</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Indexes.html">splunkjs.Service.Indexes</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Job.html">splunkjs.Service.Job</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Jobs.html">splunkjs.Service.Jobs</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Pivot.html">splunkjs.Service.Pivot</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.PivotSpecification.html">splunkjs.Service.PivotSpecification</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Resource.html">splunkjs.Service.Resource</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.SavedSearch.html">splunkjs.Service.SavedSearch</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.SavedSearches.html">splunkjs.Service.SavedSearches</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.ServerInfo.html">splunkjs.Service.ServerInfo</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.StoragePassword.html">splunkjs.Service.StoragePassword</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.StoragePasswords.html">splunkjs.Service.StoragePasswords</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.User.html">splunkjs.Service.User</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Users.html">splunkjs.Service.Users</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.View.html">splunkjs.Service.View</a></li>
+                          <li class="nav-header"><a href="splunkjs.Service.Views.html">splunkjs.Service.Views</a></li>
+                          <li class="nav-header"><a href="splunkjs.Utils.html">splunkjs.Utils</a></li>
+                          <li class="nav-header"><a href="splunkjs.private.BaseService.html">splunkjs.private.BaseService</a></li>
+            </ul>
+          </div><!--/well -->
+        </div><!--/span-->
+        <div class="span8">
+                  <div class="page-header">
+            <a href="splunkjs.Async.html"><h3 class="module-name">splunkjs.Async</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Provides utilities for asynchronous control flow and collection handling.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Context.html"><h3 class="module-name">splunkjs.Context</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>An abstraction over the Splunk HTTP-wire protocol that provides the basic functionality for communicating with a Splunk instance over HTTP, handles authentication and authorization, and formats HTTP requests (GET, POST, and DELETE) in the format that Splunk expects.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Http.html"><h3 class="module-name">splunkjs.Http</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>A base class for HTTP abstraction that provides the basic functionality for performing GET, POST, DELETE, and REQUEST operations, and provides utilities to construct uniform responses.</p>
+<p>Base classes should only override <code>makeRequest</code> and <code>parseJSON</code>.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Logger.html"><h3 class="module-name">splunkjs.Logger</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>A controllable logging module that lets you display different types of debugging information to the console.  </p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.Argument.html"><h3 class="module-name">splunkjs.ModularInputs.Argument</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Class representing an argument to a modular input kind.</p>
+<p><code>Argument</code> is meant to be used with <code>Scheme</code> to generate an XML  definition of the modular input kind that Splunk understands.</p>
+<p><code>name</code> is the only required parameter for the constructor.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.Event.html"><h3 class="module-name">splunkjs.ModularInputs.Event</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p><code>Event</code> represents an event or fragment of an event to be written by this modular input to Splunk.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.EventWriter.html"><h3 class="module-name">splunkjs.ModularInputs.EventWriter</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p><code>EventWriter</code> writes events and error messages to Splunk from a modular input.</p>
+<p>Its two important methods are <code>writeEvent</code>, which takes an <code>Event</code> object, and <code>log</code>, which takes a severity and an error message.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.InputDefinition.html"><h3 class="module-name">splunkjs.ModularInputs.InputDefinition</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p><code>InputDefinition</code> encodes the XML defining inputs that Splunk passes to a modular input script.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.Logger.html"><h3 class="module-name">splunkjs.ModularInputs.Logger</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p><code>Logger</code> logs messages to Splunk's internal logs.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.ModularInput.html"><h3 class="module-name">splunkjs.ModularInputs.ModularInput</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>A base class for implementing modular inputs.</p>
+<p>Subclasses should implement <code>getScheme</code> and <code>streamEvents</code>, and optionally <code>validateInput</code> if the modular input uses  external validation.</p>
+<p>The <code>run</code> function is used to run modular inputs; it typically should not be overridden.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.Scheme.html"><h3 class="module-name">splunkjs.ModularInputs.Scheme</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Class representing the metadata for a modular input kind.</p>
+<p>A <code>Scheme</code> specifies a title, description, several options of how Splunk  should run modular inputs of this kind, and a set of arguments that define a particular modular input's properties. The primary use of <code>Scheme</code> is to abstract away the construction of XML to feed to Splunk.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.ModularInputs.ValidationDefinition.html"><h3 class="module-name">splunkjs.ModularInputs.ValidationDefinition</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>This class represents the XML sent by Splunk for external validation of a new modular input.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.html"><h3 class="module-name">splunkjs.Service</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Provides a root access point to Splunk functionality with typed access to  Splunk resources such as searches, indexes, inputs, and more. Provides methods to authenticate and create specialized instances of the service.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Application.html"><h3 class="module-name">splunkjs.Service.Application</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific Splunk app that you can view, modify, and remove.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Applications.html"><h3 class="module-name">splunkjs.Service.Applications</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of Splunk apps. You can create and list applications  using this collection container, or get a specific app.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Collection.html"><h3 class="module-name">splunkjs.Service.Collection</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Defines a base class for a Splunk collection, which is a well-defined construct that provides basic methods for working with collections of entities, such as  creating and listing entities.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.ConfigurationFile.html"><h3 class="module-name">splunkjs.Service.ConfigurationFile</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of stanzas for a specific property file. You can create and list stanzas using this collection container, or get a specific  stanza.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.ConfigurationStanza.html"><h3 class="module-name">splunkjs.Service.ConfigurationStanza</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific stanza, which you can update and remove, from a  configuration file.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Configurations.html"><h3 class="module-name">splunkjs.Service.Configurations</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of configuration files. You can create and list  configuration files using this collection container, or get a specific file.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.DataModel.html"><h3 class="module-name">splunkjs.Service.DataModel</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a data model on the server. Data models contain <code>DataModelObject</code> instances, which specify structured views on Splunk data.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.DataModelCalculation.html"><h3 class="module-name">splunkjs.Service.DataModelCalculation</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Used for specifying a calculation on a <code>DataModelObject</code>.</p>
+<h2>Has these properties</h2>
+<ul>
+<li><code>id</code> (<em>string</em>): The ID for this data model calculation.</li>
+<li><code>type</code> (<em>string</em>): The type of this data model calculation.</li>
+<li><code>comment</code> (<em>string</em>|<em>null</em>): The comment for this data model calculation, or <code>null</code>.</li>
+<li><code>editable</code> (<em>boolean</em>): True if this calculation can be edited, false otherwise.</li>
+<li><code>lineage</code> (<em>array</em>): The lineage of the data model object on which this calculation
+     is defined in an array of strings.</li>
+<li><code>owner</code> (<em>string</em>): The data model that this calculation belongs to.</li>
+<li><code>outputFields</code> (<em>array</em>): The fields output by this calculation.</li>
+</ul>
+<h2>The Rex and Eval types have an additional property</h2>
+<ul>
+<li><code>expression</code> (<em>string</em>): The expression to use for this calculation.</li>
+</ul>
+<h2>The Rex and GeoIP types have an additional property</h2>
+<ul>
+<li><code>inputField</code> (<em>string</em>): The field to use for calculation.</li>
+</ul>
+<h2>The Lookup type has additional properties</h2>
+<ul>
+<li><code>lookupName</code> (<em>string</em>): The name of the lookup to perform.</li>
+<li><code>inputFieldMappings</code> (<em>object</em>): The mappings from fields in the events to fields in the lookup.</li>
+</ul>
+<h2>Valid types of calculations are</h2>
+<ul>
+<li><code>Lookup</code></li>
+<li><code>Eval</code></li>
+<li><code>GeoIP</code></li>
+<li><code>Rex</code></li>
+</ul>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.DataModelConstraint.html"><h3 class="module-name">splunkjs.Service.DataModelConstraint</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a constraint on a <code>DataModelObject</code> or a <code>DataModelField</code>.</p>
+<h2>Has these properties</h2>
+<ul>
+<li><code>query</code> (<em>string</em>): The search query defining this data model constraint.</li>
+<li><code>lineage</code> (<em>array</em>): The lineage of this data model constraint.</li>
+<li><code>owner</code> (<em>string</em>): The name of the data model object that owns
+     this data model constraint.</li>
+</ul>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.DataModelField.html"><h3 class="module-name">splunkjs.Service.DataModelField</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a field of a data model object. This is a helper class for <code>DataModelCalculation</code> and <code>DataModelObject</code>.</p>
+<h2>Has these properties</h2>
+<ul>
+<li><code>fieldName</code> (<em>string</em>): The name of this field.</li>
+<li><code>displayName</code> (<em>string</em>):  A human readable name for this field.</li>
+<li><code>type</code> (<em>string</em>): The type of this field.</li>
+<li><code>multivalued</code> (<em>boolean</em>): Whether this field is multivalued.</li>
+<li><code>required</code> (<em>boolean</em>): Whether this field is required.</li>
+<li><code>hidden</code> (<em>boolean</em>): Whether this field should be displayed in a data model UI.</li>
+<li><code>editable</code> (<em>boolean</em>): Whether this field can be edited.</li>
+<li><code>comment</code> (<em>string</em>): A comment for this field, or <code>null</code> if there isn't one.</li>
+<li><code>fieldSearch</code> (<em>string</em>): A search query fragment for this field.</li>
+<li><code>lineage</code> (<em>array</em>): An array of strings of the lineage of the data model
+     on which this field is defined.</li>
+<li><code>owner</code> (<em>string</em>): The name of the data model object on which this field is defined.</li>
+</ul>
+<h2>Possible types for a data model field</h2>
+<ul>
+<li><code>string</code></li>
+<li><code>boolean</code></li>
+<li><code>number</code></li>
+<li><code>timestamp</code></li>
+<li><code>objectCount</code></li>
+<li><code>childCount</code></li>
+<li><code>ipv4</code></li>
+</ul>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.DataModelObject.html"><h3 class="module-name">splunkjs.Service.DataModelObject</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents one of the structured views in a <code>DataModel</code>.</p>
+<h2>Has these properties</h2>
+<ul>
+<li><code>dataModel</code> (<em>splunkjs.Service.DataModel</em>): The <code>DataModel</code> to which this <code>DataModelObject</code> belongs.</li>
+<li><code>name</code> (<em>string</em>): The name of this <code>DataModelObject</code>.</li>
+<li><code>displayName</code> (<em>string</em>): The human readable name of this <code>DataModelObject</code>.</li>
+<li><code>parentName</code> (<em>string</em>): The name of the parent <code>DataModelObject</code> to this one.</li>
+<li><code>lineage</code> (<em>array</em>): An array of strings of the lineage of the data model
+     on which this field is defined.</li>
+<li><code>fields</code> (<em>object</em>): A dictionary of <code>DataModelField</code> objects, accessible by name.</li>
+<li><code>constraints</code> (<em>array</em>): An array of <code>DataModelConstraint</code> objects.</li>
+<li><code>calculations</code> (<em>object</em>): A dictionary of <code>DataModelCalculation</code> objects, accessible by ID.</li>
+</ul>
+<h2>BaseSearch has an additional property</h2>
+<ul>
+<li><code>baseSearch</code> (<em>string</em>): The search query wrapped by this data model object.</li>
+</ul>
+<h2>BaseTransaction has additional properties</h2>
+<ul>
+<li><code>groupByFields</code> (<em>string</em>): The fields that will be used to group events into transactions.</li>
+<li><code>objectsToGroup</code> (<em>array</em>): Names of the data model objects that should be unioned
+   and split into transactions.</li>
+<li><code>maxSpan</code> (<em>string</em>): The maximum time span of a transaction.</li>
+<li><code>maxPause</code> (<em>string</em>): The maximum pause time of a transaction.</li>
+</ul>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.DataModels.html"><h3 class="module-name">splunkjs.Service.DataModels</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of data models. You can create and list data models using this collection container, or get a specific data model.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Endpoint.html"><h3 class="module-name">splunkjs.Service.Endpoint</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Provides a base definition for a Splunk endpoint, which is a combination of a specific service and path. Provides convenience methods for GET, POST, and DELETE operations used in splunkjs, automatically preparing the path correctly and allowing for relative calls.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Entity.html"><h3 class="module-name">splunkjs.Service.Entity</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Defines a base class for a Splunk entity, which is a well-defined construct with certain operations (such as "properties", "update", and "delete").  Entities include search jobs, indexes, inputs, apps, and more. </p>
+<p>Provides basic methods for working with Splunk entities, such as fetching and updating them.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.FiredAlert.html"><h3 class="module-name">splunkjs.Service.FiredAlert</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a fired alert.  You can retrieve several of the fired alert's properties by the corresponding function name.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.FiredAlertGroup.html"><h3 class="module-name">splunkjs.Service.FiredAlertGroup</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific alert group, which you can then view and remove.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.FiredAlertGroupCollection.html"><h3 class="module-name">splunkjs.Service.FiredAlertGroupCollection</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of fired alerts for a saved search. You can create and list saved searches using this collection container, or get a specific alert group. </p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Index.html"><h3 class="module-name">splunkjs.Service.Index</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents an index, which you can update and submit events to.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Indexes.html"><h3 class="module-name">splunkjs.Service.Indexes</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of indexes. You can create and list indexes using  this collection container, or get a specific index.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Job.html"><h3 class="module-name">splunkjs.Service.Job</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific search job. You can perform different operations on this job, such as reading its status, canceling it, and getting results.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Jobs.html"><h3 class="module-name">splunkjs.Service.Jobs</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of search jobs. You can create and list search  jobs using this collection container, or get a specific search job.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Pivot.html"><h3 class="module-name">splunkjs.Service.Pivot</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Pivot represents data about a pivot report returned by the Splunk Server.</p>
+<h2>Has these properties</h2>
+<ul>
+<li><code>service</code> (<em>splunkjs.Service</em>): A <code>Service</code> instance.</li>
+<li><code>search</code> (<em>string</em>): The search string for running the pivot report.</li>
+<li><code>drilldownSearch</code> (<em>string</em>): The search for running this pivot report using drilldown.</li>
+<li><code>openInSearch</code> (<em>string</em>): Equivalent to search parameter, but listed more simply.</li>
+<li><code>prettyQuery</code> (<em>string</em>): Equivalent to <code>openInSearch</code>.</li>
+<li><code>pivotSearch</code> (<em>string</em>): A pivot search command based on the named data model.</li>
+<li><code>tstatsSearch</code> (<em>string</em>): The search for running this pivot report using tstats.</li>
+</ul>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.PivotSpecification.html"><h3 class="module-name">splunkjs.Service.PivotSpecification</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>PivotSpecification represents a pivot to be done on a particular data model object. The user creates a PivotSpecification on some data model object, adds filters, row splits, column splits, and cell values, then calls the pivot method to query splunkd and get a set of SPL queries corresponding to this specification.</p>
+<p>Call the <code>pivot</code> method to query Splunk for SPL queries corresponding to this pivot.</p>
+<p>This class supports a fluent API, each function except <code>init</code>, <code>toJsonObject</code> &amp; <code>pivot</code> return the modified <code>splunkjs.Service.PivotSpecification</code> instance.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Resource.html"><h3 class="module-name">splunkjs.Service.Resource</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Provides a base definition for a Splunk resource (for example, an entity  such as an index or search job, or a collection of entities). Provides  basic methods for handling Splunk resources, such as validation and  accessing properties. </p>
+<p>This class should not be used directly because most methods are meant to be overridden.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.SavedSearch.html"><h3 class="module-name">splunkjs.Service.SavedSearch</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific saved search, which you can then view, modify, and remove.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.SavedSearches.html"><h3 class="module-name">splunkjs.Service.SavedSearches</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of saved searches. You can create and list saved  searches using this collection container, or get a specific saved search.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.ServerInfo.html"><h3 class="module-name">splunkjs.Service.ServerInfo</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Provides access to configuration information about the server.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.StoragePassword.html"><h3 class="module-name">splunkjs.Service.StoragePassword</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific storage password, which you can then view, modify, and remove.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.StoragePasswords.html"><h3 class="module-name">splunkjs.Service.StoragePasswords</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of storage passwords. You can create and list storage  passwords using this collection container, or get a specific storage password.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.User.html"><h3 class="module-name">splunkjs.Service.User</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific Splunk user, which you can view, modify, and remove.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Users.html"><h3 class="module-name">splunkjs.Service.Users</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of users. You can create and list users using  this collection container, or get a specific user.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.View.html"><h3 class="module-name">splunkjs.Service.View</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a specific Splunk view, which you can view, modify, and remove.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Service.Views.html"><h3 class="module-name">splunkjs.Service.Views</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Represents a collection of views. You can create and list views using  this collection container, or get a specific view.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.Utils.html"><h3 class="module-name">splunkjs.Utils</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Provides various utility functions, which are mostly modeled after  <a href="http://documentcloud.github.com/underscore/">Underscore.js</a>.</p>
+            </div>
+          </div>
+                  <div class="page-header">
+            <a href="splunkjs.private.BaseService.html"><h3 class="module-name">splunkjs.private.BaseService</h3></a>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <p>Contains functionality common to Splunk Enterprise and Splunk Storm.</p>
+<p>This class is an implementation detail and is therefore SDK-private.</p>
+            </div>
+          </div>
+        </div><!--/span-->
+      </div><!--/row-->
+      <hr>
+      <footer>
+        <p>&copy; Splunk 2012</p>
+      </footer>
+    </div><!--/.fluid-container-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+  </body>
+</html>

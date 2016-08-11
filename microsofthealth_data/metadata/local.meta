@@ -1,0 +1,12 @@
+[app/install/install_source_checksum]
+version = 6.4.0
+modtime = 1470153047.665114000
+
+[passwords/credential%3Amicrosoft%3Ae52600ac-ada7-4d65-93b1-b5013037d4e1%3A]
+owner = ahuynh
+version = 6.4.0
+modtime = 1470793424.967620000
+
+[app/install/is_configured]
+version = 6.4.0
+modtime = 1470793424.971146000

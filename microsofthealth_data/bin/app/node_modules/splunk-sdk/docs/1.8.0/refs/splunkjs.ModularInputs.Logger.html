@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Splunk SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      
+      .nav .nav-header {
+        text-transform: none;
+        font-size: 13px;
+      }
+      
+      .method {
+        margin-bottom: 18px;
+        clear: both;
+      }
+      
+      .method section {
+        margin-top: 10px;
+      }
+      
+      .method section h4 {
+        margin-bottom: 5px;
+      }
+      
+      .code-link {
+        margin-bottom: 5px;
+      }
+      
+      section.code {
+        position: relative;
+      }
+      
+      pre {
+        overflow-x: auto;
+        white-space: pre;
+        word-wrap: normal;
+      }
+      
+      .pre-scrollable {
+        overflow-y: auto;
+      }
+      
+      .code-toggle {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        padding-bottom: 5px;
+      }
+      
+      section.code pre {
+        margin-top: 10px;
+      }
+      
+      code .keyword, code .special {
+        font-weight: bold;
+        color: black;
+      }
+      code .string, code .regexp {
+        color: green
+      }
+      code .class { 
+        color: blue
+      }
+      code .number {
+        color: red
+      }
+      code .comment {
+        color: grey;
+        font-style: italic;
+      }
+      
+      .param-name {
+        font-family: monospace;
+      }
+      
+      .param-type {
+        font-style: italic;
+      }
+      
+      .return-type {
+        font-style: italic;
+      }
+      
+      .returns p {
+        display: inline-block;
+      }
+      
+      section.syntax span {
+        font-family: monospace;
+      }
+      
+      .signature {
+        font-family: monospace;
+      }
+    </style>
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+                          <li class="nav-header"><a href="splunkjs.Async.html">splunkjs.Async</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Context.html">splunkjs.Context</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Http.html">splunkjs.Http</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Logger.html">splunkjs.Logger</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Argument.html">splunkjs.ModularInputs.Argument</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Event.html">splunkjs.ModularInputs.Event</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.EventWriter.html">splunkjs.ModularInputs.EventWriter</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.InputDefinition.html">splunkjs.ModularInputs.InputDefinition</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Logger.html">splunkjs.ModularInputs.Logger</a></li>
+              <li>
+                <ul class="nav nav-list">
+                                  <li class="nav-header"><a href="#splunkjs.ModularInputs.Logger-globals">Globals</a></li>
+                                  <li><a href="#splunkjs.ModularInputs.Logger+debug">debug</a></li>
+                                  <li><a href="#splunkjs.ModularInputs.Logger+error">error</a></li>
+                                  <li><a href="#splunkjs.ModularInputs.Logger+fatal">fatal</a></li>
+                                  <li><a href="#splunkjs.ModularInputs.Logger+info">info</a></li>
+                                  <li><a href="#splunkjs.ModularInputs.Logger+warn">warn</a></li>
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.ModularInput.html">splunkjs.ModularInputs.ModularInput</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Scheme.html">splunkjs.ModularInputs.Scheme</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.ValidationDefinition.html">splunkjs.ModularInputs.ValidationDefinition</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.html">splunkjs.Service</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Application.html">splunkjs.Service.Application</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Applications.html">splunkjs.Service.Applications</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Collection.html">splunkjs.Service.Collection</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.ConfigurationFile.html">splunkjs.Service.ConfigurationFile</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.ConfigurationStanza.html">splunkjs.Service.ConfigurationStanza</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Configurations.html">splunkjs.Service.Configurations</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModel.html">splunkjs.Service.DataModel</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelCalculation.html">splunkjs.Service.DataModelCalculation</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelConstraint.html">splunkjs.Service.DataModelConstraint</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelField.html">splunkjs.Service.DataModelField</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelObject.html">splunkjs.Service.DataModelObject</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModels.html">splunkjs.Service.DataModels</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Endpoint.html">splunkjs.Service.Endpoint</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Entity.html">splunkjs.Service.Entity</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlert.html">splunkjs.Service.FiredAlert</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlertGroup.html">splunkjs.Service.FiredAlertGroup</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlertGroupCollection.html">splunkjs.Service.FiredAlertGroupCollection</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Index.html">splunkjs.Service.Index</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Indexes.html">splunkjs.Service.Indexes</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Job.html">splunkjs.Service.Job</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Jobs.html">splunkjs.Service.Jobs</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Pivot.html">splunkjs.Service.Pivot</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.PivotSpecification.html">splunkjs.Service.PivotSpecification</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Resource.html">splunkjs.Service.Resource</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.SavedSearch.html">splunkjs.Service.SavedSearch</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.SavedSearches.html">splunkjs.Service.SavedSearches</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.ServerInfo.html">splunkjs.Service.ServerInfo</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.StoragePassword.html">splunkjs.Service.StoragePassword</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.StoragePasswords.html">splunkjs.Service.StoragePasswords</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.User.html">splunkjs.Service.User</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Users.html">splunkjs.Service.Users</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.View.html">splunkjs.Service.View</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Views.html">splunkjs.Service.Views</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Utils.html">splunkjs.Utils</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.private.BaseService.html">splunkjs.private.BaseService</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+            </ul>
+          </div><!--/well -->
+        </div><!--/span-->
+        <div class="span8">
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                  <div class="page-header" id="splunkjs.ModularInputs.Logger-globals">
+            <h2>splunkjs.ModularInputs.Logger Module Globals</h2>
+          </div>
+                  <section class="method well" id="splunkjs.ModularInputs.Logger+debug">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">debug</h3>
+              </div>
+              <h5 class="signature">splunkjs.ModularInputs.Logger.debug</h5>
+            </header>
+          
+            <section class="content">
+              <p>Logs messages about the state of this modular input to Splunk. These messages will show up in Splunk's internal logs.</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>root.debug = function (name, message, stream)</span>
+            </section>
+            
+            <section class="params">
+                          <h4>Parameters</h4>
+              
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                  <tr>
+                    <td class="param-name">name</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The name of this modular input.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">message</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The message to log.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">stream</td>
+                    <td class="param-type">Object</td>
+                    <td class="param-description"><p>(Optional) A stream to write log messages to, defaults to process.stderr.</p></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="returns">
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/modularinputs/logger.js#L56">lib/modularinputs/logger.js:56</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>root.debug = function (name, message, stream) {
+    try {
+        root._log(root.DEBUG, name, message, stream);
+    }
+    catch (e) {
+        throw e;
+    }
+};</code></pre>
+            </section>
+          </section>
+                  <section class="method well" id="splunkjs.ModularInputs.Logger+error">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">error</h3>
+              </div>
+              <h5 class="signature">splunkjs.ModularInputs.Logger.error</h5>
+            </header>
+          
+            <section class="content">
+              <p>Logs messages about the state of this modular input to Splunk. These messages will show up in Splunk's internal logs.</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>root.error = function (name, message, stream)</span>
+            </section>
+            
+            <section class="params">
+                          <h4>Parameters</h4>
+              
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                  <tr>
+                    <td class="param-name">name</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The name of this modular input.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">message</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The message to log.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">stream</td>
+                    <td class="param-type">Object</td>
+                    <td class="param-description"><p>(Optional) A stream to write log messages to, defaults to process.stderr.</p></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="returns">
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/modularinputs/logger.js#L110">lib/modularinputs/logger.js:110</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>root.error = function (name, message, stream) {
+    try {
+        root._log(root.ERROR, name, message, stream);
+    }
+    catch (e) {
+        throw e;
+    }
+};</code></pre>
+            </section>
+          </section>
+                  <section class="method well" id="splunkjs.ModularInputs.Logger+fatal">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">fatal</h3>
+              </div>
+              <h5 class="signature">splunkjs.ModularInputs.Logger.fatal</h5>
+            </header>
+          
+            <section class="content">
+              <p>Logs messages about the state of this modular input to Splunk. These messages will show up in Splunk's internal logs.</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>root.fatal = function (name, message, stream)</span>
+            </section>
+            
+            <section class="params">
+                          <h4>Parameters</h4>
+              
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                  <tr>
+                    <td class="param-name">name</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The name of this modular input.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">message</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The message to log.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">stream</td>
+                    <td class="param-type">Object</td>
+                    <td class="param-description"><p>(Optional) A stream to write log messages to, defaults to process.stderr.</p></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="returns">
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/modularinputs/logger.js#L128">lib/modularinputs/logger.js:128</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>root.fatal = function (name, message, stream) {
+        try {
+            root._log(root.FATAL, name, message, stream);
+        }
+        catch (e) {
+            throw e;
+        }
+    };
+    module.exports = root;
+}());</code></pre>
+            </section>
+          </section>
+                  <section class="method well" id="splunkjs.ModularInputs.Logger+info">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">info</h3>
+              </div>
+              <h5 class="signature">splunkjs.ModularInputs.Logger.info</h5>
+            </header>
+          
+            <section class="content">
+              <p>Logs messages about the state of this modular input to Splunk. These messages will show up in Splunk's internal logs.</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>root.info = function (name, message, stream)</span>
+            </section>
+            
+            <section class="params">
+                          <h4>Parameters</h4>
+              
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                  <tr>
+                    <td class="param-name">name</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The name of this modular input.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">message</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The message to log.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">stream</td>
+                    <td class="param-type">Object</td>
+                    <td class="param-description"><p>(Optional) A stream to write log messages to, defaults to process.stderr.</p></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="returns">
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/modularinputs/logger.js#L74">lib/modularinputs/logger.js:74</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>root.info = function (name, message, stream) {
+    try {
+        root._log(root.INFO, name, message, stream);
+    }
+    catch (e) {
+        throw e;
+    }
+};</code></pre>
+            </section>
+          </section>
+                  <section class="method well" id="splunkjs.ModularInputs.Logger+warn">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">warn</h3>
+              </div>
+              <h5 class="signature">splunkjs.ModularInputs.Logger.warn</h5>
+            </header>
+          
+            <section class="content">
+              <p>Logs messages about the state of this modular input to Splunk. These messages will show up in Splunk's internal logs.</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>root.warn = function (name, message, stream)</span>
+            </section>
+            
+            <section class="params">
+                          <h4>Parameters</h4>
+              
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                  <tr>
+                    <td class="param-name">name</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The name of this modular input.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">message</td>
+                    <td class="param-type">String</td>
+                    <td class="param-description"><p>The message to log.</p></td>
+                  </tr>
+                                  <tr>
+                    <td class="param-name">stream</td>
+                    <td class="param-type">Object</td>
+                    <td class="param-description"><p>(Optional) A stream to write log messages to, defaults to process.stderr.</p></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="returns">
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/modularinputs/logger.js#L92">lib/modularinputs/logger.js:92</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>root.warn = function (name, message, stream) {
+    try {
+        root._log(root.WARN, name, message, stream);
+    }
+    catch (e) {
+        throw e;
+    }
+};</code></pre>
+            </section>
+          </section>
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+        </div><!--/span-->
+      </div><!--/row-->
+      <hr>
+      <footer>
+        <p>&copy; Splunk 2012</p>
+      </footer>
+    </div><!--/.fluid-container-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+    
+    <script>
+      $(function() {
+        $("a.code-toggle").click(function(e) {
+          var code = $(this).parent().children("pre");
+          var isHidden = code.hasClass("hidden");
+          
+          if (isHidden) {
+            $(code).removeClass("hidden");  
+            $(this).children("i").addClass("icon-minus");
+            $(this).children("i").removeClass("icon-plus");
+          }
+          else {
+            $(code).addClass("hidden");  
+            $(this).children("i").addClass("icon-plus");
+            $(this).children("i").removeClass("icon-minus");
+          }
+          
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+    </script>
+    <script>
+      (function (hijs) {
+      //
+      // hijs - JavaScript Syntax Highlighter
+      //
+      // Copyright (c) 2010 Alexis Sellier
+      //
+      // All elements which match this will be syntax highlighted.
+      var selector = hijs || "code";
+      var keywords = ('var function if else for while break switch case do new null in with void '
+                     +'continue delete return this true false throw catch typeof with instanceof').split(' '),
+          special  = ('eval window document undefined NaN Infinity parseInt parseFloat '
+                     +'encodeURI decodeURI encodeURIComponent decodeURIComponent').split(' ');
+      // Syntax definition
+      // The key becomes the class name of the <span>
+      // around the matched block of code.
+      var syntax = [
+        ['comment', /(\/\*(?:[^*\n]|\*+[^\/*])*\*+\/)/g],
+        ['comment', /(\/\/[^\n]*)/g],
+        ['string' , /("(?:(?!")[^\\\n]|\\.)*"|'(?:(?!')[^\\\n]|\\.)*')/g],
+        ['regexp' , /(\/.+\/[mgi]*)(?!\s*\w)/g],
+        ['class'  , /\b([A-Z][a-zA-Z]+)\b/g],
+        ['number' , /\b([0-9]+(?:\.[0-9]+)?)\b/g],
+        ['keyword', new(RegExp)('\\b(' + keywords.join('|') + ')\\b', 'g')],
+        ['special', new(RegExp)('\\b(' + special.join('|') + ')\\b', 'g')]
+      ];
+      var nodes, table = {};
+      if (/^[a-z]+$/.test(selector)) {
+          nodes = document.getElementsByTagName(selector);
+      } else if (/^\.[\w-]+$/.test(selector)) {
+          nodes = document.getElementsByClassName(selector.slice(1));
+      } else if (document.querySelectorAll) {
+          nodes = document.querySelectorAll(selector);
+      } else {
+          nodes = [];
+      }
+      for (var i = 0, children; i < nodes.length; i++) {
+          children = nodes[i].childNodes;
+          for (var j = 0, str; j < children.length; j++) {
+              code = children[j];
+              if (code.length >= 0) { // It's a text node
+                  // Don't highlight command-line snippets
+                  if (! /^\$/.test(code.nodeValue.trim())) {
+                      syntax.forEach(function (s) {
+                          var k = s[0], v = s[1];
+                          code.nodeValue = code.nodeValue.replace(v, function (_, m) {
+                              return '\u00ab' + encode(k) + '\u00b7'
+                                              + encode(m) +
+                                     '\u00b7' + encode(k) + '\u00bb';
+                          });
+                      });
+                  }
+              }
+          }
+      }
+      for (var i = 0; i < nodes.length; i++) {
+          nodes[i].innerHTML =
+              nodes[i].innerHTML.replace(/\u00ab(.+?)\u00b7(.+?)\u00b7\1\u00bb/g, function (_, name, value) {
+                  value = value.replace(/\u00ab[^\u00b7]+\u00b7/g, '').replace(/\u00b7[^\u00bb]+\u00bb/g, '');
+                  return '<span class="' + decode(name) + '">' + escape(decode(value)) + '</span>';
+          });
+      }
+      function escape(str) {
+          return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      // Encode ASCII characters to, and from Braille
+      function encode (str, encoded) {
+          table[encoded = str.split('').map(function (s) {
+              if (s.charCodeAt(0) > 127) { return s }
+              return String.fromCharCode(s.charCodeAt(0) + 0x2800);
+          }).join('')] = str;
+          return encoded;
+      }
+      function decode (str) {
+          if (str in table) {
+              return table[str];
+          } else {
+              return str.trim().split('').map(function (s) {
+                  if (s.charCodeAt(0) - 0x2800 > 127) { return s }
+                  return String.fromCharCode(s.charCodeAt(0) - 0x2800);
+              }).join('');
+          }
+      }
+      })(window.hijs);
+    </script>
+  </body>
+</html>

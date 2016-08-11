@@ -2,11 +2,12 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/json"
-	"strings"
+	"os"
 	"testing"
 	"time"
+
+	splunk "github.com/AndyNortrup/GoSplunk"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/fitbit"
@@ -23,52 +24,63 @@ require some setup to be run correctly.
 */
 func TestFitbitGetData(t *testing.T) {
 	const expectedSteps int = 14102
-	endTime := time.Date(2016, time.August, 3, 0, 0, 0, 0, time.Local)
-	startTime := time.Date(2016, time.August, 1, 0, 0, 0, 0, time.Local)
+	endTime := time.Date(2016, time.August, 2, 02, 00, 0, 0, time.Local)
+	startTime := time.Date(2016, time.August, 1, 23, 0, 0, 0, time.Local)
 
 	reader, err := NewFitbitReader(startTime, endTime)
+	if err != nil {
+		t.Fail()
+		t.Logf("Failed to create Fitbit Reader: %v", err)
+	}
 
-	tok := newToken(fitbitRefreshToken,
-		fitbitAccessToken,
-		fitbitExpires,
-		testTokenType,
-		getTokenTimeFormat(strategyFitbit))
+	sessionKey, _ := splunk.NewSessionKey(accountName, password, splunk.LocalSplunkMgmntURL)
+	users, err := getUsers(splunk.LocalSplunkMgmntURL,
+		sessionKey.SessionKey,
+		strategyFitbit)
 
-	client := getClient(tok, fitbitClientId, fitbitClientSecret, strategyFitbit)
-	buf := bytes.NewBuffer([]byte{})
-	writer := bufio.NewWriter(buf)
+	users[0].Token.AccessToken = ""
+
+	client, newToken := getClient(&users[0].Token, fitbitClientId, fitbitClientSecret, strategyFitbit)
+	// buf := bytes.NewBuffer([]byte{})
+	// writer := bufio.NewWriter(buf)
+
+	users[0].Token = *newToken
+	updateKVStoreToken(users[0], strategyFitbit, sessionKey.SessionKey)
 
 	//Go get the data from fitbit
-	date := reader.getData(client, writer, User{Name: "Andy"})
+	date := reader.getData(client, bufio.NewWriter(os.Stdout), User{Name: "Andy"})
 
-	if date.Day() != 3 {
-		t.Logf("Wrong date returned.\nExpected:%v\nRecieved:%v", endTime, date)
+	if date.Day() != endTime.Day() && date.Hour() != endTime.Hour() {
 		t.Fail()
+		t.Logf("Wrong date returned")
 	}
 
+	// log.Printf("%s", buf)
 	//Turn the data returned to the writer back into a data structure
-	var us []FitbitOutput
-	//to turn it into a JSON array we need to add commas between events and add
-	// brackets around the whole result
-	b := []byte("[" + strings.Replace(string(buf.Bytes()), "}}", "}},", 2) + "]")
-	err = json.Unmarshal(b, &us)
-	if err != nil {
-		t.Logf("Input: %s", b)
-		t.Fatal(err)
-	}
+	// var us []FitbitOutput
+	// //to turn it into a JSON array we need to add commas between events and add
+	// // brackets around the whole result
+	// b := []byte("[" + strings.Replace(string(buf.Bytes()), "}}", "}},", 2) + "]")
+	// err = json.Unmarshal(b, &us)
+	// if err != nil {
+	// 	t.Logf("Input: %s", b)
+	// 	t.Fatal(err)
+	// }
+	//
+	// if len(us) != 1 {
+	// 	t.Logf("Failed to retrieve data from fitbit.")
+	// 	t.Fail()
+	// }
+}
 
-	if len(us) != 3 {
-		t.Logf("Failed to retrieve data from fitbit.")
-		t.Fail()
-	} else {
-		expected := expectedSteps
-		if us[0].Summary.Steps != 14102 {
-			t.Logf("Incorrect step count retrived for 1AUG16. Expected: %v\tRecieved:%v\n",
-				expected, us[0].Summary.Steps)
-			t.Fail()
-		}
-	}
+func TestGetTimeZone(t *testing.T) {
+	tok := newTokenNoExpiry(fitbitRefreshToken, fitbitAccessToken, testTokenType)
 
+	client, _ := getClient(tok, fitbitClientId, fitbitClientSecret, strategyFitbit)
+	reader := &FitbitReader{}
+	tz := reader.getTimeZone(client)
+
+	t.Log(tz)
 }
 
 func TestFitbitDates(t *testing.T) {
@@ -108,7 +120,7 @@ func TestCreateFitbitAuthCodeURL(t *testing.T) {
 	conf := oauth2.Config{ClientID: fitbitClientId, ClientSecret: fitbitClientSecret}
 	conf.Endpoint = fitbit.Endpoint
 	conf.Scopes = []string{"activity"}
-	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
+	conf.RedirectURL = "https://localhost:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
 	//print a url to go get an access code
 	t.Logf("URL: %v\n", conf.AuthCodeURL("state",
 		oauth2.AccessTypeOffline,
@@ -119,9 +131,9 @@ func disabledTestExchangeFitBitToken(t *testing.T) {
 	conf := oauth2.Config{ClientID: fitbitClientId, ClientSecret: fitbitClientSecret}
 	conf.Endpoint = fitbit.Endpoint
 	conf.Scopes = []string{"activity"}
-	conf.RedirectURL = "https://www.fitnessforsplunk.ninja:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
+	conf.RedirectURL = "https://localhost:8000/en-US/splunkd/services/fitness_for_splunk/fitbit_callback"
 
-	tok := getTokenFromAccessCode("68f5a1c28dff96afee402ab42e6c3ff0400b82dd", conf)
+	tok := getTokenFromAccessCode("9b38bc72beb73167ee2ccecf9af7f5cdd6869bf9", conf)
 	tokStr, _ := json.Marshal(tok)
 	t.Logf("%s\n", tokStr)
 }

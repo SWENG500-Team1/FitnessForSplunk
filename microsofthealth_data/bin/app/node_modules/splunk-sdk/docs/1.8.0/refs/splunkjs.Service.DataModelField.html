@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Splunk SDK for JavaScript</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      
+      .nav .nav-header {
+        text-transform: none;
+        font-size: 13px;
+      }
+      
+      .method {
+        margin-bottom: 18px;
+        clear: both;
+      }
+      
+      .method section {
+        margin-top: 10px;
+      }
+      
+      .method section h4 {
+        margin-bottom: 5px;
+      }
+      
+      .code-link {
+        margin-bottom: 5px;
+      }
+      
+      section.code {
+        position: relative;
+      }
+      
+      pre {
+        overflow-x: auto;
+        white-space: pre;
+        word-wrap: normal;
+      }
+      
+      .pre-scrollable {
+        overflow-y: auto;
+      }
+      
+      .code-toggle {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        padding-bottom: 5px;
+      }
+      
+      section.code pre {
+        margin-top: 10px;
+      }
+      
+      code .keyword, code .special {
+        font-weight: bold;
+        color: black;
+      }
+      code .string, code .regexp {
+        color: green
+      }
+      code .class { 
+        color: blue
+      }
+      code .number {
+        color: red
+      }
+      code .comment {
+        color: grey;
+        font-style: italic;
+      }
+      
+      .param-name {
+        font-family: monospace;
+      }
+      
+      .param-type {
+        font-style: italic;
+      }
+      
+      .return-type {
+        font-style: italic;
+      }
+      
+      .returns p {
+        display: inline-block;
+      }
+      
+      section.syntax span {
+        font-family: monospace;
+      }
+      
+      .signature {
+        font-family: monospace;
+      }
+    </style>
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+                          <li class="nav-header"><a href="splunkjs.Async.html">splunkjs.Async</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Context.html">splunkjs.Context</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Http.html">splunkjs.Http</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Logger.html">splunkjs.Logger</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Argument.html">splunkjs.ModularInputs.Argument</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Event.html">splunkjs.ModularInputs.Event</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.EventWriter.html">splunkjs.ModularInputs.EventWriter</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.InputDefinition.html">splunkjs.ModularInputs.InputDefinition</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Logger.html">splunkjs.ModularInputs.Logger</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.ModularInput.html">splunkjs.ModularInputs.ModularInput</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.Scheme.html">splunkjs.ModularInputs.Scheme</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.ModularInputs.ValidationDefinition.html">splunkjs.ModularInputs.ValidationDefinition</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.html">splunkjs.Service</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Application.html">splunkjs.Service.Application</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Applications.html">splunkjs.Service.Applications</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Collection.html">splunkjs.Service.Collection</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.ConfigurationFile.html">splunkjs.Service.ConfigurationFile</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.ConfigurationStanza.html">splunkjs.Service.ConfigurationStanza</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Configurations.html">splunkjs.Service.Configurations</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModel.html">splunkjs.Service.DataModel</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelCalculation.html">splunkjs.Service.DataModelCalculation</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelConstraint.html">splunkjs.Service.DataModelConstraint</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelField.html">splunkjs.Service.DataModelField</a></li>
+              <li>
+                <ul class="nav nav-list">
+                                  <li><a href="#splunkjs.Service.DataModelField-init">init</a></li>
+                                  <li><a href="#splunkjs.Service.DataModelField-isBoolean">isBoolean</a></li>
+                                  <li><a href="#splunkjs.Service.DataModelField-isChildcount">isChildcount</a></li>
+                                  <li><a href="#splunkjs.Service.DataModelField-isIPv4">isIPv4</a></li>
+                                  <li><a href="#splunkjs.Service.DataModelField-isNumber">isNumber</a></li>
+                                  <li><a href="#splunkjs.Service.DataModelField-isObjectcount">isObjectcount</a></li>
+                                  <li><a href="#splunkjs.Service.DataModelField-isString">isString</a></li>
+                                  <li><a href="#splunkjs.Service.DataModelField-isTimestamp">isTimestamp</a></li>
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModelObject.html">splunkjs.Service.DataModelObject</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.DataModels.html">splunkjs.Service.DataModels</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Endpoint.html">splunkjs.Service.Endpoint</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Entity.html">splunkjs.Service.Entity</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlert.html">splunkjs.Service.FiredAlert</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlertGroup.html">splunkjs.Service.FiredAlertGroup</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.FiredAlertGroupCollection.html">splunkjs.Service.FiredAlertGroupCollection</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Index.html">splunkjs.Service.Index</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Indexes.html">splunkjs.Service.Indexes</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Job.html">splunkjs.Service.Job</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Jobs.html">splunkjs.Service.Jobs</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Pivot.html">splunkjs.Service.Pivot</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.PivotSpecification.html">splunkjs.Service.PivotSpecification</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Resource.html">splunkjs.Service.Resource</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.SavedSearch.html">splunkjs.Service.SavedSearch</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.SavedSearches.html">splunkjs.Service.SavedSearches</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.ServerInfo.html">splunkjs.Service.ServerInfo</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.StoragePassword.html">splunkjs.Service.StoragePassword</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.StoragePasswords.html">splunkjs.Service.StoragePasswords</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.User.html">splunkjs.Service.User</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Users.html">splunkjs.Service.Users</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.View.html">splunkjs.Service.View</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Service.Views.html">splunkjs.Service.Views</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.Utils.html">splunkjs.Utils</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+                          <li class="nav-header"><a href="splunkjs.private.BaseService.html">splunkjs.private.BaseService</a></li>
+              <li>
+                <ul class="nav nav-list">
+                </ul>
+              </li>
+            </ul>
+          </div><!--/well -->
+        </div><!--/span-->
+        <div class="span8">
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                  <div class="page-header" id="splunkjs.Service.DataModelField">
+            <h2>Methods</h2>
+          </div>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-init">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">init</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.init</h5>
+            </header>
+          
+            <section class="content">
+              <p>Constructor for a data model field. SDK users are not expected to invoke this constructor directly.</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>init: function(props)</span>
+            </section>
+            
+            <section class="params">
+                          <h4>Parameters</h4>
+              
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                  <tr>
+                    <td class="param-name">props</td>
+                    <td class="param-type">Object</td>
+                    <td class="param-description"><p>A dictionary of properties to set:<br /> - <code>fieldName</code> (<em>string</em>): The name of this field.<br /> - <code>displayName</code> (<em>string</em>): A human readable name for this field.<br /> - <code>type</code> (<em>string</em>): The type of this field, see valid types in class docs.<br /> - <code>multivalue</code> (<em>boolean</em>): Whether this field is multivalued.<br /> - <code>required</code> (<em>boolean</em>): Whether this field is required on events in the object<br /> - <code>hidden</code> (<em>boolean</em>): Whether this field should be displayed in a data model UI.<br /> - <code>editable</code> (<em>boolean</em>): Whether this field can be edited.<br /> - <code>comment</code> (<em>string</em>): A comment for this field, or <code>null</code> if there isn't one.<br /> - <code>fieldSearch</code> (<em>string</em>): A search query fragment for this field.<br /> - <code>lineage</code> (<em>string</em>): The lineage of the data model object on which this field<br /> is defined, items are delimited by a dot. This is converted into an array of<br /> strings upon construction.</p></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="returns">
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L3937">lib/service.js:3937</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>init: function(props) {
+    props = props || {};
+    props.owner = props.owner || &quot;&quot;;
+    this.name           = props.fieldName;
+    this.displayName    = props.displayName;
+    this.type           = props.type;
+    this.multivalued    = props.multivalue;
+    this.required       = props.required;
+    this.hidden         = props.hidden;
+    this.editable       = props.editable;
+    this.comment        = props.comment || null;
+    this.fieldSearch    = props.fieldSearch;
+    this.lineage        = props.owner.split(&quot;.&quot;);
+    this.owner          = this.lineage[this.lineage.length - 1];
+},</code></pre>
+            </section>
+          </section>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-isBoolean">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">isBoolean</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.isBoolean</h5>
+            </header>
+          
+            <section class="content">
+              <p>Is this data model field of type boolean?</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>isBoolean: function()</span>
+            </section>
+            
+            <section class="params">
+            </section>
+            
+            <section class="returns">
+                                      <h4>Return</h4>
+              <span class="return-type">Boolean</span>. <p>True if this data model field is of type boolean.</p>
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L4027">lib/service.js:4027</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>isBoolean: function() {
+        return &quot;boolean&quot; === this.type;
+    }
+});</code></pre>
+            </section>
+          </section>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-isChildcount">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">isChildcount</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.isChildcount</h5>
+            </header>
+          
+            <section class="content">
+              <p>Is this data model field of type child count?</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>isChildcount: function()</span>
+            </section>
+            
+            <section class="params">
+            </section>
+            
+            <section class="returns">
+                                      <h4>Return</h4>
+              <span class="return-type">Boolean</span>. <p>True if this data model field is of type child count.</p>
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L4005">lib/service.js:4005</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>isChildcount: function() {
+    return &quot;childCount&quot; === this.type;
+},</code></pre>
+            </section>
+          </section>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-isIPv4">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">isIPv4</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.isIPv4</h5>
+            </header>
+          
+            <section class="content">
+              <p>Is this data model field of type ipv4?</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>isIPv4: function()</span>
+            </section>
+            
+            <section class="params">
+            </section>
+            
+            <section class="returns">
+                                      <h4>Return</h4>
+              <span class="return-type">Boolean</span>. <p>True if this data model field is of type ipv4.</p>
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L4016">lib/service.js:4016</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>isIPv4: function() {
+    return &quot;ipv4&quot; === this.type;
+},</code></pre>
+            </section>
+          </section>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-isNumber">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">isNumber</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.isNumber</h5>
+            </header>
+          
+            <section class="content">
+              <p>Is this data model field of type number?</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>isNumber: function()</span>
+            </section>
+            
+            <section class="params">
+            </section>
+            
+            <section class="returns">
+                                      <h4>Return</h4>
+              <span class="return-type">Boolean</span>. <p>True if this data model field is of type number.</p>
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L3972">lib/service.js:3972</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>isNumber: function() {
+    return &quot;number&quot; === this.type;
+},</code></pre>
+            </section>
+          </section>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-isObjectcount">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">isObjectcount</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.isObjectcount</h5>
+            </header>
+          
+            <section class="content">
+              <p>Is this data model field of type object count?</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>isObjectcount: function()</span>
+            </section>
+            
+            <section class="params">
+            </section>
+            
+            <section class="returns">
+                                      <h4>Return</h4>
+              <span class="return-type">Boolean</span>. <p>True if this data model field is of type object count.</p>
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L3994">lib/service.js:3994</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>isObjectcount: function() {
+    return &quot;objectCount&quot; === this.type;
+},</code></pre>
+            </section>
+          </section>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-isString">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">isString</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.isString</h5>
+            </header>
+          
+            <section class="content">
+              <p>Is this data model field of type string?</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>isString: function()</span>
+            </section>
+            
+            <section class="params">
+            </section>
+            
+            <section class="returns">
+                                      <h4>Return</h4>
+              <span class="return-type">Boolean</span>. <p>True if this data model field is of type string.</p>
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L3961">lib/service.js:3961</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>isString: function() {
+    return &quot;string&quot; === this.type;
+},</code></pre>
+            </section>
+          </section>
+                
+          <section class="method well" id="splunkjs.Service.DataModelField-isTimestamp">
+            <header>
+              <div class="method-header">
+                <h3 class="method-name">isTimestamp</h3>
+              </div>
+              <h5 class="signature">splunkjs.Service.DataModelField.isTimestamp</h5>
+            </header>
+          
+            <section class="content">
+              <p>Is this data model field of type timestamp?</p>
+            </section>
+            
+            <section class="syntax">
+                          <h4>Syntax</h4>
+              <span>isTimestamp: function()</span>
+            </section>
+            
+            <section class="params">
+            </section>
+            
+            <section class="returns">
+                                      <h4>Return</h4>
+              <span class="return-type">Boolean</span>. <p>True if this data model field is of type timestamp.</p>
+            </section>
+            
+            <section class="examples">
+            </section>
+                        
+            <section class="code">
+              
+              <h4 class="code-link">Source (<a target="_blank" href="https://github.com/splunk/splunk-sdk-javascript/blob/master/lib/service.js#L3983">lib/service.js:3983</a>)</h4>  
+              <a class="btn btn-mini code-toggle"><i class="icon-plus"></i></a>
+              
+              <pre class="hidden" class="linenums pre-scrollable"><code>isTimestamp: function() {
+    return &quot;timestamp&quot; === this.type;
+},</code></pre>
+            </section>
+          </section>
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+        </div><!--/span-->
+      </div><!--/row-->
+      <hr>
+      <footer>
+        <p>&copy; Splunk 2012</p>
+      </footer>
+    </div><!--/.fluid-container-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+    
+    <script>
+      $(function() {
+        $("a.code-toggle").click(function(e) {
+          var code = $(this).parent().children("pre");
+          var isHidden = code.hasClass("hidden");
+          
+          if (isHidden) {
+            $(code).removeClass("hidden");  
+            $(this).children("i").addClass("icon-minus");
+            $(this).children("i").removeClass("icon-plus");
+          }
+          else {
+            $(code).addClass("hidden");  
+            $(this).children("i").addClass("icon-plus");
+            $(this).children("i").removeClass("icon-minus");
+          }
+          
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+    </script>
+    <script>
+      (function (hijs) {
+      //
+      // hijs - JavaScript Syntax Highlighter
+      //
+      // Copyright (c) 2010 Alexis Sellier
+      //
+      // All elements which match this will be syntax highlighted.
+      var selector = hijs || "code";
+      var keywords = ('var function if else for while break switch case do new null in with void '
+                     +'continue delete return this true false throw catch typeof with instanceof').split(' '),
+          special  = ('eval window document undefined NaN Infinity parseInt parseFloat '
+                     +'encodeURI decodeURI encodeURIComponent decodeURIComponent').split(' ');
+      // Syntax definition
+      // The key becomes the class name of the <span>
+      // around the matched block of code.
+      var syntax = [
+        ['comment', /(\/\*(?:[^*\n]|\*+[^\/*])*\*+\/)/g],
+        ['comment', /(\/\/[^\n]*)/g],
+        ['string' , /("(?:(?!")[^\\\n]|\\.)*"|'(?:(?!')[^\\\n]|\\.)*')/g],
+        ['regexp' , /(\/.+\/[mgi]*)(?!\s*\w)/g],
+        ['class'  , /\b([A-Z][a-zA-Z]+)\b/g],
+        ['number' , /\b([0-9]+(?:\.[0-9]+)?)\b/g],
+        ['keyword', new(RegExp)('\\b(' + keywords.join('|') + ')\\b', 'g')],
+        ['special', new(RegExp)('\\b(' + special.join('|') + ')\\b', 'g')]
+      ];
+      var nodes, table = {};
+      if (/^[a-z]+$/.test(selector)) {
+          nodes = document.getElementsByTagName(selector);
+      } else if (/^\.[\w-]+$/.test(selector)) {
+          nodes = document.getElementsByClassName(selector.slice(1));
+      } else if (document.querySelectorAll) {
+          nodes = document.querySelectorAll(selector);
+      } else {
+          nodes = [];
+      }
+      for (var i = 0, children; i < nodes.length; i++) {
+          children = nodes[i].childNodes;
+          for (var j = 0, str; j < children.length; j++) {
+              code = children[j];
+              if (code.length >= 0) { // It's a text node
+                  // Don't highlight command-line snippets
+                  if (! /^\$/.test(code.nodeValue.trim())) {
+                      syntax.forEach(function (s) {
+                          var k = s[0], v = s[1];
+                          code.nodeValue = code.nodeValue.replace(v, function (_, m) {
+                              return '\u00ab' + encode(k) + '\u00b7'
+                                              + encode(m) +
+                                     '\u00b7' + encode(k) + '\u00bb';
+                          });
+                      });
+                  }
+              }
+          }
+      }
+      for (var i = 0; i < nodes.length; i++) {
+          nodes[i].innerHTML =
+              nodes[i].innerHTML.replace(/\u00ab(.+?)\u00b7(.+?)\u00b7\1\u00bb/g, function (_, name, value) {
+                  value = value.replace(/\u00ab[^\u00b7]+\u00b7/g, '').replace(/\u00b7[^\u00bb]+\u00bb/g, '');
+                  return '<span class="' + decode(name) + '">' + escape(decode(value)) + '</span>';
+          });
+      }
+      function escape(str) {
+          return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      // Encode ASCII characters to, and from Braille
+      function encode (str, encoded) {
+          table[encoded = str.split('').map(function (s) {
+              if (s.charCodeAt(0) > 127) { return s }
+              return String.fromCharCode(s.charCodeAt(0) + 0x2800);
+          }).join('')] = str;
+          return encoded;
+      }
+      function decode (str) {
+          if (str in table) {
+              return table[str];
+          } else {
+              return str.trim().split('').map(function (s) {
+                  if (s.charCodeAt(0) - 0x2800 > 127) { return s }
+                  return String.fromCharCode(s.charCodeAt(0) - 0x2800);
+              }).join('');
+          }
+      }
+      })(window.hijs);
+    </script>
+  </body>
+</html>

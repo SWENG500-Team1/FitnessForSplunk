@@ -1,0 +1,70 @@
+[passwords/credential%3A%3A616872666934-ctkc2btlhme0or0vmar8mlaidt2g1j16.apps.googleusercontent.com%3A]
+owner = admin
+version = 6.4.1
+modtime = 1467941915.658841000
+
+[app/install/is_configured]
+version = 6.4.0
+modtime = 1470840364.286370000
+
+[]
+access = read : [ * ], write : [ admin ]
+export = none
+version = 6.4.1
+modtime = 1469984056.109899000
+
+[app/install/install_source_checksum]
+version = 6.4.0
+modtime = 1470839483.220257000
+
+[passwords/credential%3AGoogleFitness%3Aandrew.nortrup%3A]
+owner = admin
+version = 6.4.1
+modtime = 1469507549.929629000
+
+[passwords/credential%3Afitbit%3Atest%3A]
+owner = admin
+version = 6.4.1
+modtime = 1469756212.978338000
+
+[passwords/credential%3Arealm%3Atest%3A]
+owner = admin
+version = 6.4.1
+modtime = 1469767631.787067000
+
+[passwords/credential%3AGoogle%3A562161563902-3a6rur7qknsh1a2u7p74elrghfa2paqi.apps.googleusercontent.com%3A]
+owner = admin
+version = 6.4.1
+modtime = 1470026086.208856000
+
+[passwords/credential%3AFitBit%3A227MVJ%3A]
+owner = admin
+version = 6.4.1
+modtime = 1470026020.808967000
+
+[inputs/TA-GoogleFitness%3A%2F%2FGoogle]
+owner = admin
+version = 6.4.1
+modtime = 1470508927.911415000
+
+[inputs/TA-FitnessTrackers%3A%2F%2Fgoogle]
+version = 6.4.0
+modtime = 1470841142.076985000
+
+[inputs/TA-FitnessTrackers%3A%2F%2Ffitbit]
+version = 6.4.1
+modtime = 1470803349.550233000
+
+[passwords/credential%3Afitbit%3A227MVJ%3A]
+owner = anortrup
+version = 6.4.0
+modtime = 1470840268.108745000
+
+[passwords/credential%3Agoogle%3A18652691864-3o63q65qqjpjl9jc5oav7mh8r3su42oa.apps.googleusercontent.com%3A]
+owner = anortrup
+version = 6.4.0
+modtime = 1470840364.283033000
+
+[app/install/state]
+version = 6.4.0
+modtime = 1470883968.389486000

@@ -5,3 +5,98 @@ modtime = 1466405453.248862600
 [app/launcher]
 version = 6.4.1
 modtime = 1466405453.255373800
+
+[app/install/install_source_checksum]
+version = 6.4.0
+modtime = 1470114467.870197000
+
+[props/MicrosoftHealth]
+owner = anortrup
+version = 6.4.0
+modtime = 1470158507.618021000
+
+[html/account_enrollment]
+access = read : [ * ], write : [ * ]
+export = none
+owner = ctrust
+version = 6.4.0
+modtime = 1470862775.495618000
+
+[views/account_enrollment]
+access = read : [ * ], write : [ * ]
+export = none
+owner = ctrust
+version = 6.4.0
+modtime = 1470168767.572338000
+
+[nav/default]
+version = 6.4.0
+modtime = 1470875453.393883000
+
+[views/account_add_success]
+access = read : [ * ], write : [ * ]
+export = none
+owner = ctrust
+version = 6.4.0
+modtime = 1470178965.643086000
+
+[views/account_add_failure]
+access = read : [ * ], write : [ * ]
+export = none
+owner = ctrust
+version = 6.4.0
+modtime = 1470178378.593219000
+
+[html/Adding_Fitbit_Account]
+access = read : [ admin ], write : [ admin ]
+export = none
+owner = ahuynh
+version = 6.4.0
+modtime = 1470877627.972559000
+
+[html/Adding_Google_Account]
+access = read : [ admin ], write : [ admin ]
+export = none
+owner = ahuynh
+version = 6.4.0
+modtime = 1470875901.915146000
+
+[html/Adding_Microsoft_Account]
+access = read : [ admin ], write : [ admin ]
+export = none
+owner = ahuynh
+version = 6.4.0
+modtime = 1470875843.700929000
+
+[html/account_add_failure]
+access = read : [ * ], write : [ * ]
+owner = ctrust
+version = 6.4.0
+modtime = 1470787807.234181000
+
+[html/account_add_success]
+access = read : [ * ], write : [ * ]
+owner = ctrust
+version = 6.4.0
+modtime = 1470790660.491183000
+
+[views/main]
+access = read : [ * ], write : [ * ]
+export = none
+owner = ctrust
+version = 6.4.0
+modtime = 1470875659.873927000
+
+[html/Home]
+access = read : [ admin ], write : [ admin ]
+export = none
+owner = ahuynh
+version = 6.4.0
+modtime = 1470873555.663277000
+
+[html/Enrollment]
+access = read : [ admin ], write : [ admin ]
+export = none
+owner = ahuynh
+version = 6.4.0
+modtime = 1470862902.430162000

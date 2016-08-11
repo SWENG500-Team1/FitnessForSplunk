@@ -9,12 +9,12 @@
     max-width: 
 }
 
-.enrollment-success,  {
+.enrollment-success  {
     background-image: url("images/ffs-joined-bg.png");
     background-repeat: no-repeat;
 }
 
-.enrollment.failure {
+.enrollment-failure {
     background-image: url("images/ffs-join-fail.png");
     background-repeat: no-repeat;
 }

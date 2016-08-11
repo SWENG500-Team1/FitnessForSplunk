@@ -3,10 +3,12 @@ package splunk
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -66,15 +68,15 @@ func GetEntities(baseURL string,
 		return &RestResponse{}, err
 	}
 
-	resp, err := makeRestRequest(u, sessionKey)
+	resp, err := makeGetRestRequest(u, sessionKey)
 	if err != nil {
 		return &RestResponse{}, err
 	}
-
-	defer resp.Body.Close()
-
 	//Decode the response from XML
-	decoder := xml.NewDecoder(resp.Body)
+	b, err := ioutil.ReadAll(resp.Body)
+	// log.Printf("Raw XML: %s", b)
+
+	decoder := xml.NewDecoder(bytes.NewReader(b))
 	result := &RestResponse{}
 
 	err = decoder.Decode(result)
@@ -96,13 +98,11 @@ func KVStoreGetCollection(baseURL string,
 	u, err := buildRequestPath(baseURL, []string{"storage", "collections", "data", collection},
 		namespace, owner)
 
-	fmt.Printf("URL: %v", u)
-
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := makeRestRequest(u, sessionKey)
+	resp, err := makeGetRestRequest(u, sessionKey)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,44 @@ func KVStoreGetCollection(baseURL string,
 	return resp.Body, nil
 }
 
-func makeRestRequest(u *url.URL, sessionKey string) (*http.Response, error) {
+func KVStoreUpdate(baseURL, collection, id string,
+	payload interface{},
+	namespace, owner, sessionKey string) error {
+	u, err := buildRequestPath(baseURL,
+		[]string{"storage", "collections", "data", collection, id},
+		namespace, owner)
+
+	if err != nil {
+		return err
+	}
+
+	//Encode the payload into JSON
+	b, err := json.Marshal(payload)
+
+	if err != nil {
+		return err
+	}
+	reader := bytes.NewReader(b)
+
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%v", u), reader)
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Splunk "+sessionKey)
+
+	if err != nil {
+		return err
+	}
+	client := newSplunkHttpClient(false)
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func makeGetRestRequest(u *url.URL, sessionKey string) (*http.Response, error) {
 	//Create the Request
 	r, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%v", u), nil)
 	r.Header.Add("Authorization", "Splunk "+sessionKey)

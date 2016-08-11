@@ -40,8 +40,8 @@ func (input *FitnessInput) ReturnScheme() {
 		})
 
 	scheme := &splunk.Scheme{
-		Title:                 "Google Fitness",
-		Description:           "Retrieves fitness data from Google Fitness.",
+		Title:                 "Fitness Trackers",
+		Description:           "Retrieves fitness data from Google Fitness and fitbit.",
 		UseExternalValidation: true,
 		StreamingMode:         "simple",
 		Args:                  arguments,
@@ -88,13 +88,31 @@ func (input *FitnessInput) StreamEvents() {
 		log.Printf("Unable to get user tokens: %v", err)
 	}
 
+	clientId, clientSecret := input.getAppCredentials()
 	for _, token := range tokens {
+
+		//Quick and dirty fix because it's late.
+		//KV store escapes the backslash in the refresh tokens from google.
+		token.RefreshToken = strings.Replace(token.RefreshToken, "\\", "", -1)
 		//Create HTTP client
-		clientId, clientSecret := input.getAppCredentials()
-		client := getClient(&token.Token, clientId, clientSecret, input.getStrategy())
+		client, newToken := getClient(&token.Token,
+			clientId,
+			clientSecret,
+			input.getStrategy())
+
+		//Fitbit is stupid and makes you cache a new refresh token every time.
+		//Probably more secure, but much more of a pain to handle.
+		if input.getStrategy() == strategyFitbit {
+			token.RefreshToken = newToken.RefreshToken
+			err := updateKVStoreToken(token, input.getStrategy(), input.SessionKey)
+			if err != nil {
+				log.Printf("FITBIT: Failed to update KV Store with new key for user: %v Err: %v",
+					token.UserID, err)
+			}
+		}
 
 		//Get start and end points from checkpoint
-		startTime, endTime := input.getTimes()
+		startTime, endTime := input.getTimes(input.getStrategy(), token.Name, token.UserID)
 
 		//Create a Fitness Reader to go get the data
 		fitnessReader, err := readerFactory(input.getStrategy(), startTime, endTime)
@@ -102,7 +120,10 @@ func (input *FitnessInput) StreamEvents() {
 			log.Fatal(err)
 		}
 
-		input.writeCheckPoint(fitnessReader.getData(client, bufio.NewWriter(os.Stdout), token))
+		input.writeCheckPoint(input.getStrategy(),
+			token.Name,
+			token.UserID,
+			fitnessReader.getData(client, bufio.NewWriter(os.Stdout), token))
 	}
 }
 
@@ -134,8 +155,8 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 		input.SessionKey)
 
 	if err != nil || len(passwords.Entries) == 0 {
-		log.Fatalf("Unable to retrieve password entries for TA-GoogleFitness: %v\n",
-			err)
+		log.Fatalf("Unable to retrieve password entries for: %v"+
+			"Error: %v\n", err, input.Stanzas[0].StanzaName)
 	}
 
 	for _, entry := range passwords.Entries {
@@ -164,16 +185,16 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 //getTimes returns a startTime and an endTime value.  endTime is retrived from
 // a checkpoint file, if not it returns the current time.
 // The end time is always the current time.
-func (input *FitnessInput) getTimes() (time.Time, time.Time) {
-	startTime, err := input.readCheckPoint()
+func (input *FitnessInput) getTimes(service, username, userid string) (time.Time, time.Time) {
+	startTime, err := input.readCheckPoint(service, username, userid)
 	if err != nil {
-		startTime = time.Now()
+		startTime = time.Now().AddDate(0, 0, -5)
 	}
 	endTime := time.Now()
 	return startTime, endTime
 }
 
-func (input *FitnessInput) writeCheckPoint(t time.Time) {
+func (input *FitnessInput) writeCheckPoint(service, username, userid string, t time.Time) {
 
 	//Encode the time we've been given into bytes
 	g, err := t.GobEncode()
@@ -182,14 +203,14 @@ func (input *FitnessInput) writeCheckPoint(t time.Time) {
 	}
 
 	//Write the checkpoint
-	err = ioutil.WriteFile(input.getCheckPointPath(), g, 0644)
+	err = ioutil.WriteFile(input.getCheckPointPath(service, username, userid), g, 0644)
 	if err != nil {
 		log.Fatalf("Error writing checkpoint file: %v\n", err)
 	}
 }
 
-func (input *FitnessInput) readCheckPoint() (time.Time, error) {
-	b, err := ioutil.ReadFile(input.getCheckPointPath())
+func (input *FitnessInput) readCheckPoint(service, username, userid string) (time.Time, error) {
+	b, err := ioutil.ReadFile(input.getCheckPointPath(service, username, userid))
 	if err != nil {
 		log.Printf("Unable to read checkpoint file:%v\n", err)
 		return time.Now(), err
@@ -198,16 +219,16 @@ func (input *FitnessInput) readCheckPoint() (time.Time, error) {
 	err = t.GobDecode(b)
 	if err != nil {
 		log.Printf("Unable to decode checkpoint file: %v\n", err)
-		return time.Now().Add(-2 * time.Hour), err
+		return time.Now().AddDate(0, 0, -10), err
 	}
 	return t, nil
 }
 
 // Takes the checkpoint dir from and config stanza name from the input and
 // creates a checkpoint dir.  Should be unique for each input
-func (input *FitnessInput) getCheckPointPath() string {
+func (input *FitnessInput) getCheckPointPath(service, username, userid string) string {
 	//Create a hash of the stanza name as a filename
-	fileName := strings.Split(input.Stanzas[0].StanzaName, "://")
-	path := path.Join(input.CheckpointDir, fileName[1])
+	fileName := service + "_" + username + "_" + userid
+	path := path.Join(input.CheckpointDir, fileName)
 	return path
 }

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Account Enrollment</title>
+  <link rel="shortcut icon" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/fitness_for_splunk/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/build/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="{{SPLUNKWEB_URL_PREFIX}}/static/css/build/pages/dashboard-simple-bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="{{SPLUNKWEB_URL_PREFIX}}/static/app/fitness_for_splunk/custom.css" />
+</head>
+<body class="simplexml preload locale-en enrollment">
+  <!-- <img src="{{SPLUNKWEB_URL_PREFIX}}/static/app/fitness_for_splunk/images/ffs-main-bg.png" /> -->
+<!-- 
+BEGIN LAYOUT
+This section contains the layout for the dashboard. Splunk uses proprietary
+styles in <div> tags, similar to Bootstrap's grid system. 
+-->
+<a class="navSkip" href="#navSkip" tabindex="1">Screen reader users, click here to skip the navigation bar</a>
+<div class="header splunk-header">
+        <div id="placeholder-splunk-bar">
+            <a href="{{SPLUNKWEB_URL_PREFIX}}/app/launcher/home" class="brand" title="splunk &gt; listen to your data">splunk<strong>&gt;</strong></a>
+        </div>
+            <div id="placeholder-app-bar"></div>
+</div>
+<a id="navSkip"></a>
+<div class="dashboard-body container-fluid main-section-body" data-role="main">
+    <div class="dashboard-header clearfix">  
+
+      
+      
+  <script>
+  	function setAccountURL(theURL){
+    	document.getElementById('account-link').value=theURL;
+    }
+    function linkAccount(account) {
+      if (account) {
+    	window.location=account;
+      }
+      else {
+    	alert('Please select an account type to add, then click \"Next\"')
+      }
+    }
+  </script>
+          
+<div class="pagetext">
+      <p>
+        To join Fitness for Splunk, you must have a fitness <br /> 
+        tracking device and an associated Google Fit, Microsoft <br /> 
+        HealthCloud, or Fitbit account.
+      </p>
+  		<br />
+      <p>      
+To continue, simply select your account type and <br /> 
+        authorize Fitness for Splunk to access and display <br /> 
+        certain fitness account information, such as your:
+      </p>
+        <br />
+      <p>      
+		<ul>
+          <li style="line-height: 32px;">Name and user ID</li>  
+		  <li style="line-height: 32px;">Current or recent fitness activity</li>  
+		  <li style="line-height: 32px;">Fitness goals</li>  
+		  <li style="line-height: 32px;">Fitness tracking account type</li>   
+        </ul>
+      </p>        
+
+  </div>
+  
+<h3 style="margin: 40px 0 0 100px; color: #ddd; font-weight: bold; font-size: 20px">ACCOUNT TYPE TO ADD?</h3>
+<div id="radio">
+  <span id="option1"><input type="radio" id="fitbit" value="https://www.fitbit.com/oauth2/authorize?response_type=code&amp;client_id=227MVJ&amp;expires_in=31536000&amp;redirect_uri=https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Fitbit_Account&amp;scope=activity%20profile" onclick="setAccountURL(this.value)" name="accountType" checked /><a onclick="document.getElementById('fitbit').checked=true;document.getElementById('fitbit').onclick();">&nbsp;<b>Fitbit</b></a></span><br />
+  
+  <span id="option2"><input type="radio" id="google" value="https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&amp;prompt=consent&amp;scope=https://www.googleapis.com/auth/fitness.activity.read+https://www.googleapis.com/auth/fitness.body.read+https://www.googleapis.com/auth/userinfo.profile&amp;response_type=code&amp;redirect_uri=https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Google_Account&amp;client_id=18652691864-3o63q65qqjpjl9jc5oav7mh8r3su42oa.apps.googleusercontent.com" onclick="setAccountURL(this.value)" name="accountType" /><a onclick="document.getElementById('google').checked=true;document.getElementById('google').onclick();">&nbsp;<b>Google Fit</b></a></span><br />
+  
+  <span id="option3"><input type="radio" id="microsoft" value="https://login.live.com/oauth20_authorize.srf?client_id=e52600ac-ada7-4d65-93b1-b5013037d4e1&amp;scope=mshealth.ReadProfile%20mshealth.ReadActivityHistory%20mshealth.ReadDevices%20mshealth.ReadActivityLocation%20offline_access&amp;response_type=code&amp;redirect_uri=https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Microsoft_Account" onclick="setAccountURL(this.value)" name="accountType" /><a onclick="document.getElementById('microsoft').checked=true;document.getElementById('microsoft').onclick();">&nbsp;<b>Microsoft HealthCloud</b></a></span><br /> <br /> 
+  
+  <button type="button" id="account-link" style="line-height: 24px;" value="https://www.fitbit.com/oauth2/authorize?response_type=code&amp;client_id=227MVJ&amp;expires_in=31536000&amp;redirect_uri=https://www.fitnessforsplunk.ninja:8000/en-US/app/fitness_for_splunk/Adding_Fitbit_Account&amp;scope=activity%20profile" onclick="linkAccount(this.value);"> NEXT >> </button> <br />
+</div>
+
+<div class="pagenote">
+      <p>
+      	<br /><br />  
+        <i>NOTE:  You can revoke permissions at any time by simply visiting your fitness tracking <br />account website and deauthorizing Fitness for Splunk</i>  
+        <br /> <br /> 
+  	  </p>      
+</div>      
+      
+      
+      
+      
+</div>
+
+    <div id="row1" class="dashboard-row dashboard-row1">
+        <div id="panel1" class="dashboard-cell" style="width: 100%;">
+            <div class="dashboard-panel clearfix">
+              
+            </div>
+        </div>
+    </div>
+    <div id="row2" class="dashboard-row dashboard-row2">
+        <div id="panel2" class="dashboard-cell" style="width: 100%;">
+            <div class="dashboard-panel clearfix">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer"></div>
+
+<!-- 
+END LAYOUT
+-->
+
+<script src="{{SPLUNKWEB_URL_PREFIX}}/config?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/i18n.js"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/i18ncatalog?autoload=1"></script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/js/build/simplexml.min/config.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+require.config({
+    baseUrl: "{{SPLUNKWEB_URL_PREFIX}}/static/js",
+    waitSeconds: 0 // Disable require.js load timeout
+});
+
+//
+// LIBRARY REQUIREMENTS
+//
+// In the require function, we include the necessary libraries and modules for
+// the HTML dashboard. Then, we pass variable names for these libraries and
+// modules as function parameters, in order.
+// 
+// When you add libraries or modules, remember to retain this mapping order
+// between the library or module and its function parameter. You can do this by
+// adding to the end of these lists, as shown in the commented examples below.
+
+require([
+    "splunkjs/mvc",
+    "splunkjs/mvc/utils",
+    "splunkjs/mvc/tokenutils",
+    "underscore",
+    "jquery",
+    "splunkjs/mvc/simplexml",
+    "splunkjs/mvc/headerview",
+    "splunkjs/mvc/footerview",
+    "splunkjs/mvc/simplexml/dashboardview",
+    "splunkjs/mvc/simplexml/dashboard/panelref",
+    "splunkjs/mvc/simplexml/element/chart",
+    "splunkjs/mvc/simplexml/element/event",
+    "splunkjs/mvc/simplexml/element/html",
+    "splunkjs/mvc/simplexml/element/list",
+    "splunkjs/mvc/simplexml/element/map",
+    "splunkjs/mvc/simplexml/element/single",
+    "splunkjs/mvc/simplexml/element/table",
+    "splunkjs/mvc/simplexml/element/visualization",
+    "splunkjs/mvc/simpleform/formutils",
+    "splunkjs/mvc/simplexml/eventhandler",
+    "splunkjs/mvc/simplexml/searcheventhandler",
+    "splunkjs/mvc/simpleform/input/dropdown",
+    "splunkjs/mvc/simpleform/input/radiogroup",
+    "splunkjs/mvc/simpleform/input/linklist",
+    "splunkjs/mvc/simpleform/input/multiselect",
+    "splunkjs/mvc/simpleform/input/checkboxgroup",
+    "splunkjs/mvc/simpleform/input/text",
+    "splunkjs/mvc/simpleform/input/timerange",
+    "splunkjs/mvc/simpleform/input/submit",
+    "splunkjs/mvc/searchmanager",
+    "splunkjs/mvc/savedsearchmanager",
+    "splunkjs/mvc/postprocessmanager",
+    "splunkjs/mvc/simplexml/urltokenmodel"
+    // Add comma-separated libraries and modules manually here, for example:
+    // ..."splunkjs/mvc/simplexml/urltokenmodel",
+    // "splunkjs/mvc/tokenforwarder"
+    ],
+    function(
+        mvc,
+        utils,
+        TokenUtils,
+        _,
+        $,
+        DashboardController,
+        HeaderView,
+        FooterView,
+        Dashboard,
+        PanelRef,
+        ChartElement,
+        EventElement,
+        HtmlElement,
+        ListElement,
+        MapElement,
+        SingleElement,
+        TableElement,
+        VisualizationElement,
+        FormUtils,
+        EventHandler,
+        SearchEventHandler,
+        DropdownInput,
+        RadioGroupInput,
+        LinkListInput,
+        MultiSelectInput,
+        CheckboxGroupInput,
+        TextInput,
+        TimeRangeInput,
+        SubmitButton,
+        SearchManager,
+        SavedSearchManager,
+        PostProcessManager,
+        UrlTokenModel
+
+        // Add comma-separated parameter names here, for example: 
+        // ...UrlTokenModel, 
+        // TokenForwarder
+        ) {
+
+        var pageLoading = true;
+
+
+        // 
+        // TOKENS
+        //
+        
+        // Create token namespaces
+        var urlTokenModel = new UrlTokenModel();
+        mvc.Components.registerInstance('url', urlTokenModel);
+        var defaultTokenModel = mvc.Components.getInstance('default', {create: true});
+        var submittedTokenModel = mvc.Components.getInstance('submitted', {create: true});
+
+        urlTokenModel.on('url:navigate', function() {
+            defaultTokenModel.set(urlTokenModel.toJSON());
+            if (!_.isEmpty(urlTokenModel.toJSON()) && !_.all(urlTokenModel.toJSON(), _.isUndefined)) {
+                submitTokens();
+            } else {
+                submittedTokenModel.clear();
+            }
+        });
+
+        // Initialize tokens
+        defaultTokenModel.set(urlTokenModel.toJSON());
+
+        function submitTokens() {
+            // Copy the contents of the defaultTokenModel to the submittedTokenModel and urlTokenModel
+            FormUtils.submitForm({ replaceState: pageLoading });
+        }
+
+        function setToken(name, value) {
+            defaultTokenModel.set(name, value);
+            submittedTokenModel.set(name, value);
+        }
+
+        function unsetToken(name) {
+            defaultTokenModel.unset(name);
+            submittedTokenModel.unset(name);
+        }
+
+        
+        
+        //
+        // SEARCH MANAGERS
+        //
+
+
+
+        //
+        // SPLUNK HEADER AND FOOTER
+        //
+
+        new HeaderView({
+            id: 'header',
+            section: 'dashboards',
+            el: $('.header'),
+            acceleratedAppNav: true,
+            useSessionStorageCache: true,
+            splunkbar: true,
+            appbar: true,
+            litebar: false,
+        }, {tokens: true}).render();
+
+        new FooterView({
+            id: 'footer',
+            el: $('.footer')
+        }, {tokens: true}).render();
+
+
+        //
+        // DASHBOARD EDITOR
+        //
+
+        new Dashboard({
+            id: 'dashboard',
+            el: $('.dashboard-body'),
+            showTitle: true,
+            editable: true
+        }, {tokens: true}).render();
+
+
+        //
+        // VIEWS: VISUALIZATION ELEMENTS
+        //
+
+        // Initialize time tokens to default
+        if (!defaultTokenModel.has('earliest') && !defaultTokenModel.has('latest')) {
+            defaultTokenModel.set({ earliest: '0', latest: '' });
+        }
+
+        submitTokens();
+
+
+        //
+        // DASHBOARD READY
+        //
+
+        DashboardController.ready();
+        pageLoading = false;
+
+    }
+);
+// ]]>
+</script>
+<script src="{{SPLUNKWEB_URL_PREFIX}}/static/app/fitness_for_splunk/custom.js" />
+</body>
+</html>

@@ -167,7 +167,8 @@ class fitbit_callback(splunk.rest.BaseRestHandler):
         self.response.setHeader('content-type', 'text/xml')
         #self.response.write(kv_jsonstring)
         self.addMessage("Success", "Your Fitbit account was successfully added!")
-        
+        return
+ 
     # listen to all verbs
     handle_POST = handle_DELETE = handle_PUT = handle_VIEW = handle_GET
     
@@ -258,7 +259,8 @@ class google_callback(splunk.rest.BaseRestHandler):
         # Store id, name, and token in KV store
         credentials_json = jsonbyteify.json_loads_byteified(credentials.to_json())
         token_json = credentials_json['token_response']
-        
+        token_expiry = credentials_json['token_expiry']
+
         # Store id, name, and token in KV store
         c.namespace.app = REST_config['kv_namespace']
         collection_name = 'google_tokens'
@@ -277,7 +279,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         except:
             userExists = False
         
-        kv_jsonstring = json.dumps({'_key': user_id, 'id': user_id, 'name': full_name, 'token': token_json})
+        kv_jsonstring = json.dumps({'_key': user_id, 'id': user_id, 'name': full_name, 'token': token_json, 'token_expiry': token_expiry})
         
         if userExists:
             # Update entry
@@ -292,6 +294,7 @@ class google_callback(splunk.rest.BaseRestHandler):
         self.response.setHeader('content-type', 'text/xml')
         #self.response.write(kv_jsonstring)
         self.addMessage("Success", "Your Google account was successfully added!")
+        return
         
     # listen to all verbs
     handle_POST = handle_DELETE = handle_PUT = handle_VIEW = handle_GET
@@ -419,6 +422,7 @@ class microsoft_callback(splunk.rest.BaseRestHandler):
         self.response.setHeader('content-type', 'text/xml')
         #self.response.write(kv_jsonstring)
         self.addMessage("Success", "Your Microsoft account was successfully added!")
+        return
         
     # listen to all verbs
     handle_POST = handle_DELETE = handle_PUT = handle_VIEW = handle_GET

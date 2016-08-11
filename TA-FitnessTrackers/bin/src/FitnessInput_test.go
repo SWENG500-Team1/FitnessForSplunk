@@ -75,10 +75,10 @@ func TestWriteCheckpoint(t *testing.T) {
 	input.ModInputConfig = config
 
 	//write the checkpoint.
-	input.writeCheckPoint(checkpointTime)
+	input.writeCheckPoint("service", "username", "userid", checkpointTime)
 
 	//get the checkpoint back
-	startTime, _ := input.getTimes()
+	startTime, _ := input.getTimes("service", "username", "userid")
 
 	//Validate that the time we sent in is the same as the time we get back.
 	if startTime != checkpointTime {
