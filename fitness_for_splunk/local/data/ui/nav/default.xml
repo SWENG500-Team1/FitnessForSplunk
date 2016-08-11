@@ -2,6 +2,6 @@
   <view name="Home" default="true" />
   <view name="Enrollment" />
   <view name="main" />
+  <view name='event_registration' />
   <view name="search" />
-  <view name="dashboards" />
 </nav>
