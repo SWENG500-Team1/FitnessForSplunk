@@ -37,9 +37,9 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 		return users, err
 	}
 
-	for _, user := range users {
-		if user.TokenExpiry != "" {
-			user.Token.Expiry, err = time.Parse(getTokenTimeFormat(strategy), user.TokenExpiry)
+	for i, user := range users {
+		if user.TokenExpiry != "" && strategy == strategyGoogle {
+			users[i].Token.Expiry, err = time.Parse(getTokenTimeFormat(strategy), user.TokenExpiry)
 			if err != nil {
 				log.Printf("Failed to convert token expiry time to time.Time obj: %v", err)
 			}

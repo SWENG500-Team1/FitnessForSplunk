@@ -89,6 +89,7 @@ func (input *FitnessInput) StreamEvents() {
 	}
 
 	clientId, clientSecret := input.getAppCredentials()
+
 	for _, token := range tokens {
 
 		//Quick and dirty fix because it's late.
@@ -113,7 +114,6 @@ func (input *FitnessInput) StreamEvents() {
 
 		//Get start and end points from checkpoint
 		startTime, endTime := input.getTimes(input.getStrategy(), token.Name, token.UserID)
-
 		//Create a Fitness Reader to go get the data
 		fitnessReader, err := readerFactory(input.getStrategy(), startTime, endTime)
 		if err != nil {
@@ -155,8 +155,8 @@ func (input *FitnessInput) getAppCredentials() (string, string) {
 		input.SessionKey)
 
 	if err != nil || len(passwords.Entries) == 0 {
-		log.Fatalf("Unable to retrieve password entries for TA-GoogleFitness: %v\n",
-			err)
+		log.Fatalf("Unable to retrieve password entries for: %v"+
+			"Error: %v\n", err, input.Stanzas[0].StanzaName)
 	}
 
 	for _, entry := range passwords.Entries {
@@ -207,6 +207,7 @@ func (input *FitnessInput) writeCheckPoint(service, username, userid string, t t
 	if err != nil {
 		log.Fatalf("Error writing checkpoint file: %v\n", err)
 	}
+
 }
 
 func (input *FitnessInput) readCheckPoint(service, username, userid string) (time.Time, error) {
@@ -221,6 +222,7 @@ func (input *FitnessInput) readCheckPoint(service, username, userid string) (tim
 		log.Printf("Unable to decode checkpoint file: %v\n", err)
 		return time.Now().AddDate(0, 0, -10), err
 	}
+
 	return t, nil
 }
 

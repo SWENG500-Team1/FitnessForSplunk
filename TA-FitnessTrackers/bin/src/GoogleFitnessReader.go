@@ -45,7 +45,7 @@ func (input *GoogleFitnessReader) getData(
 
 			//find the last time recorded so that we can write that as the checkpoint
 			if time.Unix(0, point.EndTimeNanos).After(lastOutputTime) {
-				input.endTime = time.Unix(0, point.EndTimeNanos)
+				lastOutputTime = time.Unix(0, point.EndTimeNanos)
 			}
 		}
 	}
