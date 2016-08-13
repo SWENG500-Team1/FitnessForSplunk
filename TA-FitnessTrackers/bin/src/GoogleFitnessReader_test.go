@@ -48,16 +48,11 @@ func TestGoogleStrategy(t *testing.T) {
 var startTime = time.Now().Add(-12 * time.Hour)
 var endTime = startTime.Add(5 * time.Hour)
 
-func TestLatestTime(t *testing.T) {
+// TestGoogleLatestTime is a integration test with the Google Fitness API to
+// validate that data is retrieved and the GoogleFitnessReader.getData method
+// returns a data after the startTime given.
+func TestGoogleLatestTime(t *testing.T) {
 
-	//TODO: Replace hard coded values with pull from arguments
-	// reader := NewFitnessReader(testClientId, testClientSecret)
-
-	//TODO: Replace hard coded values with pull from storage/passwords
-	/*TODO: Determine if the value from storage/passwords has a refresh token.
-	  Yes: Refresh the existing token.
-	  No: Get a refresh token and store new token
-	*/
 	tok := newTokenWithExpiry(testRefreshToken,
 		testAccessToken,
 		testExpires,
@@ -78,6 +73,7 @@ func TestLatestTime(t *testing.T) {
 	}
 }
 
+// TestGetSessions tests if the system is able to retrieve a session from Google
 func TestGetSessions(t *testing.T) {
 	startTime := time.Date(2016, 07, 16, 04, 0, 0, 0, time.Local)
 	tok := newTokenWithExpiry(testRefreshToken,

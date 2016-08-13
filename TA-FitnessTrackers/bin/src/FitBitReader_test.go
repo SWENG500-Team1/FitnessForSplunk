@@ -13,15 +13,14 @@ import (
 	"golang.org/x/oauth2/fitbit"
 )
 
-/* TestFitbitGetData is an integration test with the Fitbit servers.  It does
-require some setup to be run correctly.
-
-1. Set the date range with complete days. (i.e. not today)
-2. Set fitbitAccessToken, fitbitAccessToken, fitbitExpires constants in a file
-   that is not in your git repo.
-3. Make sure you know the exact value of steps the first date and set the value
-  of expectedStesp to that value.
-*/
+// TestFitbitGetData is an integration test with the Fitbit servers.  It does
+// require some setup to be run correctly.
+//
+// 1. Set the date range with complete days. (i.e. not today)
+// 2. Set fitbitAccessToken, fitbitAccessToken, fitbitExpires constants in a file
+//    that is not in your git repo.
+// 3. Make sure you know the exact value of steps the first date and set the value
+//   of expectedStesp to that value.
 func TestFitbitGetData(t *testing.T) {
 	const expectedSteps int = 14102
 	endTime := time.Date(2016, time.August, 2, 02, 00, 0, 0, time.Local)
@@ -73,46 +72,21 @@ func TestFitbitGetData(t *testing.T) {
 	// }
 }
 
+// TestGetTimeZone is an integration test with the fitbit server.  This tests the
+// FitbitReader.getTimeZone method to ensure that it gets the right time zone
+// back for the test user.
+// Precondition: Set fitbitAccessToken, fitbitAccessToken, fitbitExpires
+// constants in a file that is not in your git repo.
 func TestGetTimeZone(t *testing.T) {
 	tok := newTokenNoExpiry(fitbitRefreshToken, fitbitAccessToken, testTokenType)
 
 	client, _ := getClient(tok, fitbitClientId, fitbitClientSecret, strategyFitbit)
 	reader := &FitbitReader{}
-	tz := reader.getTimeZone(client)
+	tz, _ := reader.getTimeZone(client)
 
-	t.Log(tz)
-}
-
-func TestFitbitDates(t *testing.T) {
-	now := time.Now()
-	_, err := NewFitbitReader(now, now.AddDate(0, 0, -1))
-	if err == nil {
-		t.Log("Failed to detect invalid date range.")
+	if tz != "-07:00" {
 		t.Fail()
-	}
-
-	fbr, err := NewFitbitReader(now.AddDate(0, 0, -2), now)
-	if err != nil {
-		t.Log("Failed to create Fitbit reader with valid date range.")
-		t.Fail()
-	}
-
-	if fbr.endTime.Day() != now.Day()-1 {
-		t.Logf("Failed to back date off of current day.")
-		t.Fail()
-	}
-
-	endTime := time.Date(2016, time.August, 3, 0, 0, 0, 0, time.Local)
-	startTime := time.Date(2016, time.August, 1, 0, 0, 0, 0, time.Local)
-	fbr, err = NewFitbitReader(startTime, endTime)
-	if err != nil {
-		t.Log("Failed to create Fitbit reader with valid date range.")
-		t.Fail()
-	}
-
-	if fbr.endTime.Day() != endTime.Day() {
-		t.Log("Date changed improperly when creating Fitbit reader.")
-		t.Fail()
+		t.Log("Wrong time zone returned.")
 	}
 }
 
