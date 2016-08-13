@@ -28,11 +28,12 @@ func (input *GoogleFitnessReader) getData(
 	user User) time.Time {
 
 	lastOutputTime := input.startTime
+	totalEvents := 0
 
 	dataSources := input.getDataSources(client)
+	log.Printf("Recieved %v datasources for %v", len(dataSources), user.Name)
 	for _, dataSource := range dataSources {
 		dataset := input.getDataSet(client, *dataSource)
-
 		for _, point := range dataset.Point {
 			type event struct {
 				Username  string            `json:"username"`
@@ -48,8 +49,9 @@ func (input *GoogleFitnessReader) getData(
 				lastOutputTime = time.Unix(0, point.EndTimeNanos)
 			}
 		}
+		totalEvents += len(dataset.Point)
 	}
-
+	log.Printf("New Google Events=%v User=%v", totalEvents, user.Name)
 	input.getSessions(client, writer)
 	return lastOutputTime
 }

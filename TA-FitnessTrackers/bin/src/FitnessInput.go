@@ -207,6 +207,7 @@ func (input *FitnessInput) writeCheckPoint(service, username, userid string, t t
 	if err != nil {
 		log.Fatalf("Error writing checkpoint file: %v\n", err)
 	}
+	log.Printf("Wrote checkpoint for %v - %v: %v", service, username, t)
 
 }
 
@@ -220,8 +221,10 @@ func (input *FitnessInput) readCheckPoint(service, username, userid string) (tim
 	err = t.GobDecode(b)
 	if err != nil {
 		log.Printf("Unable to decode checkpoint file: %v\n", err)
-		return time.Now().AddDate(0, 0, -10), err
+		return time.Now().AddDate(0, 0, -5), err
 	}
+
+	log.Printf("Read checkpoint for %v - %v: %v", service, username, t)
 
 	return t, nil
 }

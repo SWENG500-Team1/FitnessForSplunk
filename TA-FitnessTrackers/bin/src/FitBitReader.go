@@ -28,7 +28,7 @@ func (input *FitbitReader) getData(
 	user User) time.Time {
 
 	//Get the user's time-zone
-	tz := input.getTimeZone(client)
+	tz, local := input.getTimeZone(client)
 
 	result := &input.startTime
 
@@ -42,10 +42,10 @@ func (input *FitbitReader) getData(
 		//Make a request to the API endpoint:
 		// https://api.fitbit.com/1/user/[user-id]/activities/date/[date].json
 		requestString := "https://api.fitbit.com/1/user/-/activities/steps/date/" +
-			loopStart.Format(dateFormat) + "/" +
-			loopEnd.Format(dateFormat) + "/" +
-			"1min/time/" + loopStart.Format(timeFormat) +
-			"/" + loopEnd.Format(timeFormat) + ".json"
+			loopStart.In(local).Format(dateFormat) + "/" +
+			loopEnd.In(local).Format(dateFormat) + "/" +
+			"1min/time/" + loopStart.In(local).Format(timeFormat) +
+			"/" + loopEnd.In(local).Format(timeFormat) + ".json"
 
 		response, err := client.Get(requestString)
 		if err != nil {
@@ -54,7 +54,8 @@ func (input *FitbitReader) getData(
 
 		if response.StatusCode != http.StatusOK {
 			b, _ := ioutil.ReadAll(response.Body)
-			log.Printf("Non-200 status code from fitbit request: %v, %v\n %s",
+			log.Printf("Non-200 status code from fitbit request: Resonse Code=%v, Username=%v: URL=%v, Error=%s",
+				user.Name,
 				response.StatusCode,
 				requestString,
 				b)
@@ -66,7 +67,7 @@ func (input *FitbitReader) getData(
 			result = lastTime
 		}
 	}
-
+	log.Printf("Fitbit last date=%v", result)
 	return *result
 }
 
@@ -106,7 +107,7 @@ func (input *FitbitReader) decodeAndPrint(reader io.Reader,
 
 //getTimeZone makes a call to the fitbit profile endpoint so that we can get
 // the user's timezone for proper time series indexing
-func (input *FitbitReader) getTimeZone(client *http.Client) string {
+func (input *FitbitReader) getTimeZone(client *http.Client) (string, *time.Location) {
 	resp, err := client.Get("https://api.fitbit.com/1/user/-/profile.json")
 	if err != nil {
 		log.Fatalf("Failed to get user profile information: %v\n", err)
@@ -133,7 +134,7 @@ func (input *FitbitReader) getTimeZone(client *http.Client) string {
 		log.Fatalf("Failed to convert timezone to local: %v\n", err)
 	}
 	t := time.Date(0, 0, 0, 0, 0, 0, 0, local)
-	return string(t.Format("-0700"))
+	return string(t.Format("-0700")), local
 }
 
 //userStruct: A a struct to glue username and Activity Summaries together
