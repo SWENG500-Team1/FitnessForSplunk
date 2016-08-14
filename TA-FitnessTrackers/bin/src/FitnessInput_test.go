@@ -17,12 +17,14 @@ import (
 const accountName string = "testing_user"
 const password string = "TestAccount"
 
-// test_getAppCredentials is an integration test that requires the following:
+// TestGetAppCredentials is an integration test that requires the following:
 // 1. Splunk server running locally.
 // 2. User on that Splunk server with admin access so that we can access
 //    storage/passwords.
 // 3. A google clientId and clientSecret password loaded in the
 //    APP_NAME local/passwords.conf file.
+// This test requests the contents of the storage/passwords endpoint from Splunk
+// and compares the results with the expected values.
 func TestGetAppCredentials(t *testing.T) {
 	accessKey, err := splunk.NewSessionKey(accountName, password, splunk.LocalSplunkMgmntURL)
 	if err != nil {
@@ -50,8 +52,8 @@ func TestGetAppCredentials(t *testing.T) {
 	}
 }
 
-//Write's a value to a checkpoint file an then reads it back to confirm that it
-// was written correctly
+// TestWriteCheckpoint is a unit test that write's a value to a checkpoint file
+// an then reads it back to confirm that it was written correctly.
 func TestWriteCheckpoint(t *testing.T) {
 
 	tempDir, err := ioutil.TempDir("", "checkpointDir")
@@ -75,10 +77,10 @@ func TestWriteCheckpoint(t *testing.T) {
 	input.ModInputConfig = config
 
 	//write the checkpoint.
-	input.writeCheckPoint(checkpointTime)
+	input.writeCheckPoint("service", "username", "userid", checkpointTime)
 
 	//get the checkpoint back
-	startTime, _ := input.getTimes()
+	startTime, _ := input.getTimes("service", "username", "userid")
 
 	//Validate that the time we sent in is the same as the time we get back.
 	if startTime != checkpointTime {
@@ -87,6 +89,8 @@ func TestWriteCheckpoint(t *testing.T) {
 	}
 }
 
+// TestScheme is a unit test to validate that a the scheme produced by the
+// ReturnScheme method matches the expected XML scheme.
 func TestScheme(t *testing.T) {
 	scheme := `   <scheme>
       <title>Google Fitness</title>
@@ -116,6 +120,8 @@ func TestScheme(t *testing.T) {
 	}
 }
 
+// TestSchemeValidation tests if the ValidateScheme method properly detects
+// inalid schemes when presented.
 func TestSchemeValidation(t *testing.T) {
 	improperValue := "Not a strategy."
 	correctSchemes := []string{`<input>
@@ -197,6 +203,8 @@ func TestGetReader(t *testing.T) {
 	}
 }
 
+// TestGetReaderFromXML is a unit test that takes a string copy of a mod input
+// scheme and attempts to make a FitnessReader object of the correct type.
 func TestGetReaderFromXML(t *testing.T) {
 	config := `<input>
 			<server_host>myHost</server_host>
@@ -224,6 +232,8 @@ func TestGetReaderFromXML(t *testing.T) {
 	}
 }
 
+// TestGetCredentials is an integration test between the TA and Splunk to
+// determine if the TA can successfully request user tokens from the KV store.
 func TestGetCredentials(t *testing.T) {
 	accessKey, err := splunk.NewSessionKey(accountName, password, splunk.LocalSplunkMgmntURL)
 	if err != nil {
@@ -248,6 +258,8 @@ func TestGetCredentials(t *testing.T) {
 	}
 }
 
+// TestUnmarshalKVJSON is a unit test that validates that the user and token data
+// from the KV store can be unmarshaled into a User object.
 func TestUnmarshalKVJSON(t *testing.T) {
 	encoded := `[ { "name" : "Andy Huynh", "id" : "106238504011438260955", "token" : { "id_token" : "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBmMmY1ZTMxNjE0YmIxYTc4ZjkxNTYxZWIxMmE0M2I5ZjUwNTQ2NDMifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhdF9oYXNoIjoiMTc1ZHo4NmFLenlfQllNcW1adWI2dyIsImF1ZCI6IjE4NjUyNjkxODY0LTNvNjNxNjVxcWpwamw5amM1b2F2N21oOHIzc3U0Mm9hLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA2MjM4NTA0MDExNDM4MjYwOTU1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF6cCI6IjE4NjUyNjkxODY0LTNvNjNxNjVxcWpwamw5amM1b2F2N21oOHIzc3U0Mm9hLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiZW1haWwiOiJhbmR5aHV5bmgyM0BnbWFpbC5jb20iLCJpYXQiOjE0NzAzNjMwODQsImV4cCI6MTQ3MDM2NjY4NCwibmFtZSI6IkFuZHkgSHV5bmgiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1BQ2NBOWthU2dTWS9BQUFBQUFBQUFBSS9BQUFBQUFBQUFKQS9XUW9Qa3dYLVFIOC9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiQW5keSIsImZhbWlseV9uYW1lIjoiSHV5bmgiLCJsb2NhbGUiOiJlbiJ9.TkDTloZYCLJmWxG2XVnphHeUUr3ee_h_HOR650uxb0xMKt-MuCVh6VnbUOjpMGuLbRGKvJ0qLh88mCws2VwGvgK1WnqpAyALQVFUEmm9ud4f9TLNnPsL2uBxmf4p3DtAp3uKeuKOr3bFWSIjp5IOH7dyaWHfBZX5hS1ni3Zuei_VPtW_QZNied7ToO_SBODUtm3YA6RMjuGJQ4ZPv7P0Fx0-_FBFM0SY7iTWDapwOaPu1XmRZwgyxjvOCj-Ewr2d5fnqWo64Ytzp9qWZz6NcSUznZUOTFvj3WJF6yl57xewqOEIWDdKRrWYowZ8EpOYX6vN81S145CgJPDrcy_3Jfg", "access_token" : "ya29.Ci82A2iR0N1iOLCpf7gl5K4oR82kXGeDOP1Di5TTAYWsXcgBhDB3KuXcbwbho3fTmQ", "refresh_token" : "1\/pcyzd0z8KIVtnB5z-X6qI0c2TiYE44gVzUWakiTTRrw", "expires_in" : 3600, "token_type" : "Bearer" }, "_user" : "nobody", "_key" : "106238504011438260955" } ]`
 	var user []User

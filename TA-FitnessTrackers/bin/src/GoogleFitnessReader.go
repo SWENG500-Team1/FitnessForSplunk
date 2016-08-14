@@ -11,7 +11,8 @@ import (
 	"google.golang.org/api/fitness/v1"
 )
 
-const googleOauthTimeFormat = "2006-01-02 15:04:05.00000000 -0700 MST"
+//2016-08-10T01:01:49Z
+const googleOauthTimeFormat = "2006-01-02T15:04:05Z"
 const fitbitOauthTimeFormat = "2006-01-02T15:04:05.000000000-07:00"
 const sessionTimeFormat string = "2006-01-02T15:04:05.00Z"
 
@@ -27,11 +28,12 @@ func (input *GoogleFitnessReader) getData(
 	user User) time.Time {
 
 	lastOutputTime := input.startTime
+	totalEvents := 0
 
 	dataSources := input.getDataSources(client)
+	log.Printf("Recieved %v datasources for %v", len(dataSources), user.Name)
 	for _, dataSource := range dataSources {
 		dataset := input.getDataSet(client, *dataSource)
-
 		for _, point := range dataset.Point {
 			type event struct {
 				Username  string            `json:"username"`
@@ -44,11 +46,12 @@ func (input *GoogleFitnessReader) getData(
 
 			//find the last time recorded so that we can write that as the checkpoint
 			if time.Unix(0, point.EndTimeNanos).After(lastOutputTime) {
-				input.endTime = time.Unix(0, point.EndTimeNanos)
+				lastOutputTime = time.Unix(0, point.EndTimeNanos)
 			}
 		}
+		totalEvents += len(dataset.Point)
 	}
-
+	log.Printf("New Google Events=%v User=%v", totalEvents, user.Name)
 	input.getSessions(client, writer)
 	return lastOutputTime
 }
@@ -106,6 +109,7 @@ func (input *GoogleFitnessReader) getSessions(client *http.Client,
 
 	list, err := sessionCall.Do()
 	if err != nil {
+		log.Printf("%v", client)
 		return err
 	}
 

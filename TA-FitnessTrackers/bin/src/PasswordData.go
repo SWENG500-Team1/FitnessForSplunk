@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"log"
+	"time"
 
 	"github.com/AndyNortrup/GoSplunk"
 	"golang.org/x/oauth2"
@@ -13,21 +15,14 @@ type User struct {
 	UserID       string `json:"id"`
 	Scope        []string
 	oauth2.Token `json:"token"`
+	TokenExpiry  string `json:"token_expiry"`
 }
 
 // getTokens gets a list of tokens that are in the storage/passwords endpoint
 // for the given strategy
 func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 
-	var collection string
-	switch {
-	case strategy == strategyGoogle:
-		collection = "google_tokens"
-	case strategy == strategyFitbit:
-		collection = "fitbit_tokens"
-	case strategy == strategyMicrosoft:
-		collection = "microsoft_tokens"
-	}
+	collection := getKVStoreCollection(strategy)
 
 	tokenReader, err := splunk.KVStoreGetCollection(splunk.LocalSplunkMgmntURL,
 		collection, fitnessForSplunkAppName, "nobody", sessionKey)
@@ -35,25 +30,44 @@ func getUsers(serverURI, sessionKey, strategy string) ([]User, error) {
 		return []User{}, errors.New("Unable to get user tokens from Splunk:" + err.Error())
 	}
 	defer tokenReader.Close()
-	var user []User
+	var users []User
 	decoder := json.NewDecoder(tokenReader)
-	err = decoder.Decode(&user)
+	err = decoder.Decode(&users)
 	if err != nil {
-		return user, err
+		return users, err
 	}
-	return user, err
+
+	for i, user := range users {
+		if user.TokenExpiry != "" && strategy == strategyGoogle {
+			users[i].Token.Expiry, err = time.Parse(getTokenTimeFormat(strategy), user.TokenExpiry)
+			if err != nil {
+				log.Printf("Failed to convert token expiry time to time.Time obj: %v", err)
+			}
+		}
+	}
+	return users, err
 }
 
-//Temporary struct so we can get string values out then make a JSON token
-// by properly converting the date stamp
-type KVStoreUser struct {
-	Name  string            `json:"name"`
-	Id    string            `json:"id"`
-	Token map[string]string `json:"token"`
+//updateKVStoreToken updates the Splunk KV Store with a new refreshToken for the user
+func updateKVStoreToken(u User, strategy, sessionKey string) error {
+	return splunk.KVStoreUpdate(splunk.LocalSplunkMgmntURL,
+		getKVStoreCollection(strategy),
+		u.UserID, u,
+		fitnessForSplunkAppName,
+		"nobody",
+		sessionKey)
 }
 
-type UserCollection struct {
-	users []KVStoreUser
+func getKVStoreCollection(strategy string) string {
+	switch {
+	case strategy == strategyGoogle:
+		return "google_tokens"
+	case strategy == strategyFitbit:
+		return "fitbit_tokens"
+	case strategy == strategyMicrosoft:
+		return "microsoft_tokens"
+	}
+	return ""
 }
 
 func getTokenTimeFormat(strategy string) string {
