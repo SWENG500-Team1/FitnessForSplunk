@@ -1,7 +1,26 @@
-//Microsoft HEalth Data API ModularInputs for Splunk
-
+// Copyright 2014 Splunk, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License"): you may
+// not use this file except in compliance with the License. You may obtain
+// a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+// License for the specific language governing permissions and limitations
+// under the License.
 
 (function() {
+    var splunkjs        = require("splunk-sdk");
+    var ModularInputs   = splunkjs.ModularInputs;
+    var Logger          = ModularInputs.Logger;
+    var Event           = ModularInputs.Event;
+    var Scheme          = ModularInputs.Scheme;
+    var Argument        = ModularInputs.Argument;
+    var utils           = ModularInputs.utils;
+
     var splunkjs        = require("splunk-sdk");
     var ModularInputs   = splunkjs.ModularInputs;
     var Logger          = ModularInputs.Logger;
@@ -16,29 +35,13 @@
     var _refreshtoken = 'MCWEvRoUDxGIvJdlP4R3g*TfVClLRZvEBt2s67m3OiHugUJUDMuqRGzYE23KqLGCo90OSlrTYBuwKJjFgp9OgFP6zYmPzRRusBDmENNe3o4Nv1wmp97z6KDSrrAyr!zL*hmFwVudYTFjA583oaZ1krH5Hn3SKeoEqRNyvsGeIKwTHT5Nbn2ZPAAXbd*NPQTuN8EC!a6tQzdjLIGlF2eWsJyqpeeWmb0BDflBZ34Pg3ahO*DM6rSHrIdpyTj7UKGxAfWpuDduXAg7YFp3*rPE3NazHPLmpUUw4dGNsCwkZtYbtRS8PNEIIiv3GrX8icT2D9GXQvT0JtHNUVfRne6wUXJCaMwV5CWkJOdPRlAS0PSwcbe4*HfG*uihLb*8HoBtBNSrbUWvZnifyWCt*mardbLTDjAhL6ViUCqM7AtOWP1*4'
 
     var _newAccessToken = 'aaaa'
-
-//==========================================================================
-//--Test Logging process
-//==========================================================================
+    var teststartDate = '';
+	var endDate = '';
     var fs = require('fs');
-    var os = require("os");
-    var path = 'logs.txt';
-    function processInput ( text )
-    {
-      fs.open(path, 'a', 666, function( e, id ) {
-       fs.write( id, text + os.EOL, null, 'utf8', function(){
-        fs.close(id, function(){
-         console.log('file is updated');
-        });
-       });
-      });
-     }
-
 
 //==========================================================================
 //--Input Scheme
 //==========================================================================
-  processInput("Process Started: "+new Date());
     exports.getScheme = function() {
         var scheme = new Scheme("Microsoft Health Data");
 
@@ -66,14 +69,14 @@
             new Argument({
                 name: "startdate",
                 dataType: Argument.dataTypeString,
-                description: "Enter last date serched on or date to start searching on.",
+                description: "Enter last date searched on or date to start searching on.",
                 requiredOnCreate: false,
                 requiredOnEdit: false
             }),
             new Argument({
                 name: "token_json",
                 dataType: Argument.dataTypeString,
-                description: "Please enter your Auth Token.",
+                description: "Please enter your Refresh Auth Token.",
                 requiredOnCreate: true,
                 requiredOnEdit: false
             })
@@ -89,25 +92,51 @@
           done();
     };
 //==========================================================================
+//--Code Modules for Application
+//==========================================================================	
+     //------------------------------------------
+     //--PreCalculate End Date
+     //------------------------------------------
+     var d = new Date();
+     var d2 = new Date();
+     d2.setMinutes(d.getMinutes() - d.getMinutes());
+     d2.setSeconds(d.getSeconds() - d.getSeconds());
+     d2.setMilliseconds(d.getMilliseconds() - d.getMilliseconds());
+       endDate = d2.toISOString();	
+	 //------------------------------------------
+     //--PreCalculate Test Start Date
+     //------------------------------------------
+     var s = new Date();
+     var s2 = new Date();
+     s2.setHours(s.getHours() - 1);
+	 s2.setMinutes(s.getMinutes() - s.getMinutes());
+     s2.setSeconds(s.getSeconds() - s.getSeconds());
+     s2.setMilliseconds(s.getMilliseconds() - s.getMilliseconds());
+       teststartDate = s2.toISOString();	  
+	   
+	   
+	   
+	
+//==========================================================================
 //--Process To: Refresh Token / Get Data / Send to Splunk
 //==========================================================================
     exports.streamEvents = function(name, singleInput, eventWriter, done) {
-        var username    = singleInput.username;
+//------------------------------------------------------------------------------------------------------------------------------
+	var username    = singleInput.username;
         var fullname    = singleInput.fullname;
          _refreshtoken  = singleInput.token_json;
         var start_date  = singleInput.date;
-        var _StartTime   ="2016-07-30T00:00:00.000Z"
-        var _EndTime    = "2016-07-30T15:00:00.000Z"
+        var _StartTime   =teststartDate//"2016-07-30T00:00:00.000Z"
+        var _EndTime    = endDate//"2016-07-30T15:00:00.000Z"
 
         var errorFound = false;
 
-var unirest = require("unirest");
-var reqauth = unirest("POST", "https://login.live.com/oauth20_token.srf");
-var reqdata = unirest("GET", "https://api.microsofthealth.net/v1/me/Summaries/Hourly");
+	var unirest = require("unirest");
+	var reqauth = unirest("POST", "https://login.live.com/oauth20_token.srf");
+	var reqdata = unirest("GET", "https://api.microsofthealth.net/v1/me/Summaries/Hourly");
 
 reqauth.query({
   "redirect_uri": "http://127.0.0.1:3000"
-
 });
 //------------------------------------------
 //--Set the auth format
@@ -124,6 +153,7 @@ reqauth.form({
   "refresh_token": _refreshtoken,
   "client_secret": _clientSecret
 });
+
 //------------------------------------------
 //--Data Set the time
 //------------------------------------------
@@ -131,7 +161,6 @@ reqdata.query({
   "startTime": _StartTime,
   "endTime": _EndTime
 });
-
 
 reqauth.end(function (resauth) {
 var _newAccessToken = resauth.body.access_token;
@@ -156,7 +185,7 @@ var result = JSON.stringify(resData.body.summaries[0]);
     result = JSON.stringify(resData.body.summaries[i]);
       var curEvent = new Event({
           stanza: name,
-          data: "{\"username\":" + username + ",\"fullname\":" + fullname + ",\"data\":" + result + "}"
+          data: '{"username":' + '"'+username +'"'+ ',"fullname":' + '"'+fullname +'"'+ ',"data":' + result + '}'
       });
       try {
           eventWriter.writeEvent(curEvent);
@@ -171,12 +200,13 @@ var result = JSON.stringify(resData.body.summaries[0]);
   }
 });
 });
-///////////////////////////////////////////////////////////////////////////
 
 
-        //-We're done
+//------------------------------------------------------------------------------------------------------------------------------
+        //--We're done
         done();
     };
+//==========================================================================	
 
     ModularInputs.execute(exports, module);
 })();
