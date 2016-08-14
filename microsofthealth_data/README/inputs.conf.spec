@@ -1,5 +1,6 @@
-[microsoft_data://<name>]
+[microsofthealth_data://<name>]
 *Generates events containing a Microsoft data.
+
 fullname = <value>
 username = <value>
 startdate = <value>

@@ -1,0 +1,11 @@
+{
+  "name": "microsofthealth_data",
+  "version": "0.0.1",
+  "description": "Splunk modular input example for generating random numbers",
+  "main": "microsofthealth_data.js",
+  "dependencies": {
+    "splunk-sdk": ">=1.4.0",
+    "unirest": "~0.5.0"
+  },
+  "author": "Splunk"
+}
