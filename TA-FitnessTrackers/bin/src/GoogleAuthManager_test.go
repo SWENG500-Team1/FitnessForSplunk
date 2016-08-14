@@ -6,7 +6,8 @@ import (
 	splunk "github.com/AndyNortrup/GoSplunk"
 )
 
-//Test if the app is able to exchange a stale token for a valid client.
+// TestGetUsersFromKVStore tests if users can be retrieved from the Splunk KV
+// store.
 func TestGetUsersFromKVStore(t *testing.T) {
 
 	sessionKey, err := splunk.NewSessionKey(accountName,
